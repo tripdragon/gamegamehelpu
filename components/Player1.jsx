@@ -12,55 +12,26 @@ import { Vector3, Euler } from 'three';
 // and forwardRef
 
 function Player1(props, ref) {
-// export default function Player1(props, ref) {
-// const ugggghrefs = forwardRef(function Player1Reeefforcedsystem(props, ref) {
-// export default forwardRef(function Player1Reeefforcedsystem(props, ref) {
 
-// these are hard fed from the debugger tools
-const animationPoses = {
-  walk : {
-    // this might actually use an axis rotation instead of the eulers
-    armSway : {front: new Vector3(1.91008833338259, 0, 0 ), back: new Vector3( 4.68725623915597, 0, 0 ) }
-  }
-}
+    // these are hard fed from the debugger tools
+    const animationPoses = {
+      walk : {
+        // this might actually use an axis rotation instead of the eulers
+        armSway : {front: new Vector3(1.91008833338259, 0, 0 ), back: new Vector3( 4.68725623915597, 0, 0 ) }
+      }
+    }
 
 
-    
-    // const ref = useRef()
-
-    // const meshRef = useRef();
-    
-    
     const [hovered, setHover] = useState(false);
     const [active, setActive] = useState(false);
     
     // Subscribe this component to the render-loop, rotate the mesh every frame
     // useFrame((state, delta) => (meshRef.current.rotation.x += delta));
 
-    // const gltf = useLoader(GLTFLoader, './models/player1.glb');
     const gltf = useLoader(GLTFLoader, './models/player1withrig1.glb');
     return <primitive ref={ref} object={gltf.scene} position={props.position} scale={props.scale} animationPoses={animationPoses} />;
-          
-    // Return view, these are regular three.js elements expressed in JSX
-    // return (
-    //     <mesh
-    //         {...props}
-    //         ref={meshRef}
-    //         scale={active ? 1.5 : 1}
-    //         onClick={() => setActive(!active)}
-    //         onPointerOver={() => setHover(true)}
-    //         onPointerOut={() => setHover(false)}>
-    //         <boxGeometry args={[1, 1, 1]} />
-    //         <meshStandardMaterial color={hovered ? 'hotpink' : 'green'} />
-    //     </mesh>
-    // );
+
 }
 
-
-// export default function Player1(props, ref) {
-//   return (
-//     <ugggghrefs props={props} ref={ref} />
-//   )
-// }
 
 export default forwardRef(Player1);
