@@ -5,9 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "open http://localhost:5173 && vite",
-    "build": "vite build"
+    "build": "vite build",
+    "lint": "eslint --fix main.jsx ./components/*"
   },
   "devDependencies": {
+    "eslint": "^8.54.0",
+    "eslint-plugin-react": "^7.33.2",
     "vite": "^5.0.0"
   },
   "dependencies": {
