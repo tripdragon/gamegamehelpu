@@ -5,19 +5,19 @@ import { useLoader } from '@react-three/fiber'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
 
-export default function Town1(props) {
+export default function Player1(props) {
     
     const meshRef = useRef();
     
     
-    // const [hovered, setHover] = useState(false);
-    // const [active, setActive] = useState(false);
-    // 
+    const [hovered, setHover] = useState(false);
+    const [active, setActive] = useState(false);
+    
     // Subscribe this component to the render-loop, rotate the mesh every frame
     // useFrame((state, delta) => (meshRef.current.rotation.x += delta));
 
-    const gltf = useLoader(GLTFLoader, '/models/town4.glb')
-    return <primitive castShadow receiveShadow object={gltf.scene} />
+    const gltf = useLoader(GLTFLoader, '/models/player1.glb')
+    return <primitive object={gltf.scene} position={props.position} scale={props.scale} />
           
     // Return view, these are regular three.js elements expressed in JSX
     // return (
