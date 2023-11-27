@@ -3,7 +3,9 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Canvas } from '@react-three/fiber';
 
-import { Vector3 } from 'three';
+import { Vector3, MathUtils } from 'three';
+const lerp = MathUtils.lerp;
+const remap = MathUtils.mapLinear;
 
 import { PerspectiveCamera, OrbitControls } from '@react-three/drei';
 
@@ -18,11 +20,15 @@ import Box from './components/Box';
 import Town1 from './components/Town1';
 import Player1 from './components/Player1';
 
-function Foooots() {
-    const {camera, scene} = useThree();
-    // debugger
-    camera.lookAt(new Vector3());
-}
+
+import GUI from "https://cdn.jsdelivr.net/npm/lil-gui@0.19/+esm";
+
+
+// function Foooots() {
+//     const {camera, scene} = useThree();
+//     // debugger
+//     camera.lookAt(new Vector3());
+// }
 // </*
 // <Foooots />
 // <PerspectiveCamera makeDefault position={[0,24,0]} rotation={[2.2,2,2]} />
@@ -63,11 +69,38 @@ function App() {
 
 
 
+const gui = new GUI();
+
+
+const menuG = {
+arm_leftX: 0,
+arm_leftY: 0,
+arm_leftZ: 0,
+arm_left_tween: 0.5,
+arm_right_tween: 0.5,
+arm_both_tween: 0.5,
+// myFunction: function() { alert( 'hi' ) }
+};
+
+gui.add(menuG, "arm_leftX", 0, Math.PI * 2 * 2);
+gui.add(menuG, "arm_leftY", 0, Math.PI * 2 * 2);
+gui.add(menuG, "arm_leftZ", 0, Math.PI * 2 * 2);
+gui.add(menuG, "arm_left_tween", 0, 1);
+gui.add(menuG, "arm_right_tween", 0, 1);
+gui.add(menuG, "arm_both_tween", 0, 1);
+  
+
+
+
+
 
 // REF's SUCKSORS
 // https://stackoverflow.com/questions/71835726/how-can-i-use-forwardref-in-react-component
 // and forwardRef
 function Stuff1() {
+
+  
+
 
     const {camera, scene, controls} = useThree();
 
@@ -76,12 +109,6 @@ function Stuff1() {
     const keyMap = useKeyboard();
 
     var orbitPointer = null;
-    //
-    // useEffect(() => {
-    //       // call api or anything
-    //       console.log("loaded");
-    //       debugger
-    //    });
 
     const speed = 4;
 
@@ -91,7 +118,6 @@ function Stuff1() {
 
 
     function movePlayer(dir, player, delta){
-    // debugger
     
         player.getWorldPosition(oldObjectPosition);
 
@@ -121,21 +147,23 @@ function Stuff1() {
         camera.position.add(deltaB);
         
         orbitRef.current.enabled = true;  
-        // debugger
+        
         orbitRef.current.target.copy(player.position)
-        setTimeout(()=>{
-        // camera.lookAt(player.position)
-      }, 1000)
+        //   setTimeout(()=>{
+        //   // camera.lookAt(player.position)
+        // }, 1000)
         
         
       }
     }
 
+
+    var tempArmLeft = null;
+    var tempArmRight = null;
+    const tVecLeft = new Vector3();
+    const tVecRight = new Vector3();
+
     useFrame((_, delta) => {
-    // if( playerPointer === null ){
-    //   // debugger
-    //   playerPointer = scene.getObjectByName("player1", true);
-    // }
         if(playerRef){
             // debugger
             keyMap['KeyA'] && ( movePlayer('KeyA', playerRef.current, delta) );
@@ -146,26 +174,50 @@ function Stuff1() {
             // keyMap['KeyD'] && (playerPointer.position.x += 1 * delta)
             // keyMap['KeyW'] && (playerPointer.position.z -= 1 * delta)
             // keyMap['KeyS'] && (playerPointer.position.z += 1 * delta)
-
+        }
+        
+        // this shoiuld be an onchange from the menu instead
+        // this also goes into the player more so
+        
+        if(playerRef){
+          if ( ! tempArmLeft ) tempArmLeft = playerRef.current.getObjectByName("arm_l");
+          if ( ! tempArmRight ) tempArmRight = playerRef.current.getObjectByName("arm_r");
+          if (tempArmLeft && tempArmRight) {
+            // debugger
+            // tempArmLeft.rotation.set(menuG.arm_leftX , menuG.arm_leftY, menuG.arm_leftZ);
+            // tempArmRight.rotation.set(menuG.arm_leftX , menuG.arm_leftY, menuG.arm_leftZ);
+            // tempArmLeft.rotation.y = menuG.arm_leftY;
+            // tempArmLeft.rotation.z = menuG.arm_leftZ;
+            // tempArmLeft.rotation.x = menuG.arm_leftX;
+            
+            // tVecLeft.lerpVectors(playerRef.current.animationPoses.walk.armSway.front, 
+            //   playerRef.current.animationPoses.walk.armSway.back,
+            //   menuG.arm_left_tween);
+            // tempArmLeft.rotation.setFromVector3(tVecLeft);
+            // 
+            // tVecRight.lerpVectors(playerRef.current.animationPoses.walk.armSway.front, 
+            //   playerRef.current.animationPoses.walk.armSway.back,
+            //   menuG.arm_right_tween);
+            // tempArmRight.rotation.setFromVector3(tVecRight);
+            // 
+            
+            tVecLeft.lerpVectors(playerRef.current.animationPoses.walk.armSway.front, 
+              playerRef.current.animationPoses.walk.armSway.back,
+              menuG.arm_both_tween);
+            tVecRight.lerpVectors(playerRef.current.animationPoses.walk.armSway.front, 
+              playerRef.current.animationPoses.walk.armSway.back,
+              1-menuG.arm_both_tween);
+              
+            tempArmLeft.rotation.setFromVector3(tVecLeft);
+            tempArmRight.rotation.setFromVector3(tVecRight);
+            
+            
+          }
+          
         }
     });
-
-    //
-    // MORE FKNNNN wrappers
-    // https://stackoverflow.com/questions/70768112/how-to-get-orbitcontrols-ref
-    //
-    // IUUUGGGG cant figure this out
-    // const DerpOrbitControls = (props, ref) => {
-    //   const { setControls } = props;
-    //   // const ref = useRef();
-    //
-    //   useEffect(() => {
-    //     if (!ref.current) return;
-    //     setControls(ref.current);
-    //   }, ref.current);
-    //     return forwardRef(<OrbitControls makeDefault ref={ref} />);
-    // };
-
+    
+    // Need this to get the reference var for the orbitcontrols
     useEffect(() => {
 
         if (orbitRef.current) {
@@ -177,25 +229,16 @@ function Stuff1() {
         <>
             <color attach="background" args={['skyblue']} />
 
-
-            {/*
-      <DerpOrbitControls ref={orbitRef} makeDefault />
-      <OrbitControls ref={orbitRef} makeDefault />
-      */}
             <OrbitControls ref={orbitRef} makeDefault />
             <ambientLight intensity={2.2} />
 
-            <directionalLight intensity={8.2} position={[0, 1, 5]} color="#00aaff" />
+            <directionalLight intensity={6.2} position={[0, 1, 5]} color="#00aaff" />
 
             <Box position={[-1.2, 0, 0]} />
             <Box position={[1.2, 0, 0]} />
 
             <Town1 />
-            {/*
-    Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?
-    <Player1 name="player1" ref={ref} position={[0.1,0,0]}  scale={2} />
 
-    */}
             <Player1 ref={playerRef} name="player1" position={[0.1,0,0]}  scale={2} />
         </>
 
