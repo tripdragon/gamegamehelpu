@@ -15,6 +15,10 @@ cd dist/
 npx http-server
 http://127.0.0.1:8080
 
+or
+
+npm run preview
+
 ```
 
 ```npm run lint
