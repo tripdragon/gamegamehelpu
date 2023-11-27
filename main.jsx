@@ -152,6 +152,7 @@ function Stuff1() {
 
 
     {/*
+      <DerpOrbitControls ref={orbitRef} makeDefault />
       <OrbitControls ref={orbitRef} makeDefault />
       */}
     <OrbitControls makeDefault />
