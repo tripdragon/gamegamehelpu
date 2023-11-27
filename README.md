@@ -9,6 +9,12 @@ nvm use v18.16.1
 ```
 npm install
 npm run dev
+npm run build
+
+cd dist/
+npx http-server
+http://127.0.0.1:8080
+
 ```
 
 ```npm run lint
