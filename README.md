@@ -1,3 +1,6 @@
+
+https://tripdragon.github.io/gamegamehelpu/dist/
+
 # gamegamehelpu
 game help u
 
