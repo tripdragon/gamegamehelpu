@@ -1,8 +1,8 @@
 import React, { useRef, useState, forwardRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 
-import { useLoader } from '@react-three/fiber'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { useLoader } from '@react-three/fiber';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 
 // REF's SUCKSORS
@@ -15,7 +15,7 @@ function Player1(props, ref) {
 // export default forwardRef(function Player1Reeefforcedsystem(props, ref) {
 
     
-  // const ref = useRef()
+    // const ref = useRef()
 
     // const meshRef = useRef();
     
@@ -26,8 +26,8 @@ function Player1(props, ref) {
     // Subscribe this component to the render-loop, rotate the mesh every frame
     // useFrame((state, delta) => (meshRef.current.rotation.x += delta));
 
-    const gltf = useLoader(GLTFLoader, '/models/player1.glb')
-    return <primitive ref={ref} object={gltf.scene} position={props.position} scale={props.scale} />
+    const gltf = useLoader(GLTFLoader, '/models/player1.glb');
+    return <primitive ref={ref} object={gltf.scene} position={props.position} scale={props.scale} />;
           
     // Return view, these are regular three.js elements expressed in JSX
     // return (

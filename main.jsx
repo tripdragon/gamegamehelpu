@@ -19,9 +19,9 @@ import Town1 from './components/Town1';
 import Player1 from './components/Player1';
 
 function Foooots() {
-  const {camera, scene} = useThree();
-  // debugger
-  camera.lookAt(new Vector3());
+    const {camera, scene} = useThree();
+    // debugger
+    camera.lookAt(new Vector3());
 }
 // </*
 // <Foooots />
@@ -34,33 +34,32 @@ var playerPointer = null;
 
 
 createRoot(document.getElementById('root')).render(
-  <App />
+    <App />
 );
 
 
 const Controls_A = {
-  forward : 'forward',
-  back : 'back',
-  left : 'left',
-  right : 'right',
-  jump : 'jump',
-}
+    forward : 'forward',
+    back : 'back',
+    left : 'left',
+    right : 'right',
+    jump : 'jump',
+};
 
 
 function App() {
-  
 
 
-  
-  return (
-    <Canvas shadows camera={{ position: [5, 10, 18], fov: 25 }} >
-      <Stuff1 />
-    </Canvas>
 
 
-  )
+    return (
+        <Canvas shadows camera={{ position: [5, 10, 18], fov: 25 }} >
+            <Stuff1 />
+        </Canvas>
+
+
+    );
 }
-
 
 
 
@@ -70,107 +69,111 @@ function App() {
 // and forwardRef
 function Stuff1() {
 
+    const {camera, scene, controls} = useThree();
 
-  const {camera, scene, controls} = useThree();
-  
-  const playerRef = useRef()
-  const orbitRef = useRef()
-  const keyMap = useKeyboard()
-  
-  var orbitPointer = null;
-  // 
-  // useEffect(() => {
-  //       // call api or anything
-  //       console.log("loaded");
-  //       debugger
-  //    });
+    const playerRef = useRef();
+    const orbitRef = useRef();
+    const keyMap = useKeyboard();
 
+    var orbitPointer = null;
+    //
+    // useEffect(() => {
+    //       // call api or anything
+    //       console.log("loaded");
+    //       debugger
+    //    });
 
-  let speed = 4;
+    const speed = 4;
 
-  function movePlayer(dir, player, delta){
+    function movePlayer(dir, player, delta){
     // debugger
-    if (dir === "KeyA") {
-      player.position.x -= speed * delta
-    }
-    if (dir === "KeyD") {
-      player.position.x += speed * delta
-      // debugger
-      // camera.position.x = player.position.x;
-      // camera.lookAt(player.position)
-    }
-    if (dir === "KeyW") {
-      player.position.z -= speed * delta
-    }
-    if (dir === "KeyS") {
-      player.position.z += speed * delta
-    }
+        if (dir === 'KeyA') {
+            player.position.x -= speed * delta;
+        }
+        if (dir === 'KeyD') {
+            player.position.x += speed * delta;
+            // debugger
+            // camera.position.x = player.position.x;
+            // camera.lookAt(player.position)
+        }
+        if (dir === 'KeyW') {
+            player.position.z -= speed * delta;
+        }
+        if (dir === 'KeyS') {
+            player.position.z += speed * delta;
+        }
     // if(camera){
     //   camera.position.x += 4;
     // }
-  }
-  
-  useFrame((_, delta) => {
+    }
+
+    useFrame((_, delta) => {
     // if( playerPointer === null ){
     //   // debugger
     //   playerPointer = scene.getObjectByName("player1", true);
     // }
-    if(playerRef){
-      // debugger
-      keyMap['KeyA'] && ( movePlayer('KeyA', playerRef.current, delta) )
-      keyMap['KeyD'] && (movePlayer('KeyD', playerRef.current, delta) )
-      keyMap['KeyW'] && ( movePlayer('KeyW', playerRef.current, delta) )
-      keyMap['KeyS'] && ( movePlayer('KeyS', playerRef.current, delta) )
-      // keyMap['KeyA'] && (playerPointer.position.x -= 1 * delta)
-      // keyMap['KeyD'] && (playerPointer.position.x += 1 * delta)
-      // keyMap['KeyW'] && (playerPointer.position.z -= 1 * delta)
-      // keyMap['KeyS'] && (playerPointer.position.z += 1 * delta)
-      
-    }
-  })
-  
-  //
-  // MORE FKNNNN wrappers
-  // https://stackoverflow.com/questions/70768112/how-to-get-orbitcontrols-ref
-  // 
-  // IUUUGGGG cant figure this out
-  // const DerpOrbitControls = (props, ref) => {
-  //   const { setControls } = props;
-  //   // const ref = useRef();
-  // 
-  //   useEffect(() => {
-  //     if (!ref.current) return;
-  //     setControls(ref.current);
-  //   }, ref.current);
-  //     return forwardRef(<OrbitControls makeDefault ref={ref} />);
-  // };
-  
-  
-  return (
-    <>
-    <color attach="background" args={['skyblue']} />
+        if(playerRef){
+            // debugger
+            keyMap['KeyA'] && ( movePlayer('KeyA', playerRef.current, delta) );
+            keyMap['KeyD'] && (movePlayer('KeyD', playerRef.current, delta) );
+            keyMap['KeyW'] && ( movePlayer('KeyW', playerRef.current, delta) );
+            keyMap['KeyS'] && ( movePlayer('KeyS', playerRef.current, delta) );
+            // keyMap['KeyA'] && (playerPointer.position.x -= 1 * delta)
+            // keyMap['KeyD'] && (playerPointer.position.x += 1 * delta)
+            // keyMap['KeyW'] && (playerPointer.position.z -= 1 * delta)
+            // keyMap['KeyS'] && (playerPointer.position.z += 1 * delta)
+
+        }
+    });
+
+    //
+    // MORE FKNNNN wrappers
+    // https://stackoverflow.com/questions/70768112/how-to-get-orbitcontrols-ref
+    //
+    // IUUUGGGG cant figure this out
+    // const DerpOrbitControls = (props, ref) => {
+    //   const { setControls } = props;
+    //   // const ref = useRef();
+    //
+    //   useEffect(() => {
+    //     if (!ref.current) return;
+    //     setControls(ref.current);
+    //   }, ref.current);
+    //     return forwardRef(<OrbitControls makeDefault ref={ref} />);
+    // };
+
+    useEffect(() => {
+
+        if (orbitRef.current) {
+            console.log('orbitRef.current', orbitRef.current);
+        }
+    }, [orbitRef.current]);
+
+    return (
+        <>
+            <color attach="background" args={['skyblue']} />
 
 
-    {/*
+            {/*
       <DerpOrbitControls ref={orbitRef} makeDefault />
       <OrbitControls ref={orbitRef} makeDefault />
       */}
-    <OrbitControls makeDefault />
-    <ambientLight intensity={2.2} />
+            <OrbitControls ref={orbitRef} makeDefault />
+            <ambientLight intensity={2.2} />
 
-    <directionalLight intensity={8.2} position={[0, 1, 5]} color="#00aaff" />
+            <directionalLight intensity={8.2} position={[0, 1, 5]} color="#00aaff" />
 
-    <Box position={[-1.2, 0, 0]} />
-    <Box position={[1.2, 0, 0]} />
+            <Box position={[-1.2, 0, 0]} />
+            <Box position={[1.2, 0, 0]} />
 
-    <Town1 />
-    {/*
+            <Town1 />
+            {/*
     Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?
     <Player1 name="player1" ref={ref} position={[0.1,0,0]}  scale={2} />
 
     */}
-    <Player1 ref={playerRef} name="player1" position={[0.1,0,0]}  scale={2} />
-    </>
+            <Player1 ref={playerRef} name="player1" position={[0.1,0,0]}  scale={2} />
+        </>
 
-  )
+    );
 }
