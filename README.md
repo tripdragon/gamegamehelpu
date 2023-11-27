@@ -2,7 +2,13 @@
 game help u
 
 
-```npm run dev
+something older than v14
+nvm use v18.16.1
+
+
+```
+npm install
+npm run dev
 ```
 
 ```npm run lint
