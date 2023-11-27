@@ -7,6 +7,9 @@ nvm use v18.16.1
 
 
 ```
+
+npm i vite-tsconfig-paths --save-dev
+
 npm install
 npm run dev
 npm run build
