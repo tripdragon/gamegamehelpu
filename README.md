@@ -32,6 +32,10 @@ npm run preview
 
 Make sure all links are relative "./" for github pages to work
 
+removed from package cause its annoying
+"dev": "open http://localhost:5173 && vite",
+
+
 
 
 **Premise:

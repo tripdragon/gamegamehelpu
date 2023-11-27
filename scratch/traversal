@@ -1,0 +1,16 @@
+playerRef.current.children[0].children[1].children
+
+
+// select = playerRef.current.children[0].children[1].children;
+select = playerRef.current;
+select.traverse( ( item ) => {
+
+  // if ( item.isMesh ) {
+  // if ( item.name ) {
+  if ( item.isBone ) {
+    console.log(item.name);
+    // console.log(item.type);
+  }
+});
+
+arm_l = playerRef.current.getObjectByName("arm_l")
