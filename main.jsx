@@ -85,8 +85,16 @@ function Stuff1() {
 
     const speed = 4;
 
+
+    const oldObjectPosition = new Vector3();
+    const newObjectPosition = new Vector3();
+
+
     function movePlayer(dir, player, delta){
     // debugger
+    
+        player.getWorldPosition(oldObjectPosition);
+
         if (dir === 'KeyA') {
             player.position.x -= speed * delta;
         }
@@ -102,9 +110,25 @@ function Stuff1() {
         if (dir === 'KeyS') {
             player.position.z += speed * delta;
         }
-    // if(camera){
-    //   camera.position.x += 4;
-    // }
+      if(camera && orbitRef){
+      
+        orbitRef.current.enabled = false;
+
+        player.getWorldPosition(newObjectPosition);
+
+        const deltaB = newObjectPosition.sub(oldObjectPosition);//.multiplyScalar(0.1);
+
+        camera.position.add(deltaB);
+        
+        orbitRef.current.enabled = true;  
+        // debugger
+        orbitRef.current.target.copy(player.position)
+        setTimeout(()=>{
+        // camera.lookAt(player.position)
+      }, 1000)
+        
+        
+      }
     }
 
     useFrame((_, delta) => {
