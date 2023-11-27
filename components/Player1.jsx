@@ -26,7 +26,7 @@ function Player1(props, ref) {
     // Subscribe this component to the render-loop, rotate the mesh every frame
     // useFrame((state, delta) => (meshRef.current.rotation.x += delta));
 
-    const gltf = useLoader(GLTFLoader, '/models/player1.glb');
+    const gltf = useLoader(GLTFLoader, './models/player1.glb');
     return <primitive ref={ref} object={gltf.scene} position={props.position} scale={props.scale} />;
           
     // Return view, these are regular three.js elements expressed in JSX

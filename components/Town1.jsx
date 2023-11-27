@@ -16,7 +16,7 @@ export default function Town1(props) {
     // Subscribe this component to the render-loop, rotate the mesh every frame
     // useFrame((state, delta) => (meshRef.current.rotation.x += delta));
 
-    const gltf = useLoader(GLTFLoader, '/models/town4.glb');
+    const gltf = useLoader(GLTFLoader, './models/town4.glb');
     return <primitive castShadow receiveShadow object={gltf.scene} />;
           
     // Return view, these are regular three.js elements expressed in JSX
