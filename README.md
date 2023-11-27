@@ -30,6 +30,8 @@ npm run preview
 ```npm run lint
 ```
 
+Make sure all links are relative "./" for github pages to work
+
 
 
 **Premise:
