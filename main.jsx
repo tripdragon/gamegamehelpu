@@ -79,15 +79,17 @@ arm_leftZ: 0,
 arm_left_tween: 0.5,
 arm_right_tween: 0.5,
 arm_both_tween: 0.5,
+walk_tween_driver: 0,
 // myFunction: function() { alert( 'hi' ) }
 };
 
-gui.add(menuG, "arm_leftX", 0, Math.PI * 2 * 2);
-gui.add(menuG, "arm_leftY", 0, Math.PI * 2 * 2);
-gui.add(menuG, "arm_leftZ", 0, Math.PI * 2 * 2);
-gui.add(menuG, "arm_left_tween", 0, 1);
-gui.add(menuG, "arm_right_tween", 0, 1);
+// gui.add(menuG, "arm_leftX", 0, Math.PI * 2 * 2);
+// gui.add(menuG, "arm_leftY", 0, Math.PI * 2 * 2);
+// gui.add(menuG, "arm_leftZ", 0, Math.PI * 2 * 2);
+// gui.add(menuG, "arm_left_tween", 0, 1);
+// gui.add(menuG, "arm_right_tween", 0, 1);
 gui.add(menuG, "arm_both_tween", 0, 1);
+gui.add(menuG, "walk_tween_driver", 0, Math.PI * 2 * 8);
   
 
 
@@ -110,7 +112,7 @@ function Stuff1() {
 
     var orbitPointer = null;
 
-    const speed = 4;
+    const walkSpeed = 6;
 
 
     const oldObjectPosition = new Vector3();
@@ -122,19 +124,23 @@ function Stuff1() {
         player.getWorldPosition(oldObjectPosition);
 
         if (dir === 'KeyA') {
-            player.position.x -= speed * delta;
+            // player.position.x -= walkSpeed * delta;
+            player.rotation.y += walkSpeed * delta;
         }
         if (dir === 'KeyD') {
-            player.position.x += speed * delta;
+            // player.position.x += walkSpeed * delta;
+            player.rotation.y -= walkSpeed * delta;
             // debugger
             // camera.position.x = player.position.x;
             // camera.lookAt(player.position)
         }
         if (dir === 'KeyW') {
-            player.position.z -= speed * delta;
+            // player.position.z -= walkSpeed * delta;
+            player.translateZ( walkSpeed * delta );
         }
         if (dir === 'KeyS') {
-            player.position.z += speed * delta;
+            // player.position.z += walkSpeed * delta;
+            player.translateZ( -walkSpeed * delta );
         }
       if(camera && orbitRef){
       
@@ -160,8 +166,14 @@ function Stuff1() {
 
     var tempArmLeft = null;
     var tempArmRight = null;
+
+    var tempLegLeft = null;
+    var tempLegRight = null;
     const tVecLeft = new Vector3();
     const tVecRight = new Vector3();
+
+    let mTime = 0;
+    const swingSpeed = 0.08;
 
     useFrame((_, delta) => {
         if(playerRef){
@@ -176,12 +188,22 @@ function Stuff1() {
             // keyMap['KeyS'] && (playerPointer.position.z += 1 * delta)
         }
         
-        // this shoiuld be an onchange from the menu instead
+        
+        // if(Object.keys(keyMap).length > 0){
+        if(keyMap['KeyA'] || keyMap['KeyD'] || keyMap['KeyW'] || keyMap['KeyS']){
+          mTime += swingSpeed;
+          
+        }
+        
+        // this should be an onchange from the menu instead
         // this also goes into the player more so
         
         if(playerRef){
+          
           if ( ! tempArmLeft ) tempArmLeft = playerRef.current.getObjectByName("arm_l");
           if ( ! tempArmRight ) tempArmRight = playerRef.current.getObjectByName("arm_r");
+          if ( ! tempLegLeft ) tempLegLeft = playerRef.current.getObjectByName("leg_l");
+          if ( ! tempLegRight ) tempLegRight = playerRef.current.getObjectByName("leg_r");
           if (tempArmLeft && tempArmRight) {
             // debugger
             // tempArmLeft.rotation.set(menuG.arm_leftX , menuG.arm_leftY, menuG.arm_leftZ);
@@ -201,16 +223,55 @@ function Stuff1() {
             // tempArmRight.rotation.setFromVector3(tVecRight);
             // 
             
-            tVecLeft.lerpVectors(playerRef.current.animationPoses.walk.armSway.front, 
-              playerRef.current.animationPoses.walk.armSway.back,
-              menuG.arm_both_tween);
-            tVecRight.lerpVectors(playerRef.current.animationPoses.walk.armSway.front, 
-              playerRef.current.animationPoses.walk.armSway.back,
-              1-menuG.arm_both_tween);
+            let poses = playerRef.current.animationPoses;
+            let walkPoses = poses.walk;
+            var pl = playerRef.current;
+            
+                        // // arms
+                        // tVecLeft.lerpVectors(walkPoses.armSway.front, walkPoses.armSway.back, menuG.arm_both_tween);
+                        // tVecRight.lerpVectors(walkPoses.armSway.front, walkPoses.armSway.back, 1-menuG.arm_both_tween);
+                        // 
+                        // tempArmLeft.rotation.setFromVector3(tVecLeft);
+                        // tempArmRight.rotation.setFromVector3(tVecRight);
+                        // 
+                        // 
+                        // // legs
+                        // 
+                        // // tempLegLeft.rotation.y = menuG.arm_leftY;
+                        // // tempLegLeft.rotation.z = menuG.arm_leftZ;
+                        // // tempLegLeft.rotation.x = menuG.arm_leftX;
+                        // 
+                        // tVecLeft.lerpVectors(walkPoses.legSway.front, walkPoses.legSway.back, 1-menuG.arm_both_tween);
+                        // tVecRight.lerpVectors(walkPoses.legSway.front, walkPoses.legSway.back, menuG.arm_both_tween);
+                        // 
+                        // tempLegLeft.rotation.setFromVector3(tVecLeft);
+                        // tempLegRight.rotation.setFromVector3(tVecRight);
+                        // 
+
+// console.log("delta", delta);
+            // arms
+            
+            
+            // let gg1 = Math.cos(menuG.walk_tween_driver) * 0.5 + 0.5;
+            let gg1 = Math.cos(mTime) * 0.5 + 0.5;
+            tVecLeft.lerpVectors(walkPoses.armSway.front, walkPoses.armSway.back, gg1);
+            tVecRight.lerpVectors(walkPoses.armSway.front, walkPoses.armSway.back, 1-gg1);
               
             tempArmLeft.rotation.setFromVector3(tVecLeft);
             tempArmRight.rotation.setFromVector3(tVecRight);
             
+            
+            // legs
+            
+            // let gg2 = Math.sin(menuG.walk_tween_driver) * 0.5 + 0.5;
+            let gg2 = Math.sin(mTime) * 0.5 + 0.5;
+            tVecLeft.lerpVectors(walkPoses.legSway.front, walkPoses.legSway.back, 1-gg2);
+            tVecRight.lerpVectors(walkPoses.legSway.front, walkPoses.legSway.back, gg2);
+            
+            tempLegLeft.rotation.setFromVector3(tVecLeft);
+            tempLegRight.rotation.setFromVector3(tVecRight);
+            
+                        
             
           }
           
