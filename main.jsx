@@ -80,6 +80,8 @@ arm_left_tween: 0.5,
 arm_right_tween: 0.5,
 arm_both_tween: 0.5,
 walk_tween_driver: 0,
+swingSpeed : 0.08,
+walkSpeed : 6.2
 // myFunction: function() { alert( 'hi' ) }
 };
 
@@ -88,8 +90,10 @@ walk_tween_driver: 0,
 // gui.add(menuG, "arm_leftZ", 0, Math.PI * 2 * 2);
 // gui.add(menuG, "arm_left_tween", 0, 1);
 // gui.add(menuG, "arm_right_tween", 0, 1);
-gui.add(menuG, "arm_both_tween", 0, 1);
-gui.add(menuG, "walk_tween_driver", 0, Math.PI * 2 * 8);
+// gui.add(menuG, "arm_both_tween", 0, 1);
+// gui.add(menuG, "walk_tween_driver", 0, Math.PI * 2 * 8);
+gui.add(menuG, "swingSpeed", 0, 2);
+gui.add(menuG, "walkSpeed", 0, 22);
   
 
 
@@ -112,7 +116,6 @@ function Stuff1() {
 
     var orbitPointer = null;
 
-    const walkSpeed = 6;
 
 
     const oldObjectPosition = new Vector3();
@@ -120,7 +123,8 @@ function Stuff1() {
 
 
     function movePlayer(dir, player, delta){
-    
+      const walkSpeed = menuG.walkSpeed;
+
         player.getWorldPosition(oldObjectPosition);
 
         if (dir === 'KeyA') {
@@ -173,9 +177,13 @@ function Stuff1() {
     const tVecRight = new Vector3();
 
     let mTime = 0;
-    const swingSpeed = 0.08;
+    // const swingSpeed = 0.08;
 
     useFrame((_, delta) => {
+      const swingSpeed = menuG.swingSpeed;
+      // const walkSpeed = 6.2;
+      const walkSpeed = menuG.walkSpeed;
+
         if(playerRef){
             // debugger
             keyMap['KeyA'] && ( movePlayer('KeyA', playerRef.current, delta) );
