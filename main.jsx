@@ -83,6 +83,7 @@ walk_tween_driver: 0,
 swingSpeed : 0.28,
 walkSpeed : 7.1,
 turnSpeed : 3.87,
+playerScale : 1.0,
 // myFunction: function() { alert( 'hi' ) }
 };
 
@@ -96,6 +97,7 @@ turnSpeed : 3.87,
 gui.add(menuG, "swingSpeed", 0, 2);
 gui.add(menuG, "walkSpeed", 0, 22);
 gui.add(menuG, "turnSpeed", 0, 22);
+gui.add(menuG, "playerScale", 0.1, 20);
   
 
 
@@ -186,6 +188,13 @@ function Stuff1() {
       const swingSpeed = menuG.swingSpeed;
       // const walkSpeed = 6.2;
       const walkSpeed = menuG.walkSpeed;
+
+if(playerRef){
+
+playerRef.current.scale.setScalar(menuG.playerScale);
+}
+
+
 
         if(playerRef){
             // debugger
@@ -308,14 +317,16 @@ function Stuff1() {
             <OrbitControls ref={orbitRef} makeDefault />
             <ambientLight intensity={2.2} />
 
-            <directionalLight intensity={6.2} position={[0, 1, 5]} color="#00aaff" />
+            <directionalLight intensity={14.2} position={[0, 1, 5]} color="#00aaff" />
 
             <Box position={[-1.2, 0, 0]} />
             <Box position={[1.2, 0, 0]} />
 
             <Town1 />
-
-            <Player1 ref={playerRef} name="player1" position={[0.1,0,0]}  scale={2} />
+{/*
+  <Player1 ref={playerRef} name="player1" position={[0.1,0,0]}  scale={0.2} />
+  */}
+            <Player1 ref={playerRef} name="player1" position={[0.1,0,0]}  scale={0.2} />
         </>
 
     );
