@@ -193,15 +193,19 @@ function Stuff1() {
             keyMap['KeyD'] && (movePlayer('KeyD', playerRef.current, delta) );
             keyMap['KeyW'] && ( movePlayer('KeyW', playerRef.current, delta) );
             keyMap['KeyS'] && ( movePlayer('KeyS', playerRef.current, delta) );
-            // keyMap['KeyA'] && (playerPointer.position.x -= 1 * delta)
-            // keyMap['KeyD'] && (playerPointer.position.x += 1 * delta)
-            // keyMap['KeyW'] && (playerPointer.position.z -= 1 * delta)
-            // keyMap['KeyS'] && (playerPointer.position.z += 1 * delta)
+            keyMap['ArrowLeft'] && ( movePlayer('KeyA', playerRef.current, delta) );
+            keyMap['ArrowRight'] && ( movePlayer('KeyD', playerRef.current, delta) );
+            keyMap['ArrowDown'] && ( movePlayer('KeyS', playerRef.current, delta) );
+            keyMap['ArrowUp'] && ( movePlayer('KeyW', playerRef.current, delta) );
+            
         }
         
         
         // if(Object.keys(keyMap).length > 0){
-        if(keyMap['KeyA'] || keyMap['KeyD'] || keyMap['KeyW'] || keyMap['KeyS']){
+        // Hate this, figure out the p[roper]
+        if(keyMap['KeyA'] || keyMap['KeyD'] || keyMap['KeyW'] || keyMap['KeyS'] ||
+          keyMap['ArrowLeft'] || keyMap['ArrowRight'] || keyMap['ArrowDown'] || keyMap['ArrowUp']
+          ){
           mTime += swingSpeed;
           
         }
