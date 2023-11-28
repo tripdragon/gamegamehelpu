@@ -80,8 +80,9 @@ arm_left_tween: 0.5,
 arm_right_tween: 0.5,
 arm_both_tween: 0.5,
 walk_tween_driver: 0,
-swingSpeed : 0.08,
-walkSpeed : 6.2
+swingSpeed : 0.28,
+walkSpeed : 7.1,
+turnSpeed : 3.87,
 // myFunction: function() { alert( 'hi' ) }
 };
 
@@ -94,6 +95,7 @@ walkSpeed : 6.2
 // gui.add(menuG, "walk_tween_driver", 0, Math.PI * 2 * 8);
 gui.add(menuG, "swingSpeed", 0, 2);
 gui.add(menuG, "walkSpeed", 0, 22);
+gui.add(menuG, "turnSpeed", 0, 22);
   
 
 
@@ -124,16 +126,17 @@ function Stuff1() {
 
     function movePlayer(dir, player, delta){
       const walkSpeed = menuG.walkSpeed;
+      const turnSpeed = menuG.turnSpeed;
 
         player.getWorldPosition(oldObjectPosition);
 
         if (dir === 'KeyA') {
             // player.position.x -= walkSpeed * delta;
-            player.rotation.y += walkSpeed * delta;
+            player.rotation.y += turnSpeed * delta;
         }
         if (dir === 'KeyD') {
             // player.position.x += walkSpeed * delta;
-            player.rotation.y -= walkSpeed * delta;
+            player.rotation.y -= turnSpeed * delta;
             // debugger
             // camera.position.x = player.position.x;
             // camera.lookAt(player.position)
