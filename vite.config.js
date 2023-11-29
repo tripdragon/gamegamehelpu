@@ -19,5 +19,8 @@
 // }
 
 export default {
-    base: '',
+  base: '',
+  build: {
+    outDir: './party'
+  }
 }
