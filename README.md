@@ -1,5 +1,5 @@
 
-https://tripdragon.github.io/gamegamehelpu/dist/
+https://tripdragon.github.io/gamegamehelpu/party/
 
 # gamegamehelpu
 game help u
