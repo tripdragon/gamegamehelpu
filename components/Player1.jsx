@@ -17,12 +17,12 @@ function Player1(props, ref) {
     
     // these are hard fed from the debugger tools
     const animationPoses = {
-      walk : {
+        walk : {
         // this might actually use an axis rotation instead of the eulers
-        armSway : {front: new Vector3(1.91008833338259, 0, 0 ), back: new Vector3( 4.68725623915597, 0, 0 ) },
-        legSway : {front: new Vector3(1.91008833338259, pi075, 0 ), back: new Vector3( 4.68725623915597, pi075, 0 ) }
-      }
-    }
+            armSway : {front: new Vector3(1.91008833338259, 0, 0 ), back: new Vector3( 4.68725623915597, 0, 0 ) },
+            legSway : {front: new Vector3(1.91008833338259, pi075, 0 ), back: new Vector3( 4.68725623915597, pi075, 0 ) }
+        }
+    };
 
 
     const [hovered, setHover] = useState(false);
