@@ -14,7 +14,7 @@ import { Vector3, Euler } from 'three';
 function Player1(props, ref) {
 
     const pi075 = Math.PI * 2 * 0.75;
-    
+
     // these are hard fed from the debugger tools
     const animationPoses = {
         walk : {
@@ -27,7 +27,7 @@ function Player1(props, ref) {
 
     const [hovered, setHover] = useState(false);
     const [active, setActive] = useState(false);
-    
+
     // Subscribe this component to the render-loop, rotate the mesh every frame
     // useFrame((state, delta) => (meshRef.current.rotation.x += delta));
 

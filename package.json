@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "open http://localhost:5173 && vite",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint --fix main.jsx ./components/*"
@@ -20,7 +20,10 @@
     "@react-three/fiber": "^8.15.11",
     "@types/three": "^0.158.3",
     "esbuild": "^0.19.8",
+    "react": "^18.2.0",
     "rollup": "^4.6.0",
-    "three": "^0.158.0"
+    "styled-components": "^6.1.1",
+    "three": "^0.158.0",
+    "zustand": "^4.4.7"
   }
 }
