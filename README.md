@@ -8,6 +8,8 @@ game help u
 something older than v14
 nvm use v18.16.1
 
+the build folder is named "party"
+
 
 ```
 
@@ -17,7 +19,7 @@ npm install
 npm run dev
 npm run build
 
-cd dist/
+cd party/
 npx http-server
 http://127.0.0.1:8080
 

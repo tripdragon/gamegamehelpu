@@ -13,28 +13,18 @@ import { PerspectiveCamera, OrbitControls } from '@react-three/drei';
 import { useThree } from '@react-three/fiber';
 
 import { useRef, useState, forwardRef, useEffect } from 'react';
-import useKeyboard from './Logics/useKeyboard';
+// import useKeyboard from './Logics/useKeyboard';
 import { useFrame } from '@react-three/fiber';
 
 import Box from './alexandria/components/Box';
 import Town1 from './alexandria/components/Town1';
-import Player1 from './alexandria/components/Player1';
+import Player1 from './alexandria/components/Humanoids/Player1';
 import TwoDDialog from './alexandria/components/TwoDDialog';
+
+import PlayerControllerPad from './alexandria/components/PlayerControllerPad';
 
 import GUI from 'https://cdn.jsdelivr.net/npm/lil-gui@0.19/+esm';
 
-// function Foooots() {
-//     const {camera, scene} = useThree();
-//     // debugger
-//     camera.lookAt(new Vector3());
-// }
-// </*
-// <Foooots />
-// <PerspectiveCamera makeDefault position={[0,24,0]} rotation={[2.2,2,2]} />
-// */>
-
-
-var playerPointer = null;
 
 const internals = {};
 
@@ -44,13 +34,6 @@ createRoot(document.getElementById('root')).render(
 );
 
 
-const Controls_A = {
-    forward : 'forward',
-    back : 'back',
-    left : 'left',
-    right : 'right',
-    jump : 'jump',
-};
 
 function App() {
 
@@ -78,8 +61,8 @@ const menuG = {
     arm_both_tween: 0.5,
     walk_tween_driver: 0,
     swingSpeed : 0.28,
-    walkSpeed : 7.1,
-    turnSpeed : 3.87,
+    walkSpeed : 0.1,
+    turnSpeed : 0.1,
     playerScale : 1.0,
 // myFunction: function() { alert( 'hi' ) }
 };
@@ -92,8 +75,8 @@ const menuG = {
 // gui.add(menuG, "arm_both_tween", 0, 1);
 // gui.add(menuG, "walk_tween_driver", 0, Math.PI * 2 * 8);
 gui.add(menuG, 'swingSpeed', 0, 2);
-gui.add(menuG, 'walkSpeed', 0, 22);
-gui.add(menuG, 'turnSpeed', 0, 22);
+gui.add(menuG, 'walkSpeed', 0, 2);
+gui.add(menuG, 'turnSpeed', 0, 2);
 gui.add(menuG, 'playerScale', 0.1, 20);
 
 
@@ -111,187 +94,42 @@ function Stuff1() {
 
     const playerRef = useRef();
     const orbitRef = useRef();
-    const keyMap = useKeyboard();
+    // const keyMap = useKeyboard();
+    
+    const playerControllerPad = useRef();
 
     var orbitPointer = null;
 
 
-
-    const oldObjectPosition = new Vector3();
-    const newObjectPosition = new Vector3();
-
-
-    function movePlayer(dir, player, delta){
-        const walkSpeed = menuG.walkSpeed;
-        const turnSpeed = menuG.turnSpeed;
-
-        player.getWorldPosition(oldObjectPosition);
-
-        if (dir === 'KeyA') {
-            // player.position.x -= walkSpeed * delta;
-            player.rotation.y += turnSpeed * delta;
-        }
-        if (dir === 'KeyD') {
-            // player.position.x += walkSpeed * delta;
-            player.rotation.y -= turnSpeed * delta;
-            // debugger
-            // camera.position.x = player.position.x;
-            // camera.lookAt(player.position)
-        }
-        if (dir === 'KeyW') {
-            // player.position.z -= walkSpeed * delta;
-            player.translateZ( walkSpeed * delta );
-        }
-        if (dir === 'KeyS') {
-            // player.position.z += walkSpeed * delta;
-            player.translateZ( -walkSpeed * delta );
-        }
-        if(camera && orbitRef){
-
-            orbitRef.current.enabled = false;
-
-            player.getWorldPosition(newObjectPosition);
-
-            const deltaB = newObjectPosition.sub(oldObjectPosition);//.multiplyScalar(0.1);
-
-            camera.position.add(deltaB);
-
-            orbitRef.current.enabled = true;
-
-            orbitRef.current.target.copy(player.position);
-            //   setTimeout(()=>{
-            //   // camera.lookAt(player.position)
-            // }, 1000)
-
-
-        }
-    }
-
-
-    var tempArmLeft = null;
-    var tempArmRight = null;
-
-    var tempLegLeft = null;
-    var tempLegRight = null;
-    const tVecLeft = new Vector3();
-    const tVecRight = new Vector3();
-
-    let mTime = 0;
-    // const swingSpeed = 0.08;
-
     useFrame((_, delta) => {
-        const swingSpeed = menuG.swingSpeed;
-        // const walkSpeed = 6.2;
-        const walkSpeed = menuG.walkSpeed;
-
-        if(playerRef){
-
-            playerRef.current.scale.setScalar(menuG.playerScale);
-        }
-
-
-
-        if(playerRef){
-            // debugger
-            keyMap['KeyA'] && ( movePlayer('KeyA', playerRef.current, delta) );
-            keyMap['KeyD'] && (movePlayer('KeyD', playerRef.current, delta) );
-            keyMap['KeyW'] && ( movePlayer('KeyW', playerRef.current, delta) );
-            keyMap['KeyS'] && ( movePlayer('KeyS', playerRef.current, delta) );
-            keyMap['ArrowLeft'] && ( movePlayer('KeyA', playerRef.current, delta) );
-            keyMap['ArrowRight'] && ( movePlayer('KeyD', playerRef.current, delta) );
-            keyMap['ArrowDown'] && ( movePlayer('KeyS', playerRef.current, delta) );
-            keyMap['ArrowUp'] && ( movePlayer('KeyW', playerRef.current, delta) );
-
-        }
-
-
-        // if(Object.keys(keyMap).length > 0){
-        // Hate this, figure out the p[roper]
-        if(keyMap['KeyA'] || keyMap['KeyD'] || keyMap['KeyW'] || keyMap['KeyS'] ||
-          keyMap['ArrowLeft'] || keyMap['ArrowRight'] || keyMap['ArrowDown'] || keyMap['ArrowUp']
-        ){
-            mTime += swingSpeed;
-
-        }
-
-        // this should be an onchange from the menu instead
-        // this also goes into the player more so
-
-        if(playerRef){
-
-            if ( ! tempArmLeft ) tempArmLeft = playerRef.current.getObjectByName('arm_l');
-            if ( ! tempArmRight ) tempArmRight = playerRef.current.getObjectByName('arm_r');
-            if ( ! tempLegLeft ) tempLegLeft = playerRef.current.getObjectByName('leg_l');
-            if ( ! tempLegRight ) tempLegRight = playerRef.current.getObjectByName('leg_r');
-            if (tempArmLeft && tempArmRight) {
-            // debugger
-            // tempArmLeft.rotation.set(menuG.arm_leftX , menuG.arm_leftY, menuG.arm_leftZ);
-            // tempArmRight.rotation.set(menuG.arm_leftX , menuG.arm_leftY, menuG.arm_leftZ);
-            // tempArmLeft.rotation.y = menuG.arm_leftY;
-            // tempArmLeft.rotation.z = menuG.arm_leftZ;
-            // tempArmLeft.rotation.x = menuG.arm_leftX;
-
-                // tVecLeft.lerpVectors(playerRef.current.animationPoses.walk.armSway.front,
-                //   playerRef.current.animationPoses.walk.armSway.back,
-                //   menuG.arm_left_tween);
-                // tempArmLeft.rotation.setFromVector3(tVecLeft);
-                //
-                // tVecRight.lerpVectors(playerRef.current.animationPoses.walk.armSway.front,
-                //   playerRef.current.animationPoses.walk.armSway.back,
-                //   menuG.arm_right_tween);
-                // tempArmRight.rotation.setFromVector3(tVecRight);
-                //
-
-                let poses = playerRef.current.animationPoses;
-                let walkPoses = poses.walk;
-                var pl = playerRef.current;
-
-                // // arms
-                // tVecLeft.lerpVectors(walkPoses.armSway.front, walkPoses.armSway.back, menuG.arm_both_tween);
-                // tVecRight.lerpVectors(walkPoses.armSway.front, walkPoses.armSway.back, 1-menuG.arm_both_tween);
-                //
-                // tempArmLeft.rotation.setFromVector3(tVecLeft);
-                // tempArmRight.rotation.setFromVector3(tVecRight);
-                //
-                //
-                // // legs
-                //
-                // // tempLegLeft.rotation.y = menuG.arm_leftY;
-                // // tempLegLeft.rotation.z = menuG.arm_leftZ;
-                // // tempLegLeft.rotation.x = menuG.arm_leftX;
-                //
-                // tVecLeft.lerpVectors(walkPoses.legSway.front, walkPoses.legSway.back, 1-menuG.arm_both_tween);
-                // tVecRight.lerpVectors(walkPoses.legSway.front, walkPoses.legSway.back, menuG.arm_both_tween);
-                //
-                // tempLegLeft.rotation.setFromVector3(tVecLeft);
-                // tempLegRight.rotation.setFromVector3(tVecRight);
-                //
-
-                // console.log("delta", delta);
-                // arms
-
-
-                // let gg1 = Math.cos(menuG.walk_tween_driver) * 0.5 + 0.5;
-                let gg1 = Math.cos(mTime) * 0.5 + 0.5;
-                tVecLeft.lerpVectors(walkPoses.armSway.front, walkPoses.armSway.back, gg1);
-                tVecRight.lerpVectors(walkPoses.armSway.front, walkPoses.armSway.back, 1-gg1);
-
-                tempArmLeft.rotation.setFromVector3(tVecLeft);
-                tempArmRight.rotation.setFromVector3(tVecRight);
-
-
-                // legs
-
-                // let gg2 = Math.sin(menuG.walk_tween_driver) * 0.5 + 0.5;
-                let gg2 = Math.sin(mTime) * 0.5 + 0.5;
-                tVecLeft.lerpVectors(walkPoses.legSway.front, walkPoses.legSway.back, 1-gg2);
-                tVecRight.lerpVectors(walkPoses.legSway.front, walkPoses.legSway.back, gg2);
-
-                tempLegLeft.rotation.setFromVector3(tVecLeft);
-                tempLegRight.rotation.setFromVector3(tVecRight);
-            }
-        }
+      const swingSpeed = menuG.swingSpeed;
+      // const walkSpeed = 6.2;
+      const walkSpeed = menuG.walkSpeed;
+      const turnSpeed = menuG.turnSpeed;
+      
+      if(playerRef){
+        // debugger
+          playerRef.current.scale.setScalar(menuG.playerScale);
+          // playerRef.current.walkSpeed = walkSpeed;
+          // playerRef.current.turnSpeed = turnSpeed;
+          // debugger
+          playerRef.current.walkSpeed = walkSpeed;
+          playerRef.current.turnSpeed = turnSpeed;
+      }
+      
+      // this does not work
+      if(playerControllerPad){
+        // debugger
+        // playerControllerPad.current.walkSpeed = walkSpeed;
+        // playerControllerPad.current.turnSpeed = turnSpeed;
+        // debugger
+        // this is wrong but it works for now
+        playerControllerPad.current.player.walkSpeed = walkSpeed;
+        playerControllerPad.current.player.turnSpeed = turnSpeed;
+        playerControllerPad.current.player.swingSpeed = swingSpeed;
+      }
     });
+
 
     // Need this to get the reference var for the orbitcontrols
     useEffect(() => {
@@ -299,7 +137,21 @@ function Stuff1() {
         if (orbitRef.current) {
             console.log('orbitRef.current', orbitRef.current);
         }
+        
     }, [orbitRef.current]);
+
+
+    useEffect(() => {
+
+        if (playerRef.current && playerControllerPad.current && orbitRef.current && camera) {
+            console.log('playerRef.current', playerRef.current);
+            // debugger
+            playerControllerPad.current.player = playerRef.current;
+            playerControllerPad.current.camera = camera;
+            playerControllerPad.current.orbit = orbitRef.current;
+        }
+    // }, [playerRef.current, playerControllerPad.current]);
+    });
 
     return (
         <>
@@ -314,10 +166,14 @@ function Stuff1() {
             <Box position={[1.2, 0, 0]} />
 
             <Town1 />
-            {/*
-  <Player1 ref={playerRef} name="player1" position={[0.1,0,0]}  scale={0.2} />
-  */}
-            <Player1 ref={playerRef} name="player1" position={[0.1,0,0]}  scale={0.2} />
+            
+          
+            {/* this should have the gltf link maybe */}
+            <Player1 ref={playerRef} name="player1" position={[0.1,0,0]}  scale={0.9} />
+            
+            {/* player here is not yet loaded so we have to use the useEffect sighduck */}
+            <PlayerControllerPad ref={playerControllerPad} />
+            
         </>
     );
 }
@@ -331,7 +187,7 @@ internals.TwoDOverlay = Styled.div`
     font-size: 60px;
 
     pointer-events: none;
-
+    display: none;
     * {
         pointer-events: all;
     }
