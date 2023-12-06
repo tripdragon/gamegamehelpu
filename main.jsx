@@ -1,36 +1,46 @@
+// react stuff
 import './index.css';
 import React from 'react';
 import { Suspense } from 'react';
+import { useRef, useState, forwardRef, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Canvas, useLoader } from '@react-three/fiber';
 import Styled from 'styled-components';
 
-import { Vector3, MathUtils } from 'three';
 
+// const lerp = MathUtils.lerp;
+// const remap = MathUtils.mapLinear;
+
+// three stuff
+import { PerspectiveCamera, OrbitControls, Text } from '@react-three/drei';
+import { Vector3, MathUtils } from 'three';
 import { TextureLoader } from 'three/src/loaders/TextureLoader';
 
-const lerp = MathUtils.lerp;
-const remap = MathUtils.mapLinear;
-
-import { PerspectiveCamera, OrbitControls, Text } from '@react-three/drei';
-
+// fiber stuff
 import { useThree } from '@react-three/fiber';
-
-import { useRef, useState, forwardRef, useEffect } from 'react';
 // import useKeyboard from './Logics/useKeyboard';
 import { useFrame } from '@react-three/fiber';
 
-import Box from './alexandria/components/Box';
-import Town1 from './alexandria/components/Town1';
+
+
+// main player stuff
 import Player1 from './alexandria/components/Humanoids/Player1';
-import TwoDDialog from './alexandria/components/TwoDDialog';
+import PlayerControllerPad from './Logics/PlayerControllerPad';
 import WordBubble1 from './alexandria/components/WordBubble1';
 
-import PlayerControllerPad from './alexandria/components/PlayerControllerPad';
-
+// stuff
 import GUI from 'https://cdn.jsdelivr.net/npm/lil-gui@0.19/+esm';
+import TwoDDialog from './alexandria/components/TwoDDialog';
 
 
+// levelmap stuff
+// import Box from './alexandria/components/Box';
+// import Town1 from './alexandria/components/Town1';
+import TownMap1 from './levelMaps/townMap1';
+
+
+
+// catch all for stuff in this file
 const internals = {};
 
 
@@ -89,7 +99,7 @@ gui.add(menuG, 'playerScale', 0.1, 20);
 
 
 
-// TODO seperate to stuff
+
 
 // REF's SUCKSORS
 // https://stackoverflow.com/questions/71835726/how-can-i-use-forwardref-in-react-component
@@ -151,17 +161,14 @@ function Stuff1() {
 
 
     // Need this to get the reference var for the orbitcontrols
-    useEffect(() => {
-
-        if (orbitRef.current) {
-            console.log('orbitRef.current', orbitRef.current);
-        }
-        
-    }, [orbitRef.current]);
+    // useEffect(() => {
+    //     if (orbitRef.current) {
+    //         console.log('orbitRef.current', orbitRef.current);
+    //     }
+    // }, [orbitRef.current]);
 
 
     useEffect(() => {
-
         if (playerRef.current && playerControllerPad.current && orbitRef.current && camera) {
             console.log('playerRef.current', playerRef.current);
             // debugger
@@ -174,9 +181,11 @@ function Stuff1() {
 
     return (
         <>
-            <color attach="background" args={['skyblue']} />
 
             <OrbitControls ref={orbitRef} makeDefault />
+            
+          {/* 
+            <color attach="background" args={['skyblue']} />
             <ambientLight intensity={2.2} />
 
             <directionalLight intensity={14.2} position={[0, 1, 5]} color="#00aaff" />
@@ -186,6 +195,10 @@ function Stuff1() {
 
             <Town1 />
             
+            
+             */}
+            
+            <TownMap1 />
           
             {/* this should have the gltf link maybe */}
             <Player1 ref={playerRef} name="player1" position={[0.1,0,0]}  scale={0.9} />
@@ -208,7 +221,7 @@ function Stuff1() {
               </mesh>
             */}
             
-            <WordBubble1 ref={textBubbleRef} text={["Naaarrrfs", "graaaalg", "kupafffy"]} imageURL="./textures/word_balloon_2.png" />
+            <WordBubble1 ref={textBubbleRef} textColor="black" text={["boooo", "Naaarrrfs", "graaaalg", "kupafffy"]} imageURL="./textures/word_balloon_2.png" />
             
         </>
     );
