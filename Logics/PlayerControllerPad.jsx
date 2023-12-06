@@ -4,7 +4,8 @@ import { useFrame } from '@react-three/fiber';
 import { Vector3, Object3D } from 'three';
 
 // import useKeyboard from 'useKeyboard';
-import useKeyboard from './useKeyboard';
+// import useKeyboard from './alexandria/components/useKeyboard';
+import useKeyboard from '../alexandria/components/useKeyboard';
 
 
 const Controls_A = {
