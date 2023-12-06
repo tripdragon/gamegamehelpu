@@ -8,14 +8,18 @@
   </head>
   <body>
     <div id="root"></div>
-    
-    <script type="importmap">
+
+    <!-- vite does not support importmaps
+          https://github.com/vitejs/vite/issues/2483
+    -->
+    <!-- <script type="importmap">
       {
         "imports": {
+          "alexandria" : "./alexandria",
           "useKeyboard": "./alexandria/components/useKeyboard.jsx"
         }
       }
-    </script>
+    </script> -->
     
     <script type="module" src="./main.jsx"></script>
   </body>
