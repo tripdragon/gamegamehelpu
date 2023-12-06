@@ -1,14 +1,18 @@
 import './index.css';
 import React from 'react';
+import { Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useLoader } from '@react-three/fiber';
 import Styled from 'styled-components';
 
 import { Vector3, MathUtils } from 'three';
+
+import { TextureLoader } from 'three/src/loaders/TextureLoader';
+
 const lerp = MathUtils.lerp;
 const remap = MathUtils.mapLinear;
 
-import { PerspectiveCamera, OrbitControls } from '@react-three/drei';
+import { PerspectiveCamera, OrbitControls, Text } from '@react-three/drei';
 
 import { useThree } from '@react-three/fiber';
 
@@ -20,6 +24,7 @@ import Box from './alexandria/components/Box';
 import Town1 from './alexandria/components/Town1';
 import Player1 from './alexandria/components/Humanoids/Player1';
 import TwoDDialog from './alexandria/components/TwoDDialog';
+import WordBubble1 from './alexandria/components/WordBubble1';
 
 import PlayerControllerPad from './alexandria/components/PlayerControllerPad';
 
@@ -46,6 +51,7 @@ function App() {
             <TwoDOverlay>
                 <TwoDDialog />
             </TwoDOverlay>
+
         </>
     );
 }
@@ -89,16 +95,23 @@ gui.add(menuG, 'playerScale', 0.1, 20);
 // https://stackoverflow.com/questions/71835726/how-can-i-use-forwardref-in-react-component
 // and forwardRef
 function Stuff1() {
+    
+    var orbitPointer = null;
 
     const {camera, scene, controls} = useThree();
 
     const playerRef = useRef();
     const orbitRef = useRef();
+    const textBubbleRef = useRef();
     // const keyMap = useKeyboard();
     
     const playerControllerPad = useRef();
 
-    var orbitPointer = null;
+    const word_balloon_1 = useLoader(TextureLoader, './textures/word_balloon_2.png')
+
+
+
+
 
 
     useFrame((_, delta) => {
@@ -118,7 +131,7 @@ function Stuff1() {
       }
       
       // this does not work
-      if(playerControllerPad){
+      if(playerControllerPad && playerControllerPad.current.player){
         // debugger
         // playerControllerPad.current.walkSpeed = walkSpeed;
         // playerControllerPad.current.turnSpeed = turnSpeed;
@@ -128,6 +141,12 @@ function Stuff1() {
         playerControllerPad.current.player.turnSpeed = turnSpeed;
         playerControllerPad.current.player.swingSpeed = swingSpeed;
       }
+      
+      if(textBubbleRef && playerRef){
+        textBubbleRef.current.position.copy(playerRef.current.position);
+        textBubbleRef.current.position.y += 1.8;
+      }
+      
     });
 
 
@@ -171,8 +190,25 @@ function Stuff1() {
             {/* this should have the gltf link maybe */}
             <Player1 ref={playerRef} name="player1" position={[0.1,0,0]}  scale={0.9} />
             
+            
             {/* player here is not yet loaded so we have to use the useEffect sighduck */}
             <PlayerControllerPad ref={playerControllerPad} />
+            
+            {/* 
+              
+              <OnscreenMessages />
+              
+              
+              <mesh position={[0,1.8,0]} ref={textBubbleRef} >
+              <planeGeometry args={[1.2*1.5, 1*1.5]} />
+              <meshStandardMaterial color="white" map={word_balloon_1} transparent="true" />
+              <Text fontSize="0.2" color="blue" anchorX="center" anchorY="middle" position={[0,0,0.01]} >
+              NARF!!!
+              </Text>
+              </mesh>
+            */}
+            
+            <WordBubble1 ref={textBubbleRef} text={["Naaarrrfs", "graaaalg", "kupafffy"]} imageURL="./textures/word_balloon_2.png" />
             
         </>
     );
