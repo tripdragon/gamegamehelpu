@@ -39,7 +39,7 @@ function WordBubble1(props, ref) {
     useFrame((state, delta) => {
       deltaTime += delta;
       // console.log("deltatime", deltaTime);
-      if (deltaTime > 1) {
+      if (deltaTime > 2) {
         deltaTime = 0;
          index++;
         // _text = "meeep moop";
@@ -67,7 +67,15 @@ function WordBubble1(props, ref) {
       <mesh position={[0,1.8,0]} ref={ref} >
         <planeGeometry args={[1.2*1.5, 1*1.5]} />
         <meshStandardMaterial color="white" map={word_balloon_1 || ''} transparent="true" />
-        <Text ref={textboxref} fontSize="0.2" color="blue" anchorX="center" anchorY="middle" position={[0,0,0.01]} >
+        <Text 
+          ref={textboxref} 
+          fontSize="0.4" 
+          color={props.textColor || "blue"} 
+          anchorX="center" 
+          anchorY="middle" 
+          position={[0,0,0.01]}
+          UGHHHHH="urlllllll path without importmaps"
+          font="../../typefaces/Indie_Flower/IndieFlower-Regular.ttf" >
           {/*props.text || "NArffff!!"*/}
           {_text[0]}
         </Text>
