@@ -2,23 +2,29 @@ import React, { useRef, useState, forwardRef, useEffect } from 'react';
 import { useFrame, useLoader } from '@react-three/fiber';
 
 
+import {RepeatWrapping} from "three";
+
 // import { Suspense } from 'react';
 
 // import { Group } from 'three';
 
+// 
+// 
+// import { Text } from '@react-three/drei';
+// 
+// import Box from '../alexandria/components/Box';
+// import Town1 from '../alexandria/components/Town1';
+
 
 import { TextureLoader } from 'three/src/loaders/TextureLoader';
 
-import { Text } from '@react-three/drei';
-
-import Box from '../alexandria/components/Box';
-import Town1 from '../alexandria/components/Town1';
-
-
-
-function TownMap1(props, ref) {
+function Park1(props, ref) {
   
-  // const word_balloon_1 = useLoader(TextureLoader, './textures/word_balloon_2.png')
+  const grasstex = useLoader(TextureLoader, "./textures/triangles01.jpg");
+  // debugger
+  grasstex.wrapS = RepeatWrapping;
+grasstex.wrapT = RepeatWrapping;
+grasstex.repeat.setScalar(14)
     
     // // needs a conditional 
     // const word_balloon_1 = useLoader(TextureLoader, props.imageURL);
@@ -69,21 +75,21 @@ function TownMap1(props, ref) {
     
     
     return (
-      <group>
+      <group ref={ref}>
           
         <color attach="background" args={['skyblue']} />
-        <ambientLight intensity={2.2} />
+        <ambientLight intensity={2.4} />
 
-        <directionalLight intensity={14.2} position={[0, 1, 5]} color="#00aaff" />
+        <directionalLight intensity={4.2} position={[0, 1, 5]} color="#00aaff" />
 
-        <Box position={[-1.2, 0, 0]} />
-        <Box position={[1.2, 0, 0]} />
-
-        <Town1 />
+        <mesh rotation={[-Math.PI/2,0,0]} scale="14">
+          <planeGeometry args={[1*1.5, 1*1.5]} />
+          <meshStandardMaterial color="#b9ffb8" map={grasstex} />
+        </mesh>
       
       </group>
     );
 }
 
 
-export default forwardRef(TownMap1);
+export default forwardRef(Park1);

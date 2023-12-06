@@ -37,6 +37,7 @@ import TwoDDialog from './alexandria/components/TwoDDialog';
 // import Box from './alexandria/components/Box';
 // import Town1 from './alexandria/components/Town1';
 import TownMap1 from './levelMaps/townMap1';
+import Park1 from './levelMaps/Park1';
 
 
 
@@ -80,7 +81,14 @@ const menuG = {
     walkSpeed : 0.1,
     turnSpeed : 0.1,
     playerScale : 1.0,
-// myFunction: function() { alert( 'hi' ) }
+
+    hidePark: function(ev) { 
+      levels.park.current.visible = false 
+    },
+    showTown: function(ev) { 
+      levels.park.current.visible = false 
+    }
+    
 };
 
 // gui.add(menuG, "arm_leftX", 0, Math.PI * 2 * 2);
@@ -94,10 +102,12 @@ gui.add(menuG, 'swingSpeed', 0, 2);
 gui.add(menuG, 'walkSpeed', 0, 2);
 gui.add(menuG, 'turnSpeed', 0, 2);
 gui.add(menuG, 'playerScale', 0.1, 20);
+gui.add(menuG, 'hidePark' );
 
 
+// var parkLevel;
 
-
+const levels = {}
 
 
 
@@ -113,6 +123,13 @@ function Stuff1() {
     const playerRef = useRef();
     const orbitRef = useRef();
     const textBubbleRef = useRef();
+    
+    
+    levels.park = useRef();
+    const townLevel = useRef();
+    
+    
+    
     // const keyMap = useKeyboard();
     
     const playerControllerPad = useRef();
@@ -185,6 +202,9 @@ function Stuff1() {
             <OrbitControls ref={orbitRef} makeDefault />
             
           {/* 
+            
+            moved to levelMaps
+            
             <color attach="background" args={['skyblue']} />
             <ambientLight intensity={2.2} />
 
@@ -196,9 +216,11 @@ function Stuff1() {
             <Town1 />
             
             
+            <TownMap1 ref={townLevel} />
              */}
             
-            <TownMap1 />
+             <Park1 ref={levels.park} />
+             
           
             {/* this should have the gltf link maybe */}
             <Player1 ref={playerRef} name="player1" position={[0.1,0,0]}  scale={0.9} />
@@ -221,7 +243,7 @@ function Stuff1() {
               </mesh>
             */}
             
-            <WordBubble1 ref={textBubbleRef} textColor="black" text={["boooo", "Naaarrrfs", "graaaalg", "kupafffy"]} imageURL="./textures/word_balloon_2.png" />
+            <WordBubble1 ref={textBubbleRef} textColor="black" text={["smoooth", "weeeeee", "boooo", "Naaarrrfs", "graaaalg", "kupafffy"]} imageURL="./textures/word_balloon_2.png" />
             
         </>
     );
