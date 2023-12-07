@@ -81,7 +81,7 @@ const menuG = {
     walkSpeed : 0.1,
     turnSpeed : 0.1,
     playerScale : 1.0,
-
+// myFunction: function() { alert( 'hi' ) }
     hidePark: function(ev) { 
       levels.park.current.visible = false 
     },
@@ -200,7 +200,8 @@ function Stuff1() {
         <>
 
             <OrbitControls ref={orbitRef} makeDefault />
-            
+            {/* this color wont work when nested, boooooo hisssss */}
+            <color attach="background" args={['skyblue']} />
           {/* 
             
             moved to levelMaps

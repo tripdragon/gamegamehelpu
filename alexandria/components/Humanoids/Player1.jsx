@@ -53,7 +53,12 @@ function Player1(props, ref) {
     // more wrappers!!! cause we cant simply change the constructor
     gg.add(gltf.scene);
     
+    // would like to add in 
+    //               <Outlines thickness={4.05} color="orange" />
     return <primitive ref={ref} object={gg} position={props.position} scale={props.scale} />;
+    
+        
+
 
 }
 
