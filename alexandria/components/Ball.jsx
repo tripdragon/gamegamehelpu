@@ -62,7 +62,8 @@ function Ball(props, ref) {
         <mesh
             {...props}
             sdfsdfref={meshRef}
-            ref={refsDerp.mesh}
+            sdlkfsdref={refsDerp.mesh}
+            ref={meshRef}
             receiveShadow castShadow
             asdfsdfscale={active ? 1 : 1}
             onClick={() => setActive(!active)}
