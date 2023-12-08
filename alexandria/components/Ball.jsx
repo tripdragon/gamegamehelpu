@@ -49,12 +49,12 @@ function Ball(props, ref) {
     });
     
     useEffect(()=>{
-      debugger
+      // debugger
     });
     
     function signal(){
       debugger
-      // should beable to reach any var or useframe from here
+      // should be able to reach any const be it a string or a useframe from here
       // meshRef.current.position.y += 0.1;
     }
     // https://stackoverflow.com/questions/60270678/using-multiple-refs-on-a-single-react-element
