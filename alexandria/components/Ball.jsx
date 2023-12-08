@@ -32,7 +32,7 @@ function Ball(props, ref) {
     useImperativeHandle(ref, () => {
       return {
         fishness(gg){
-          debugger
+          // debugger
           signal()
         }
       };
