@@ -18,7 +18,7 @@ import { TextureLoader } from 'three/src/loaders/TextureLoader';
 
 // fiber stuff
 import { useThree } from '@react-three/fiber';
-// import useKeyboard from './Logics/useKeyboard';
+import useKeyboard from './alexandria/components/useKeyboard';
 import { useFrame } from '@react-three/fiber';
 
 
@@ -35,9 +35,12 @@ import TwoDDialog from './alexandria/components/TwoDDialog';
 
 // levelmap stuff
 // import Box from './alexandria/components/Box';
+import Ball from './alexandria/components/Ball';
 // import Town1 from './alexandria/components/Town1';
 import TownMap1 from './levelMaps/townMap1';
 import Park1 from './levelMaps/Park1';
+
+import Park2 from './levelMaps/Park2';
 
 
 
@@ -56,7 +59,11 @@ function App() {
     const { TwoDOverlay } = internals;
     return (
         <>
+            {/*
             <Canvas shadows camera={{ position: [5, 10, 18], fov: 25 }} >
+            */}
+            <Canvas shadows >
+                <PerspectiveCamera makeDefault position={[5, 10, 18]} fov={25} />
                 <Stuff1 />
             </Canvas>
             <TwoDOverlay>
@@ -123,9 +130,11 @@ function Stuff1() {
     const playerRef = useRef();
     const orbitRef = useRef();
     const textBubbleRef = useRef();
+    const ball1 = useRef();
     
     
-    levels.park = useRef();
+    levels.park1 = useRef();
+    levels.park2 = useRef();
     const townLevel = useRef();
     
     
@@ -136,8 +145,26 @@ function Stuff1() {
 
     const word_balloon_1 = useLoader(TextureLoader, './textures/word_balloon_2.png')
 
+const keyMap = useKeyboard();
 
-
+// debugg with
+useFrame((_, delta) => {
+  window._a = _;
+  
+  // this proves we can pop the camera to a position as needed
+  // but dont have a proper tween system in place
+  if(keyMap['KeyV']){
+    
+    camera.position.fromArray([12.50698397093828, 12.321345479452335, 11.86422342703777])
+      camera.lookAt(playerRef.current.position)
+  }
+  if(keyMap['KeyB']){
+    // debugger
+    // ball1.current.signal()
+    ball1.current.fishness()
+  }
+  // keyMap['KeyA'] && ( movePlayer(player,'KeyA', camera, orbit, delta) );
+});
 
 
 
@@ -218,9 +245,10 @@ function Stuff1() {
             
             
             <TownMap1 ref={townLevel} />
+            <Park1 ref={levels.park} />
              */}
             
-             <Park1 ref={levels.park} />
+             <Park2 ref={levels.park2} />
              
           
             {/* this should have the gltf link maybe */}
@@ -244,8 +272,10 @@ function Stuff1() {
               </mesh>
             */}
             
-            <WordBubble1 ref={textBubbleRef} textColor="black" text={["smoooth", "weeeeee", "boooo", "Naaarrrfs", "graaaalg", "kupafffy"]} imageURL="./textures/word_balloon_2.png" />
+            <WordBubble1 ref={textBubbleRef} textColor="black" text={["words", "smoooth", "weeeeee", "boooo", "Naaarrrfs", "graaaalg", "kupafffy"]} imageURL="./textures/word_balloon_2.png" />
             
+            <Ball ref={ball1} position={[1.2, 0.4, 0]} scale={0.5} />
+          
         </>
     );
 }

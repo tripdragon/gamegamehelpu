@@ -17,7 +17,7 @@ function ImportedModel(props, ref) {
     const gltf = useLoader(GLTFLoader, props.imageURL);
     // return <primitive castShadow receiveShadow object={gltf.scene} {...props} />;
     // receiveShadow
-    return <Clone receiveShadow ref={ref} castShadow receiveShadow object={gltf.scene} {...props} />;
+    return <Clone receiveShadow ref={ref} castShadow object={gltf.scene} {...props} />;
 
 }
 

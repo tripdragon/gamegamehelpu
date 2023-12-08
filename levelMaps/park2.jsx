@@ -28,7 +28,7 @@ function randomInRange(start, end) {
   return Math.round(result);
 }
 
-function Park1(props, ref) {
+function Park2(props, ref) {
   
   const grasstex = useLoader(TextureLoader, "./textures/triangles01.jpg");
   // debugger
@@ -89,7 +89,7 @@ grasstex.repeat.setScalar(14)
     const circleSpace = [];
     const center = new Vector3();
     const tempv = new Vector3();
-    for (var i = 0; i < 100; i++) {
+    for (var i = 0; i < 10; i++) {
       let x = randomInRange(-12,12);
       let z = randomInRange(-12,12);
       tempv.set(x,0,z);
@@ -122,7 +122,7 @@ grasstex.repeat.setScalar(14)
 
         <mesh receiveShadow rotation={[-Math.PI/2,0,0]} scale="14">
           <planeGeometry args={[1*1.5, 1*1.5]} />
-          <meshStandardMaterial color="#00bd09" sdfsdfcolor="#b9ffb8" map={grasstex} />
+          <meshStandardMaterial color="#6c5cff" sdfsdfcolor="#b9ffb8" vdfgdfgmap={grasstex} />
         </mesh>
         
         
@@ -138,11 +138,11 @@ grasstex.repeat.setScalar(14)
           return <ImportedModel key={i} rotation={[0, Math.random()*Math.PI*2, 0]} scale={Math.random()*0.4} position={[x.x,0,x.z]} imageURL="./models/tree2.glb" />
         })}
         
-        <ImportedModel rotation={[0, Math.random()*Math.PI*2, 0]} scale={0.5} position={[2,0,2]} imageURL="./models/cat2.glb" />
+        <ImportedModel rotation={[0, Math.random()*Math.PI*2, 0]} scale={0.5} position={[4,0,4]} imageURL="./models/cat2.glb" />
       
       </group>
     );
 }
 
 // make sure the root object has ref={ref} ref ref ref 
-export default forwardRef(Park1);
+export default forwardRef(Park2);

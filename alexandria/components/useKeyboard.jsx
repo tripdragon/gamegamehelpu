@@ -21,3 +21,13 @@ export default function useKeyboard() {
 
   return keyMap.current
 }
+
+
+/*
+example
+
+const keyMap = useKeyboard();
+// this weird && 
+keyMap['KeyA'] && ( movePlayer(player,'KeyA', camera, orbit, delta) );
+
+*/

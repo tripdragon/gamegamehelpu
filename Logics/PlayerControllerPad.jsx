@@ -69,7 +69,7 @@ function PlayerControllerPad(props, ref) {
         
         if(camera && orbit){
         
-            orbit.enabled = false;
+            // orbit.enabled = false;
         
             player.getWorldPosition(newObjectPosition);
         
@@ -77,7 +77,7 @@ function PlayerControllerPad(props, ref) {
         
             camera.position.add(deltaB);
         
-            orbit.enabled = true;
+            // orbit.enabled = true;
         
             orbit.target.copy(player.position);
             
