@@ -23,21 +23,52 @@ const _forceV = new Vector3();
 export class simplePhysics{
   objectPointer = null;
   acceleration = new Vector3();
+  angularAcceleration = new Vector3();
   velocity = new Vector3();
-  force = new Vector3();
-  acceleration = 1;
+  force = new Vector3(); // this acts as a cache
   damping = 1;
+  friction = 0;
+  mass = 1;
   // position = new Vector3();
   
-  _forceV = new Vector3();
+  // friction is really low values 0.01
+  constructor(objectPointer = null, force = new Vector3(), mass = 1, damping = 1, friction = 0){
+    this.objectPointer = objectPointer;
+    this.force.copy(force);
+    this.damping = damping;
+    this.friction = friction;
+    this.mass = mass;
+  }
   
-  applyForce(){
-    this._forceV.copy(this.force);
-    this._forceV.divideScalar(this.mass);
-    this.acceleration.add(this._forceV);
+  applyForce(forceIn){
+    this.force.copy(forceIn);
+    this.force.divideScalar(this.mass);
+    this.acceleration.add(this.force);
+    
+    // this.velocity.add(this.acceleration);
+    // this.velocity.multiplyScalar(this.damping);
+    // console.log("this.velocity", this.velocity);
+    // this.objectPointer.position.add(this.velocity);
+  }
+  
+  // applyExternalForce(forceIn){
+  //   this.applyForce(forceIn);
+  //   this.clearAcceleration();
+  // }
+  
+  updateForce(){
+    // this.applyForce(this.force);
+    
+    // this.force.copy(forceIn);
+    // this.force.divideScalar(this.mass);
+    // this.acceleration.add(this.force);
+    
     this.velocity.add(this.acceleration);
     this.velocity.multiplyScalar(this.damping);
+    
+    // console.log("this.velocity", this.velocity);
     this.objectPointer.position.add(this.velocity);
+    
   }
   
   clearAcceleration(){
@@ -49,11 +80,21 @@ export class simplePhysics{
   }
   
   
+  updateFriction(){
+    
+    this.force.copy(this.velocity);
+    this.force.multiplyScalar(-1);
+    this.force.normalize();
+    this.force.multiplyScalar(this.friction); // friction coefficient
+    this.applyForce(this.force);
+    
+  }
+  
   
   update() {
-
+// console.log("force",this.force);
       // this makes it fricken jitter infinitely
-      // getFriction(_this.forceWork, _this.selected.velocity, _this.force.coefriction);
+      // getFriction(_this., _this.selected.velocity, _this.force.coefriction);
 
       // if(_this.type === "spring"){
       //   this.applySpringForce(_this.selected, _this.force, _this.forceWork, _this.force.damping);
@@ -61,7 +102,11 @@ export class simplePhysics{
       // else if (_this.type === "impulse") {
       //   // console.log("¿");
       // }
-      this.applyForce();
+      // this.applyForce();
+      
+    // this.updateFriction();
+      this.updateForce();
+      
 
       // todo: this does not belong here
       // _this.selected.rotateY( _this.selected.velocity.length()* Math.PI * 9);
@@ -114,15 +159,15 @@ export class simplePhysics{
 
 
 
-
-
-
-
-export function applyForce(wobj, physicsObject){
-  _forceV.copy(physicsBlock.force);
-  _forceV.divideScalar(mass);
-  physicsBlock.acceleration.add(_forceV);
-  physicsBlock.velocity.add(physicsBlock.acceleration);
-  physicsBlock.velocity.multiplyScalar(physicsBlock.damping);
-  wobj.position.add(physicsBlock.velocity);
-}
+// 
+// 
+// 
+// 
+// export function applyForce(wobj, physicsObject){
+//   _forceV.copy(physicsBlock.force);
+//   _forceV.divideScalar(mass);
+//   physicsBlock.acceleration.add(_forceV);
+//   physicsBlock.velocity.add(physicsBlock.acceleration);
+//   physicsBlock.velocity.multiplyScalar(physicsBlock.damping);
+//   wobj.position.add(physicsBlock.velocity);
+// }

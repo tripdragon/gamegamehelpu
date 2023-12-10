@@ -36,12 +36,18 @@ import TwoDDialog from './alexandria/components/TwoDDialog';
 // levelmap stuff
 // import Box from './alexandria/components/Box';
 import Ball from './alexandria/components/Ball';
+import Ball2 from './alexandria/components/Ball2';
 // import Town1 from './alexandria/components/Town1';
 import TownMap1 from './levelMaps/townMap1';
 import Park1 from './levelMaps/Park1';
 
 import Park2 from './levelMaps/Park2';
 
+
+
+import ImportedModel from './alexandria/components/ImportedModel';
+
+import PhysicsBodySimpleCo from "./alexandria/utilites/PhysicsBodySimpleCo";
 
 
 // catch all for stuff in this file
@@ -88,12 +94,19 @@ const menuG = {
     walkSpeed : 0.1,
     turnSpeed : 0.1,
     playerScale : 1.0,
+    pokeX : 1,
+    pokeY : 1,
 // myFunction: function() { alert( 'hi' ) }
     hidePark: function(ev) { 
       levels.park.current.visible = false 
     },
     showTown: function(ev) { 
       levels.park.current.visible = false 
+    },
+    ball: function(ev) { 
+      // ball1.current.fishness();
+      console.log("menuG.pokey", menuG.pokeY);
+      ball2.current.fishness(new Vector3(menuG.pokeX,menuG.pokeY,0))
     }
     
 };
@@ -110,6 +123,9 @@ gui.add(menuG, 'walkSpeed', 0, 2);
 gui.add(menuG, 'turnSpeed', 0, 2);
 gui.add(menuG, 'playerScale', 0.1, 20);
 gui.add(menuG, 'hidePark' );
+gui.add(menuG, 'pokeX', 0, 8 );
+gui.add(menuG, 'pokeY', 0, 48 );
+gui.add(menuG, 'ball' );
 
 
 // var parkLevel;
@@ -128,9 +144,15 @@ function Stuff1() {
     const {camera, scene, controls} = useThree();
 
     const playerRef = useRef();
+    const playerPhysicRef = useRef();
     const orbitRef = useRef();
     const textBubbleRef = useRef();
     const ball1 = useRef();
+    const ball2 = useRef();
+    window.ball1 = ball1;
+    window.ball2 = ball2;
+    
+    const catRef = useRef();
     
     
     levels.park1 = useRef();
@@ -161,8 +183,14 @@ useFrame((_, delta) => {
   if(keyMap['KeyB']){
     // debugger
     // ball1.current.signal()
-    ball1.current.fishness()
+    // ball1.current.fishness()
+    ball2.current.poke(new Vector3(0.1,2,0))
+    catRef.current.poke(new Vector3(0.1,2,0))
   }
+  if(keyMap['KeyC']){
+    playerPhysicRef.current.poke(new Vector3(0,0.7,0))
+  }
+  
   // keyMap['KeyA'] && ( movePlayer(player,'KeyA', camera, orbit, delta) );
 });
 
@@ -251,8 +279,13 @@ useFrame((_, delta) => {
              <Park2 ref={levels.park2} />
              
           
-            {/* this should have the gltf link maybe */}
-            <Player1 ref={playerRef} name="player1" position={[0.1,0,0]}  scale={0.9} />
+            {/* 
+              this should have the gltf link maybe 
+              <Player1 ref={playerRef} name="player1" position={[0.1,0,0]}  scale={0.9} />
+              */}
+            <PhysicsBodySimpleCo ref={playerPhysicRef} position={[0.1,0,0]}  scale={0.9} >
+              <Player1 ref={playerRef} name="player1"  />
+            </PhysicsBodySimpleCo>
             
             
             {/* player here is not yet loaded so we have to use the useEffect sighduck */}
@@ -270,12 +303,20 @@ useFrame((_, delta) => {
               NARF!!!
               </Text>
               </mesh>
+              <Ball ref={ball1} position={[1.2, 0.4, 0]} scale={0.5} />
             */}
             
             <WordBubble1 ref={textBubbleRef} textColor="black" text={["words", "smoooth", "weeeeee", "boooo", "Naaarrrfs", "graaaalg", "kupafffy"]} imageURL="./textures/word_balloon_2.png" />
             
-            <Ball ref={ball1} position={[1.2, 0.4, 0]} scale={0.5} />
+            <Ball2 ref={ball2} position={[1.2, 0.4, 0]} scale={0.5} />
           
+              {/* 
+                <PhysicsBodySimpleCo {...props} ref={datas.thisRef} >
+                  PhysicsBodySimpleCo
+              */}
+              <PhysicsBodySimpleCo ref={catRef} rotation={[0, Math.random()*Math.PI*2, 0]} scale={0.5} position={[4,0,4]} >
+                <ImportedModel imageURL="./models/cat2.glb"  />
+              </PhysicsBodySimpleCo>
         </>
     );
 }

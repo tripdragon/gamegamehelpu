@@ -20,6 +20,7 @@ import ImportedModel from '../alexandria/components/ImportedModel';
 import { TextureLoader } from 'three/src/loaders/TextureLoader';
 
 
+
 // https://gist.github.com/JesterXL/8a124a812811f9df600e6a1fdc0013af
 function randomInRange(start, end) {
   var range = end - start;
@@ -138,7 +139,11 @@ grasstex.repeat.setScalar(14)
           return <ImportedModel key={i} rotation={[0, Math.random()*Math.PI*2, 0]} scale={Math.random()*0.4} position={[x.x,0,x.z]} imageURL="./models/tree2.glb" />
         })}
         
-        <ImportedModel rotation={[0, Math.random()*Math.PI*2, 0]} scale={0.5} position={[4,0,4]} imageURL="./models/cat2.glb" />
+        {/* 
+          
+          <ImportedModel rotation={[0, Math.random()*Math.PI*2, 0]} scale={0.5} position={[4,0,4]} imageURL="./models/cat2.glb" />
+           */}
+        
       
       </group>
     );
