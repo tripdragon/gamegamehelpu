@@ -224,10 +224,20 @@ useFrame((_, delta) => {
         playerControllerPad.current.player.swingSpeed = swingSpeed;
       }
       
-      if(textBubbleRef && playerRef){
-        textBubbleRef.current.position.copy(playerRef.current.position);
+      // if(textBubbleRef && playerRef){
+      //   textBubbleRef.current.position.copy(playerRef.current.position);
+      //   textBubbleRef.current.position.y += 1.8;
+      // }
+      if(textBubbleRef && playerPhysicRef){
+        // debugger
+        // playerPhysicRef.current.position()
+      // cant access .position now cause the stupid double refs issue
+      // fixed but its STUUUUPID
+      
+        textBubbleRef.current.position.copy(playerPhysicRef.current.mainObject.position);
         textBubbleRef.current.position.y += 1.8;
       }
+      // 
       
     });
 
@@ -286,7 +296,10 @@ useFrame((_, delta) => {
             <PhysicsBodySimpleCo ref={playerPhysicRef} position={[0.1,0,0]}  scale={0.9} >
               <Player1 ref={playerRef} name="player1"  />
             </PhysicsBodySimpleCo>
-            
+            {/* 
+              WordBubble1 does not like to nest with things for some reason
+              */}
+            <WordBubble1 ref={textBubbleRef} textColor="black" text={["words", "smoooth", "weeeeee", "boooo", "Naaarrrfs", "graaaalg", "kupafffy"]} imageURL="./textures/word_balloon_2.png" />
             
             {/* player here is not yet loaded so we have to use the useEffect sighduck */}
             <PlayerControllerPad ref={playerControllerPad} />
@@ -306,7 +319,6 @@ useFrame((_, delta) => {
               <Ball ref={ball1} position={[1.2, 0.4, 0]} scale={0.5} />
             */}
             
-            <WordBubble1 ref={textBubbleRef} textColor="black" text={["words", "smoooth", "weeeeee", "boooo", "Naaarrrfs", "graaaalg", "kupafffy"]} imageURL="./textures/word_balloon_2.png" />
             
             <Ball2 ref={ball2} position={[1.2, 0.4, 0]} scale={0.5} />
           

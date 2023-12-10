@@ -31,6 +31,7 @@ function PhysicsBodySimpleCo(props, ref) {
       physicsRef : useRef()
     }
     
+    // UGH this thing blocks ALL normal members like .position !!!!
     useImperativeHandle(ref, () => {
       return {
         poke(force = new Vector3(-2,2,0)){
@@ -39,9 +40,16 @@ function PhysicsBodySimpleCo(props, ref) {
           // Stuuuupid bug, need some thing to reference these before you can debugger
 
           let mm = datas;
-// debugger
           datas.physicsRef.current.applyForce(force);
 
+        },
+        // stupid useImperativeHandle have to do a long look up now
+        position(){
+          // debugger
+          return datas.thisRef.current.position;
+        },
+        get mainObject() {
+          return datas.thisRef.current;
         }
       };
     }, []);
