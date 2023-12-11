@@ -17,15 +17,16 @@ export const usePhysicsStore = create((set) => ({
   
   items: [], // T : Object3D
   
-  add: (wobject) => set((state) => ({ 
-    items: state.items.push(wobject)
-  })),
+  add: (wobject) => set((state) => {
+    // debugger
+    // console.log("¿¿¿¿");
+    state.items.push(wobject)
+  }
+  ),
   
   clear: () => set({ item : [] })
   
 }))
-
-
 // 
 // export default function PhysicsGrapth1(props) {
 // 

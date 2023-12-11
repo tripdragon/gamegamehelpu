@@ -7,7 +7,7 @@ import { useFrame, extend } from '@react-three/fiber';
 
 import { Vector3, Group } from 'three';
 
-import { simplePhysics } from "../utilites/simplePhysics"
+import { simplePhysics } from "./simplePhysics"
 // import { PhysicsBodySimple } from "./PhysicsBodySimple.js";
 // extend({ PhysicsBodySimple });
 

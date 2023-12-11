@@ -1,11 +1,11 @@
 import React, { useRef, useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 
-import { simplePhysics } from "../utilites/simplePhysics"
+import { simplePhysics } from "../simplePhysics/simplePhysics"
 
 import { Vector3 } from 'three';
 
-import PhysicsBodySimpleCo from "../utilites/PhysicsBodySimpleCo";
+import PhysicsBodySimpleCo from "../simplePhysics/PhysicsBodySimpleCo";
 // import usePhysicsStore from "../utilites/PhysicsBodySimpleCo";
 import { usePhysicsStore } from "../../Logics/PhysicsGrapth1";
 
@@ -33,6 +33,9 @@ function Popable(props, ref) {
           let mm = datas;
           // debugger
           datas.thisRef.current.poke(force);
+        },
+        get mainObject() {
+          return datas.thisRef.current;
         }
       };
     }, []);
@@ -55,7 +58,8 @@ function Popable(props, ref) {
     useEffect(()=>{
       let yy = physicsItems;
       
-      debugger
+      physicsItems.add(datas.thisRef.current.mainObject);
+      // debugger
       
 
       // if (datas.thisRef && datas.thisRef.current) {

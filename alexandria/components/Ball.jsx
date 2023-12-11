@@ -1,7 +1,7 @@
 import React, { useRef, useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 
-import { simplePhysics } from "../utilites/simplePhysics"
+import { simplePhysics } from "../simplePhysics/simplePhysics"
 
 import { Vector3 } from 'three';
 

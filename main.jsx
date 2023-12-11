@@ -47,7 +47,7 @@ import Park2 from './levelMaps/Park2';
 
 import ImportedModel from './alexandria/components/ImportedModel';
 
-import PhysicsBodySimpleCo from "./alexandria/utilites/PhysicsBodySimpleCo";
+import PhysicsBodySimpleCo from "./alexandria/simplePhysics/PhysicsBodySimpleCo";
 
 import Popable from "./alexandria/components/Popable";
 // import PhysicsGrapth1 from "./Logics/PhysicsGrapth1";

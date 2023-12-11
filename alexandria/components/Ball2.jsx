@@ -1,11 +1,11 @@
 import React, { useRef, useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 
-import { simplePhysics } from "../utilites/simplePhysics"
+import { simplePhysics } from "../simplePhysics/simplePhysics"
 
 import { Vector3 } from 'three';
 
-import PhysicsBodySimpleCo from "../utilites/PhysicsBodySimpleCo";
+import PhysicsBodySimpleCo from "../simplePhysics/PhysicsBodySimpleCo";
 
 
 // in this example we need 2 refs
