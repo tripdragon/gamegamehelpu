@@ -49,6 +49,9 @@ import ImportedModel from './alexandria/components/ImportedModel';
 
 import PhysicsBodySimpleCo from "./alexandria/utilites/PhysicsBodySimpleCo";
 
+import Popable from "./alexandria/components/Popable";
+// import PhysicsGrapth1 from "./Logics/PhysicsGrapth1";
+
 
 // catch all for stuff in this file
 const internals = {};
@@ -71,10 +74,16 @@ function App() {
             <Canvas shadows >
                 <PerspectiveCamera makeDefault position={[5, 10, 18]} fov={25} />
                 <Stuff1 />
+                
+                {/* Does this belong to a Level???
+                  <PhysicsGrapth1 />
+                  */}
+                
             </Canvas>
             <TwoDOverlay>
                 <TwoDDialog />
             </TwoDOverlay>
+            
 
         </>
     );
@@ -322,13 +331,16 @@ useFrame((_, delta) => {
             
             <Ball2 ref={ball2} position={[1.2, 0.4, 0]} scale={0.5} />
           
-              {/* 
-                <PhysicsBodySimpleCo {...props} ref={datas.thisRef} >
-                  PhysicsBodySimpleCo
-              */}
-              <PhysicsBodySimpleCo ref={catRef} rotation={[0, Math.random()*Math.PI*2, 0]} scale={0.5} position={[4,0,4]} >
-                <ImportedModel imageURL="./models/cat2.glb"  />
-              </PhysicsBodySimpleCo>
+            {/* 
+              <PhysicsBodySimpleCo {...props} ref={datas.thisRef} >
+                PhysicsBodySimpleCo
+            */}
+            <PhysicsBodySimpleCo ref={catRef} rotation={[0, Math.random()*Math.PI*2, 0]} scale={0.5} position={[4,0,4]} >
+              <ImportedModel imageURL="./models/cat2.glb"  />
+            </PhysicsBodySimpleCo>
+            
+            <Popable position={[-4, 0.4, 0]} scale={0.5} />
+            
         </>
     );
 }
