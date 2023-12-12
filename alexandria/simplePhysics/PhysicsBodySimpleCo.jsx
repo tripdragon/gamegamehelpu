@@ -34,9 +34,14 @@ function PhysicsBodySimpleCo(props, ref) {
     // UGH this thing blocks ALL normal members like .position !!!!
     useImperativeHandle(ref, () => {
       return {
+        // OMEGAG
+        // to get the object here the accessor is
+        // playerRef.current.mainObject.current.mainObject2.name
+        get mainObject2() {
+          return datas.thisRef.current;
+        },
         poke(force = new Vector3(-2,2,0)){
-          // signal()
-          // debugger
+
           // Stuuuupid bug, need some thing to reference these before you can debugger
 
           let mm = datas;
@@ -47,9 +52,6 @@ function PhysicsBodySimpleCo(props, ref) {
         position(){
           // debugger
           return datas.thisRef.current.position;
-        },
-        get mainObject() {
-          return datas.thisRef.current;
         }
       };
     }, []);
@@ -68,7 +70,6 @@ function PhysicsBodySimpleCo(props, ref) {
 
           datas.physicsRef.current.applyForce(new Vector3(0,-0.4,0));
           
-          
           datas.physicsRef.current.update();
           
           // cheap floor
@@ -82,7 +83,6 @@ function PhysicsBodySimpleCo(props, ref) {
     });
     
     useEffect(()=>{
-      // debugger
       if (datas.thisRef && datas.thisRef.current) {
         datas.physicsRef.current = new simplePhysics(datas.thisRef.current, new Vector3(), 5, 0.92, 0.1)
       }
@@ -91,7 +91,8 @@ function PhysicsBodySimpleCo(props, ref) {
     
     const mm = new Group();
     // https://stackoverflow.com/questions/60270678/using-multiple-refs-on-a-single-react-element
-    return <primitive ref={datas.thisRef} object={mm} {...props} />
+    // return <primitive ref={datas.thisRef} object={mm} {...props} />
+    return <group name="fookthisgarbage1" ref={datas.thisRef} sdffgdfgobject={mm} {...props} />
     // return <PhysicsBodySimple ref={datas.thisRef} {...props} />
 }
 

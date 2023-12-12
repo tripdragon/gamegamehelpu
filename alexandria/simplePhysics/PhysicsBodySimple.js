@@ -5,6 +5,8 @@ import { simplePhysics } from "./simplePhysics";
 export class PhysicsBodySimple extends Group{
   
   isPhysicsBodySimple = true;
+  isPhysicsBody = true;
+  
   
   physics;
   target;
@@ -20,6 +22,10 @@ export class PhysicsBodySimple extends Group{
       this.add(target)
     }
   }
+  
+  // basic form of the other object
+  onCollide(other){}
+  
 }
 
 // three fiber Class constructor  cannot be invoked without 'new'

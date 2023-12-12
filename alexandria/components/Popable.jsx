@@ -9,6 +9,8 @@ import PhysicsBodySimpleCo from "../simplePhysics/PhysicsBodySimpleCo";
 // import usePhysicsStore from "../utilites/PhysicsBodySimpleCo";
 import { usePhysicsStore } from "../../Logics/PhysicsGrapth1";
 
+import { PhysicsGrapth1 } from "../../Logics/PhysicsGrapth1";
+
 
 // in this example we need 2 refs
 // one for internal so we can do animation stuff
@@ -58,7 +60,8 @@ function Popable(props, ref) {
     useEffect(()=>{
       let yy = physicsItems;
       
-      physicsItems.add(datas.thisRef.current.mainObject);
+      // physicsItems.add(datas.thisRef.current.mainObject);
+      PhysicsGrapth1.add(datas.thisRef.current.mainObject);
       // debugger
       
 
@@ -66,10 +69,16 @@ function Popable(props, ref) {
       //   datas.physicsRef.current.objectPointer = datas.thisRef.current;
       //   // datas.physicsRef2.objectPointer = datas.thisRef.current;
       // }
-    });
+    }, []);
+    
+    function onCollide(other){
+      console.log("other", other);
+    }
     
     return (
-      <PhysicsBodySimpleCo {...props} ref={datas.thisRef} >
+      <PhysicsBodySimpleCo {...props} ref={datas.thisRef}
+        onCollide={onCollide}
+         >
           <mesh receiveShadow castShadow >
               <sphereGeometry args={[1, 12, 12]} />
               <meshStandardMaterial color={'green'} />

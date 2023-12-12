@@ -50,7 +50,9 @@ import ImportedModel from './alexandria/components/ImportedModel';
 import PhysicsBodySimpleCo from "./alexandria/simplePhysics/PhysicsBodySimpleCo";
 
 import Popable from "./alexandria/components/Popable";
-// import PhysicsGrapth1 from "./Logics/PhysicsGrapth1";
+import {PhysicsGrapth1} from "./Logics/PhysicsGrapth1";
+
+import PhysicsGrapth1Compo from "./Logics/PhysicsGrapth1Compo";
 
 
 // catch all for stuff in this file
@@ -75,9 +77,8 @@ function App() {
                 <PerspectiveCamera makeDefault position={[5, 10, 18]} fov={25} />
                 <Stuff1 />
                 
-                {/* Does this belong to a Level???
-                  <PhysicsGrapth1 />
-                  */}
+                {/* Does this belong to a Level???*/}
+                <PhysicsGrapth1Compo />
                 
             </Canvas>
             <TwoDOverlay>
@@ -176,35 +177,36 @@ function Stuff1() {
 
     const word_balloon_1 = useLoader(TextureLoader, './textures/word_balloon_2.png')
 
-const keyMap = useKeyboard();
+    const keyMap = useKeyboard();
 
-// debugg with
-useFrame((_, delta) => {
-  window._a = _;
-  
-  // this proves we can pop the camera to a position as needed
-  // but dont have a proper tween system in place
-  if(keyMap['KeyV']){
-    
-    camera.position.fromArray([12.50698397093828, 12.321345479452335, 11.86422342703777])
-      camera.lookAt(playerRef.current.position)
-  }
-  if(keyMap['KeyB']){
-    // debugger
-    // ball1.current.signal()
-    // ball1.current.fishness()
-    ball2.current.poke(new Vector3(0.1,2,0))
-    catRef.current.poke(new Vector3(0.1,2,0))
-  }
-  if(keyMap['KeyC']){
-    playerPhysicRef.current.poke(new Vector3(0,0.7,0))
-  }
-  
-  // keyMap['KeyA'] && ( movePlayer(player,'KeyA', camera, orbit, delta) );
-});
+    // debugg with
+    useFrame((_, delta) => {
+      window._a = _;
+      
+      // this proves we can pop the camera to a position as needed
+      // but dont have a proper tween system in place
+      if(keyMap['KeyV']){
+        
+        camera.position.fromArray([12.50698397093828, 12.321345479452335, 11.86422342703777])
+          camera.lookAt(playerRef.current.position)
+      }
+      if(keyMap['KeyB']){
+        // debugger
+        // ball1.current.signal()
+        // ball1.current.fishness()
+        ball2.current.poke(new Vector3(0.1,2,0))
+        catRef.current.poke(new Vector3(0.1,2,0))
+      }
+      if(keyMap['KeyC']){
+        // playerPhysicRef.current.poke(new Vector3(0,0.7,0))
+        playerRef.current.poke(new Vector3(0,0.7,0))
+      }
+      
+      // keyMap['KeyA'] && ( movePlayer(player,'KeyA', camera, orbit, delta) );
+    });
 
 
-
+    // player controls
     useFrame((_, delta) => {
       const swingSpeed = menuG.swingSpeed;
       // const walkSpeed = 6.2;
@@ -213,7 +215,11 @@ useFrame((_, delta) => {
       
       if(playerRef){
         // debugger
-          playerRef.current.scale.setScalar(menuG.playerScale);
+        // THIS is how you access the .transforms
+        // playerRef.current.mainObject.current.mainObject2
+        
+          // playerRef.current.scale.setScalar(menuG.playerScale);
+          playerRef.current.mainObject.scale.setScalar(menuG.playerScale);
           // playerRef.current.walkSpeed = walkSpeed;
           // playerRef.current.turnSpeed = turnSpeed;
           // debugger
@@ -237,13 +243,15 @@ useFrame((_, delta) => {
       //   textBubbleRef.current.position.copy(playerRef.current.position);
       //   textBubbleRef.current.position.y += 1.8;
       // }
-      if(textBubbleRef && playerPhysicRef){
+      // if(textBubbleRef && playerPhysicRef){
+      if(textBubbleRef && playerRef){
         // debugger
         // playerPhysicRef.current.position()
       // cant access .position now cause the stupid double refs issue
       // fixed but its STUUUUPID
       
-        textBubbleRef.current.position.copy(playerPhysicRef.current.mainObject.position);
+        // textBubbleRef.current.position.copy(playerPhysicRef.current.mainObject.position);
+        textBubbleRef.current.position.copy(playerRef.current.mainObject.position);
         textBubbleRef.current.position.y += 1.8;
       }
       // 
@@ -251,14 +259,7 @@ useFrame((_, delta) => {
     });
 
 
-    // Need this to get the reference var for the orbitcontrols
-    // useEffect(() => {
-    //     if (orbitRef.current) {
-    //         console.log('orbitRef.current', orbitRef.current);
-    //     }
-    // }, [orbitRef.current]);
-
-
+    // Need this to get the reference var for the orbitcontrol
     useEffect(() => {
         if (playerRef.current && playerControllerPad.current && orbitRef.current && camera) {
             console.log('playerRef.current', playerRef.current);
@@ -270,6 +271,7 @@ useFrame((_, delta) => {
     // }, [playerRef.current, playerControllerPad.current]);
     });
 
+    // more layout things
     return (
         <>
 
@@ -300,11 +302,18 @@ useFrame((_, delta) => {
           
             {/* 
               this should have the gltf link maybe 
-              <Player1 ref={playerRef} name="player1" position={[0.1,0,0]}  scale={0.9} />
-              */}
-            <PhysicsBodySimpleCo ref={playerPhysicRef} position={[0.1,0,0]}  scale={0.9} >
+              <PhysicsBodySimpleCo ref={playerPhysicRef} position={[0.1,0,0]}  scale={0.9} 
+              onCollide={(x)=>{
+              debugger
+              }}
+              
+              >
               <Player1 ref={playerRef} name="player1"  />
-            </PhysicsBodySimpleCo>
+              </PhysicsBodySimpleCo>
+            */}
+            <Player1 ref={playerRef} name="player1" position={[0.1,0,0]}  scale={0.9} />
+              
+            
             {/* 
               WordBubble1 does not like to nest with things for some reason
               */}

@@ -1,11 +1,16 @@
 
 
+//
+//
+// We have two forms, classical import object 
+// And trying to get zusland to work, but its not being nice yet
+// 
+// The <PhysicsGrapth1Compo> then has the update logics
 
-// 
-// You dont nest things in this. You dont transform it
-// It manages SimplePhysics things
-// 
-// 
+// ideally to use
+// import {PhysicsGrapth1} from "./PhysicsGrapth1";
+// PhysicsGrapth1.add(item)
+//
 
 import React, { useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
@@ -27,17 +32,18 @@ export const usePhysicsStore = create((set) => ({
   clear: () => set({ item : [] })
   
 }))
-// 
-// export default function PhysicsGrapth1(props) {
-// 
-// 
-// 
-// 
-//     const thisRef = useRef();
-// 
-//     // useFrame((state, delta) => (thisRef.current.rotation.x += delta));
-//     const main = new Object3D();
-//     return (
-//         <primitive object={main} {...props} ref={thisRef} />
-//     );
-// }
+
+class grapth{
+  
+  items = [];
+  
+  add(item){
+    this.items.push(item);
+  }
+  
+  clear(){
+    this.items.length = 0;
+  }
+}
+
+export const PhysicsGrapth1 = new grapth();

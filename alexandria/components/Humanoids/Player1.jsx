@@ -1,4 +1,4 @@
-import React, { useRef, useState, forwardRef } from 'react';
+import React, { useRef, useState, forwardRef, useImperativeHandle } from 'react';
 import { useFrame } from '@react-three/fiber';
 
 import { useLoader } from '@react-three/fiber';
@@ -7,6 +7,10 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 import { Vector3, Euler, Object3D } from 'three';
 import Robot from './Robot.js';
+
+
+import PhysicsBodySimpleCo from "../../simplePhysics/PhysicsBodySimpleCo";
+
 
 // above note
 // REF's SUCKSORS
@@ -38,6 +42,24 @@ function Player1(props, ref) {
       }
     }
     
+    const datas = {
+      thisRef : useRef(),
+    }
+    
+    useImperativeHandle(ref, () => {
+      return {
+        poke(force){
+          let mm = datas;
+          // debugger
+          datas.thisRef.current.poke(force);
+        },
+        get mainObject() {
+          return datas.thisRef;
+          // NO, no no nonononononononono
+          // playerRef.current.mainObject.current.mainObject
+        }
+      };
+    }, []);
 
     // const [hovered, setHover] = useState(false);
     // const [active, setActive] = useState(false);
@@ -55,7 +77,16 @@ function Player1(props, ref) {
     
     // would like to add in 
     //               <Outlines thickness={4.05} color="orange" />
-    return <primitive ref={ref} object={gg} position={props.position} scale={props.scale} />;
+    return (
+      <PhysicsBodySimpleCo name="ffffplayernamespace111" ref={datas.thisRef} position={props.position} scale={props.scale} 
+        onCollide={(x)=>{
+          debugger
+        }}
+        >
+        <primitive object={gg}  />
+      </PhysicsBodySimpleCo>
+    )
+    // <primitive ref={ref} object={gg} position={props.position} scale={props.scale} />
     
         
 
