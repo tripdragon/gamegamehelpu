@@ -88,11 +88,15 @@ function PhysicsBodySimpleCo(props, ref) {
       }
     });
     
+    // this is not reachable due to useImperativeHandle
+    function dawg(){
+      debugger
+    }
     
     const mm = new Group();
     // https://stackoverflow.com/questions/60270678/using-multiple-refs-on-a-single-react-element
     // return <primitive ref={datas.thisRef} object={mm} {...props} />
-    return <group name="fookthisgarbage1" ref={datas.thisRef} sdffgdfgobject={mm} {...props} />
+    return <group dawg={dawg} name="fookthisgarbage1" ref={datas.thisRef} sdffgdfgobject={mm} {...props} />
     // return <PhysicsBodySimple ref={datas.thisRef} {...props} />
 }
 

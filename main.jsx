@@ -43,6 +43,8 @@ import Park1 from './levelMaps/Park1';
 
 import Park2 from './levelMaps/Park2';
 
+import WutIsThis from './alexandria/components/WutIsThis';
+import WutIsThis222 from './alexandria/components/WutIsThis222';
 
 
 import ImportedModel from './alexandria/components/ImportedModel';
@@ -163,6 +165,8 @@ function Stuff1() {
     window.ball2 = ball2;
     
     const catRef = useRef();
+    const wutRefObj = useRef();
+    const wutRefObj222 = useRef();
     
     
     levels.park1 = useRef();
@@ -213,18 +217,19 @@ function Stuff1() {
       const walkSpeed = menuG.walkSpeed;
       const turnSpeed = menuG.turnSpeed;
       
+      return 
       if(playerRef){
         // debugger
-        // THIS is how you access the .transforms
-        // playerRef.current.mainObject.current.mainObject2
-        
-          // playerRef.current.scale.setScalar(menuG.playerScale);
-          playerRef.current.mainObject.scale.setScalar(menuG.playerScale);
-          // playerRef.current.walkSpeed = walkSpeed;
-          // playerRef.current.turnSpeed = turnSpeed;
-          // debugger
-          playerRef.current.walkSpeed = walkSpeed;
-          playerRef.current.turnSpeed = turnSpeed;
+                    // THIS is how you access the .transforms
+                    // playerRef.current.mainObject.current.mainObject2
+                    
+                      // playerRef.current.scale.setScalar(menuG.playerScale);
+                      playerRef.current.mainObject.scale.setScalar(menuG.playerScale);
+                      // playerRef.current.walkSpeed = walkSpeed;
+                      // playerRef.current.turnSpeed = turnSpeed;
+                      // debugger
+                      playerRef.current.walkSpeed = walkSpeed;
+                      playerRef.current.turnSpeed = turnSpeed;
       }
       
       // this does not work
@@ -270,6 +275,21 @@ function Stuff1() {
         }
     // }, [playerRef.current, playerControllerPad.current]);
     });
+
+
+
+// testing WutIsThis222 new useRef trick
+
+useFrame((_, delta) => {
+  if(wutRefObj222){
+    // debugger
+    // oooooo this works!!!
+    // se inside of component
+    wutRefObj222.pointerLike.current.rotation.x += delta;
+    // console.log("wutRefObj222.pointerLike.current", wutRefObj222.pointerLike.current.isWut);
+    // wutRefObj222.current.narfs();
+  }
+});
 
     // more layout things
     return (
@@ -350,6 +370,13 @@ function Stuff1() {
             
             <Popable position={[-4, 0.4, 0]} scale={0.5} />
             
+              {/* 
+                <WutIsThis sdfdsfref={wutRefObj} position={[-4, 0.4, 0]} scale={[2,1,1]} />
+              */}
+            
+            <WutIsThis222 ref={wutRefObj222} position={[-4, 0.4, 0]} scale={[2,1,1]} />
+            
+        
         </>
     );
 }
