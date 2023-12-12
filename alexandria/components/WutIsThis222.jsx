@@ -1,5 +1,5 @@
 import React, { useRef, useState, forwardRef, useImperativeHandle, useEffect } from 'react';
-import { useFrame, extend } from '@react-three/fiber';
+import { useFrame, extend, useGraph } from '@react-three/fiber';
 
 
 import { Vector3, Object3D } from 'three';
@@ -27,6 +27,8 @@ extend({ Wut })
 function WutIsThis222(props, ref) {
     const datas = {
       thisRef : useRef(),
+      // tempRef : useRef(ref),
+      tempRef : ref,
     }
     // debugger
     // ok so here we try ref =
@@ -36,8 +38,8 @@ function WutIsThis222(props, ref) {
     // but here if we point .current we get
     // ref.current.current.position !!!
     // so to better name the namespace we try adding a different name
-    ref.current = datas.thisRef;
-    ref.pointerLike = datas.thisRef;
+    // ref.current = datas.thisRef;
+    // ref.pointerLike = datas.thisRef;
     
     
     useFrame((state, delta) => {
@@ -54,7 +56,10 @@ function WutIsThis222(props, ref) {
     
     useEffect(() => {
       // debugger
+      datas.tempRef.current = datas.thisRef.current
     });
+
+    // const { nodes, materials } = useGraph(scene)
 
     return (
       <wut ref={datas.thisRef} {...props}

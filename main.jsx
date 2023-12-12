@@ -173,6 +173,8 @@ function Stuff1() {
     levels.park2 = useRef();
     const townLevel = useRef();
     
+    const mockObjectRef = useRef();
+    
     
     
     // const keyMap = useKeyboard();
@@ -285,7 +287,8 @@ useFrame((_, delta) => {
     // debugger
     // oooooo this works!!!
     // se inside of component
-    wutRefObj222.pointerLike.current.rotation.x += delta;
+    // wutRefObj222.pointerLike.current.rotation.x += delta;
+    wutRefObj222.current.rotation.x += delta;
     // console.log("wutRefObj222.pointerLike.current", wutRefObj222.pointerLike.current.isWut);
     // wutRefObj222.current.narfs();
   }
@@ -371,12 +374,14 @@ useFrame((_, delta) => {
             <Popable position={[-4, 0.4, 0]} scale={0.5} />
             
               {/* 
-                <WutIsThis sdfdsfref={wutRefObj} position={[-4, 0.4, 0]} scale={[2,1,1]} />
+                <WutIsThis ref={wutRefObj} position={[-4, 0.4, 0]} scale={[2,1,1]} />
               */}
+              <WutIsThis222 ref={wutRefObj222} position={[-4, 0.4, 0]} scale={[2,1,1]} />
             
-            <WutIsThis222 ref={wutRefObj222} position={[-4, 0.4, 0]} scale={[2,1,1]} />
             
-        
+            <object3D name="nurp" ref={mockObjectRef} />
+      
+    
         </>
     );
 }
