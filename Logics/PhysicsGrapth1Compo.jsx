@@ -14,7 +14,7 @@ import React, { useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { create } from 'zustand'
 
-import {Object3D, Box3} from "three";
+import {Object3D, Box3, Sphere} from "three";
 
 import {PhysicsGrapth1} from "./PhysicsGrapth1";
 
@@ -23,6 +23,8 @@ var waitIndex = 0;
 
 const boxA = new Box3();
 const boxB = new Box3();
+const sphereA = new Sphere();
+const sphereB = new Sphere();
 
 export default function PhysicsGrapth1Compo(props) {
 
@@ -30,9 +32,9 @@ export default function PhysicsGrapth1Compo(props) {
 
     useFrame( (state, delta) => {
       
-      waitIndex++;
+      // waitIndex++;
       // console.log("waitIndex", waitIndex);
-      // if (waitIndex < 10)  return;
+      // if (waitIndex < 1)  return;
         
       
       
@@ -73,16 +75,29 @@ export default function PhysicsGrapth1Compo(props) {
               if(pp.collider.isBox3 && nn.collider.isBox3){
                 boxA.copy(pp.collider).applyMatrix4( pp.matrixWorld );
                 boxB.copy(nn.collider).applyMatrix4( nn.matrixWorld );
-                
-                  if (boxA.intersectsBox(boxB)) {
-                    // debugger
-                    nn.visible = false;
-                  }
+              
+                if (boxA.intersectsBox(boxB)) {
+                  // debugger
+                  nn.visible = false;
+                }
               }
+              // debugger
+              // just testing sphere hacney in here for now
+              // since we dont have isSphere in three source
               // Uuuuuh .isSphere is missing from source so for now we just skip it
               // else if(pp.collider.isBox3 && nn.collider.isBox3){
               
+              else if(pp.collider.isBox3 && nn.collider.isSphere){
+                sphereA.copy(nn.collider).applyMatrix4(nn.matrixWorld);              
+                boxA.copy(pp.collider).applyMatrix4( pp.matrixWorld );
+                
+                if (boxA.intersectsSphere(sphereA)) {
+                  nn.visible = false;
+                }
+              }
+              
             }
+            
             
           
         }

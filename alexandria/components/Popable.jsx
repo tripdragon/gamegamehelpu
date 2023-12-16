@@ -64,7 +64,8 @@ function Popable(props, ref) {
     
     
     function getColliderB(){
-      return datas.colliderRef?.current?.geometry?.boundingBox;
+      // return datas.colliderRef?.current?.geometry?.boundingBox;
+      return datas.colliderRef?.current?.geometry?.boundingSphere;
     }
     const getCollider = getColliderB();
 
@@ -83,6 +84,7 @@ function Popable(props, ref) {
 
       datas.colliderRef.current.geometry.computeBoundingBox();
       datas.colliderRef.current.geometry.computeBoundingSphere();
+      datas.colliderRef.current.geometry.boundingSphere.isSphere = true; // cheap patch until three updates source
       
       PhysicsGrapth1.add(datas.thisRef);
       // debugger
