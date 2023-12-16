@@ -28,34 +28,23 @@ function PhysicsBodySimpleCo(props, ref) {
 
     const datas = {
       thisRef : useRef(),
-      physicsRef : useRef()
+      physicsRef : useRef(),
+      tempRef : ref
     }
     
-    // UGH this thing blocks ALL normal members like .position !!!!
-    useImperativeHandle(ref, () => {
-      return {
-        // OMEGAG
-        // to get the object here the accessor is
-        // playerRef.current.mainObject.current.mainObject2.name
-        get mainObject2() {
-          return datas.thisRef.current;
-        },
-        poke(force = new Vector3(-2,2,0)){
 
-          // Stuuuupid bug, need some thing to reference these before you can debugger
-
-          let mm = datas;
-          datas.physicsRef.current.applyForce(force);
-
-        },
-        // stupid useImperativeHandle have to do a long look up now
-        position(){
-          // debugger
-          return datas.thisRef.current.position;
-        }
-      };
-    }, []);
-
+    // poke(force = new Vector3(-2,2,0)){
+    // 
+    //   // Stuuuupid bug, need some thing to reference these before you can debugger
+    // 
+    //   let mm = datas;
+    //   datas.physicsRef.current.applyForce(force);
+    // 
+    // },
+    
+    useEffect(() => {
+      datas.tempRef.current = datas.thisRef.current
+    });
     
     useFrame((state, delta) => {
       // thisRef.current.rotation.x += delta;

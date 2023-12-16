@@ -33,12 +33,25 @@ export const usePhysicsStore = create((set) => ({
   
 }))
 
+
+// this is 
 class grapth{
   
   items = [];
+  // these are presorted
+  positives = [];
+  negatives = [];
   
-  add(item){
+  add(_item){
+    const item = _item.current;
     this.items.push(item);
+    // debugger
+    if (item.colliderType && item.colliderType === "positive") {
+      this.positives.push(item);
+    }
+    else if (item.colliderType && item.colliderType === "negative") {
+      this.negatives.push(item);
+    }
   }
   
   clear(){

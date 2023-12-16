@@ -56,6 +56,8 @@ import {PhysicsGrapth1} from "./Logics/PhysicsGrapth1";
 
 import PhysicsGrapth1Compo from "./Logics/PhysicsGrapth1Compo";
 
+import {randomInRange} from "./alexandria/utilites/Math";
+
 
 // catch all for stuff in this file
 const internals = {};
@@ -86,8 +88,6 @@ function App() {
             <TwoDOverlay>
                 <TwoDDialog />
             </TwoDOverlay>
-            
-
         </>
     );
 }
@@ -219,14 +219,14 @@ function Stuff1() {
       const walkSpeed = menuG.walkSpeed;
       const turnSpeed = menuG.turnSpeed;
       
-      return 
+      // return 
       if(playerRef){
         // debugger
                     // THIS is how you access the .transforms
                     // playerRef.current.mainObject.current.mainObject2
                     
                       // playerRef.current.scale.setScalar(menuG.playerScale);
-                      playerRef.current.mainObject.scale.setScalar(menuG.playerScale);
+                      playerRef.current.scale.setScalar(menuG.playerScale);
                       // playerRef.current.walkSpeed = walkSpeed;
                       // playerRef.current.turnSpeed = turnSpeed;
                       // debugger
@@ -258,7 +258,7 @@ function Stuff1() {
       // fixed but its STUUUUPID
       
         // textBubbleRef.current.position.copy(playerPhysicRef.current.mainObject.position);
-        textBubbleRef.current.position.copy(playerRef.current.mainObject.position);
+        textBubbleRef.current.position.copy(playerRef.current.position);
         textBubbleRef.current.position.y += 1.8;
       }
       // 
@@ -266,17 +266,17 @@ function Stuff1() {
     });
 
 
-    // Need this to get the reference var for the orbitcontrol
-    useEffect(() => {
-        if (playerRef.current && playerControllerPad.current && orbitRef.current && camera) {
-            console.log('playerRef.current', playerRef.current);
-            // debugger
-            playerControllerPad.current.player = playerRef.current;
-            playerControllerPad.current.camera = camera;
-            playerControllerPad.current.orbit = orbitRef.current;
-        }
-    // }, [playerRef.current, playerControllerPad.current]);
-    });
+  //   // Need this to get the reference var for the orbitcontrol
+  //   useEffect(() => {
+  //       if (playerRef.current && playerControllerPad.current && orbitRef.current && camera) {
+  //           console.log('playerRef.current', playerRef.current);
+  //           debugger
+  //           playerControllerPad.current.player = playerRef.current;
+  //           playerControllerPad.current.camera = camera;
+  //           playerControllerPad.current.orbit = orbitRef.current;
+  //       }
+  //   // }, [playerRef.current, playerControllerPad.current]);
+  // });
 
 
 
@@ -292,6 +292,18 @@ useFrame((_, delta) => {
     // console.log("wutRefObj222.pointerLike.current", wutRefObj222.pointerLike.current.isWut);
     // wutRefObj222.current.narfs();
   }
+  
+  // if( ! playerRef.current ){
+  //   debugger
+  // }
+  // if( ! playerControllerPad.current.player ){
+  //   debugger
+  // }
+  
+  // console.log("playerControllerPad.current.player", playerControllerPad.current.player);
+  
+  // playerControllerPad.current.player = playerRef.current;
+  
 });
 
     // more layout things
@@ -325,14 +337,6 @@ useFrame((_, delta) => {
           
             {/* 
               this should have the gltf link maybe 
-              <PhysicsBodySimpleCo ref={playerPhysicRef} position={[0.1,0,0]}  scale={0.9} 
-              onCollide={(x)=>{
-              debugger
-              }}
-              
-              >
-              <Player1 ref={playerRef} name="player1"  />
-              </PhysicsBodySimpleCo>
             */}
             <Player1 ref={playerRef} name="player1" position={[0.1,0,0]}  scale={0.9} />
               
@@ -373,10 +377,16 @@ useFrame((_, delta) => {
             
             <Popable position={[-4, 0.4, 0]} scale={0.5} />
             
-              {/* 
-                <WutIsThis ref={wutRefObj} position={[-4, 0.4, 0]} scale={[2,1,1]} />
-              */}
-              <WutIsThis222 ref={wutRefObj222} position={[-4, 0.4, 0]} scale={[2,1,1]} />
+              {Array.apply(0, Array(400)).map(function (x, i) {
+                return <Popable key={i} position={[randomInRange(-8,8),0,randomInRange(-8,8)]} scale={0.2} />
+                
+              })}
+              
+            
+            {/* 
+              <WutIsThis ref={wutRefObj} position={[-4, 0.4, 0]} scale={[2,1,1]} />
+            */}
+            <WutIsThis222 ref={wutRefObj222} position={[-4, 0.4, 0]} scale={[2,1,1]} />
             
             
             <object3D name="nurp" ref={mockObjectRef} />

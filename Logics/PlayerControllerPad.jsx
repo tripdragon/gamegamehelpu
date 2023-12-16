@@ -1,4 +1,4 @@
-import React, { useRef, useState, forwardRef } from 'react';
+import React, { useRef, useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 
 import { Vector3, Object3D } from 'three';
@@ -41,9 +41,68 @@ function PlayerControllerPad(props, ref) {
     const keyMap = useKeyboard();
 
 
-    var player = null;
-    var camera = null;
-    var orbit = null;
+    // var player = null;
+    // var camera = null;
+    // var orbit = null;
+    
+    const datas = {
+      thisRef : useRef(),
+      tempRef: ref,
+      player : useRef(),
+      camera : useRef(),
+      orbit : useRef()
+    }
+    // useEffect(() => {
+    //   datas.tempRef.current = datas.thisRef.current
+    // });
+    
+    
+    useImperativeHandle(ref, () => {
+      return {
+        set player(p){
+          datas.player.current = p;
+        },
+        get player(){
+          return datas.player.current;
+        },
+        set camera(p){
+          datas.camera.current = p;
+        },
+        get camera(){
+          return datas.camera.current;
+        },
+        
+        set orbit(p){
+          datas.orbit.current = p;
+        },
+        get orbit(){
+          return datas.orbit.current;
+        }
+      };
+    }, []);
+    
+    
+    // BLEGGGGHHHHH functions compmememmemnts dont have getters
+    // set player(p){
+    //   datas.player.current = p;
+    // }
+    // get player{
+    //   return datas.player.current;
+    // }
+    // 
+    // set camera(p){
+    //   datas.camera.current = p;
+    // }
+    // get camera{
+    //   return datas.camera.current;
+    // }
+    // 
+    // set orbit(p){
+    //   datas.orbit.current = p;
+    // }
+    // get orbit{
+    //   return datas.orbit.current;
+    // }
 
 
     const oldObjectPosition = new Vector3();
@@ -51,7 +110,7 @@ function PlayerControllerPad(props, ref) {
     
     // function movePlayer(dir, camera, orbitRef){
     function movePlayer(player, dir, camera, orbit){
-
+// debugger
         player.getWorldPosition(oldObjectPosition);
 
         if (dir === 'KeyA') {
@@ -67,6 +126,8 @@ function PlayerControllerPad(props, ref) {
             player.move("backward", walkSpeed);
         }
         
+        // Follow player
+        // refactor to function
         if(camera && orbit){
         
             // orbit.enabled = false;
@@ -111,7 +172,7 @@ function PlayerControllerPad(props, ref) {
        // if(ref.current.player){
        //   debugger
        // }
-       
+       // debugger
        let player = ref.current.player;
        let camera = ref.current.camera;
        let orbit = ref.current.orbit;
@@ -160,7 +221,7 @@ function PlayerControllerPad(props, ref) {
     // this SHOULD not be an object3d 
 var mm = new Object3D();    
     // return <primitive object={mm}  ref={ref} player={player}  />;
-    return <primitive object={mm}  ref={ref} walkSpeed={walkSpeed} turnSpeed={turnSpeed}  />;
+    return <primitive object={mm}  ref={datas.thisRef} walkSpeed={walkSpeed} turnSpeed={turnSpeed}  />;
     // return <primitive ref={ref} object={mm}  />;
 
 

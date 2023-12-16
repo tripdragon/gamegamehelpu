@@ -22,26 +22,30 @@ import { PhysicsGrapth1 } from "../../Logics/PhysicsGrapth1";
 // it makes for some interesting new way to closure methods, but as per example
 // its the only solution to the 2+ ref issue
 
+let count = 0;
+
 function Popable(props, ref) {
 
 
     const datas = {
       thisRef : useRef(),
+      tempRef : ref,
+      colliderRef : useRef()
     }
     
-    useImperativeHandle(ref, () => {
-      return {
-        poke(force){
-          let mm = datas;
-          // debugger
-          datas.thisRef.current.poke(force);
-        },
-        get mainObject() {
-          return datas.thisRef.current;
-        }
-      };
-    }, []);
-    
+    // useImperativeHandle(ref, () => {
+    //   return {
+    //     poke(force){
+    //       let mm = datas;
+    //       // debugger
+    //       datas.thisRef.current.poke(force);
+    //     },
+    //     get mainObject() {
+    //       return datas.thisRef.current;
+    //     }
+    //   };
+    // }, []);
+    // 
     
     
     // const [hovered, setHover] = useState(false);
@@ -57,11 +61,30 @@ function Popable(props, ref) {
     
     const physicsItems = usePhysicsStore();
     
+    
+    
+    function getColliderB(){
+      return datas.colliderRef?.current?.geometry?.boundingBox;
+    }
+    const getCollider = getColliderB();
+
+    
     useEffect(()=>{
       let yy = physicsItems;
       
-      // physicsItems.add(datas.thisRef.current.mainObject);
-      PhysicsGrapth1.add(datas.thisRef.current.mainObject);
+      if (datas.tempRef) {
+        
+        datas.tempRef.current = datas.thisRef.current;
+        
+        // datas.thisRef.current.name="popable_"+count++;
+        // datas.thisRef.current.name="narf"
+        
+      }
+
+      datas.colliderRef.current.geometry.computeBoundingBox();
+      datas.colliderRef.current.geometry.computeBoundingSphere();
+      
+      PhysicsGrapth1.add(datas.thisRef);
       // debugger
       
 
@@ -72,18 +95,25 @@ function Popable(props, ref) {
     }, []);
     
     function onCollide(other){
-      console.log("other", other);
+      // console.log("other", other);
+      // datas.thisRef.current.visible = false;
     }
+    
     
     return (
       <PhysicsBodySimpleCo {...props} ref={datas.thisRef}
+        sfsgdfgname={"popable_"+count++}
+        colliderType={"negative"}
         onCollide={onCollide}
+        collider={getCollider}
+        datas={datas}
          >
-          <mesh receiveShadow castShadow >
-              <sphereGeometry args={[1, 12, 12]} />
-              <meshStandardMaterial color={'green'} />
-          </mesh>
-        </PhysicsBodySimpleCo>
+        {/* use itself as the colliderRef */}
+        <mesh ref={datas.colliderRef} receiveShadow castShadow >
+            <sphereGeometry args={[1, 12, 12]} />
+            <meshStandardMaterial color={'yellow'} />
+        </mesh>
+      </PhysicsBodySimpleCo>
     );
 }
 
