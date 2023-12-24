@@ -5,6 +5,8 @@ import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload';
 // import { rollupImportMapPlugin } from "rollup-plugin-import-map";
 
+import css from "rollup-plugin-import-css";
+
 export default {
   input: 'main.js', // Entry file
   output: {
@@ -23,6 +25,7 @@ export default {
     livereload({
       watch: 'party'
     }),
+    css()
     // rollupImportMapPlugin('./import-map.json')
   ]
 };

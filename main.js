@@ -1,3 +1,7 @@
+
+import "./style-3d-fix.css";
+
+
 import { store } from './alexandria/store';
 import Initializers from './alexandria/initializers/index';
 

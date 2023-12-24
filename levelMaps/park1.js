@@ -118,6 +118,8 @@ export class Park1 extends LevelMap{
     // debugger
     
     
+    
+    
   }
   
   
