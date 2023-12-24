@@ -92,17 +92,17 @@ function threeInit(){
 
   const directionalLight = new DirectionalLight();
   directionalLight.castShadow = true;
-  directionalLight.position.set(2.5, 4, 5);
+  directionalLight.position.set(2.5, 4, 0);
   directionalLight.intensity = 2.7;
   // directionalLight.color.setHex(0xffff80);
   directionalLight.color.setHex(0xfffff);
   scene.add(directionalLight);
 
   //Set up shadow properties for the light
-  directionalLight.shadow.mapSize.width = 512; // default
-  directionalLight.shadow.mapSize.height = 512; // default
-  directionalLight.shadow.camera.near = 0.5; // default
-  directionalLight.shadow.camera.far = 500; // default
+  directionalLight.shadow.mapSize.width = 512;
+  directionalLight.shadow.mapSize.height = 512;
+  directionalLight.shadow.camera.near = 0.5;
+  directionalLight.shadow.camera.far = 500;
 
 
 

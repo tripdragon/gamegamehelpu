@@ -100,16 +100,16 @@ export class KeyWalk extends Enty {
       this.translateZ( -0.05);
     }
     if(_a.keyboard.keys.a) {
-      this.rotation.y += -0.05;
+      this.rotation.y += 0.05;
     }
     if(_a.keyboard.keys.ArrowLeft) {
-      this.rotation.y += -0.05;
+      this.rotation.y += 0.05;
     }
     if(_a.keyboard.keys.d) {
-      this.rotation.y += 0.05;
+      this.rotation.y += -0.05;
     }
     if(_a.keyboard.keys.ArrowRight) {
-      this.rotation.y += 0.05;
+      this.rotation.y += -0.05;
     }
   }
   // update()

@@ -11,8 +11,8 @@ import { DirectionalLight, AmbientLight,
 
 import {Entities, Enty, Move, Spin, KeyWalk, Meep } from '../entities/basicEntites';
 
-import {Cube} from '../alexandria/primitives/cube';
-import {randomInRange} from '../alexandria/math/mathMore';
+import {Cube} from "../alexandria/primitives/cube";
+import {randomInRange} from "alexandria/math/mathMore";
 
 export class Park1 extends LevelMap{
 
