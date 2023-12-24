@@ -3,7 +3,7 @@ import html from '@rollup/plugin-html';
 import serve from 'rollup-plugin-serve';
 
 export default {
-  input: 'alexandria/main.js', // Entry file
+  input: 'main.js', // Entry file
   output: {
     file: 'party/bundle.js', // Output file
     format: 'esm' // ES Module format
