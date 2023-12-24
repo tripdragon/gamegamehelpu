@@ -102,7 +102,7 @@ function threeInit(){
     const directionalLight = new DirectionalLight();
     directionalLight.castShadow = true;
     directionalLight.position.set(2.5, 4, 5);
-    directionalLight.intensity = 1.7;
+    directionalLight.intensity = 2.7;
     // directionalLight.color.setHex(0xffff80);
     directionalLight.color.setHex(0xfffff);
     scene.add(directionalLight);

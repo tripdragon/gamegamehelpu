@@ -53,6 +53,12 @@ export class KeyWalk extends Enty {
     
     // document.addEventListener("keydown", (event) => this.stuff.bind(owner, event) );
   }
+  constructor(walkSpeed = 0.1, spinSpeed = 0.05){
+    super();
+    // these wont read due to the .call above
+    this.walkSpeed = walkSpeed;
+    this.spinSpeed = spinSpeed;
+  }
   // 
   // stuff(ev){
   //   // debugger
@@ -67,19 +73,44 @@ export class KeyWalk extends Enty {
   //   }
   // }
   update(){
-    // debugger
-    if(_a.keyboard.keys.w || _a.keyboard.keys.ArrowUp) {
-      // this.pos
-      // debugger
-      this.translateZ( 0.1 );
+    // if(_a.keyboard.keys.w || _a.keyboard.keys.ArrowUp) {
+    //   debugger
+    //   this.translateZ( this.walkSpeed );
+    // }
+    // if(_a.keyboard.keys.s || _a.keyboard.keys.ArrowDown) {
+    //   this.translateZ( -this.walkSpeed );
+    // }
+    // if(_a.keyboard.keys.a || _a.keyboard.keys.ArrowLeft) {
+    //   this.rotation.y += -this.spinSpeed;
+    // }
+    // if(_a.keyboard.keys.d || _a.keyboard.keys.ArrowRight) {
+    //   this.rotation.y += this.spinSpeed;
+    // }
+    
+    // doubling up the keys gives more POWER!!!
+    // cant yet use the this.speed attrs cause this is from .call
+    if(_a.keyboard.keys.w) {
+      this.translateZ( 0.05 );
     }
-    if(_a.keyboard.keys.s || _a.keyboard.keys.ArrowDown) {
-      this.translateZ( -0.1 );
+    if(_a.keyboard.keys.ArrowUp) {
+      this.translateZ( 0.05 );
     }
-    if(_a.keyboard.keys.a || _a.keyboard.keys.ArrowLeft) {
+    if(_a.keyboard.keys.s) {
+      this.translateZ( -0.05);
+    }
+    if(_a.keyboard.keys.ArrowDown) {
+      this.translateZ( -0.05);
+    }
+    if(_a.keyboard.keys.a) {
       this.rotation.y += -0.05;
     }
-    if(_a.keyboard.keys.d || _a.keyboard.keys.ArrowRight) {
+    if(_a.keyboard.keys.ArrowLeft) {
+      this.rotation.y += -0.05;
+    }
+    if(_a.keyboard.keys.d) {
+      this.rotation.y += 0.05;
+    }
+    if(_a.keyboard.keys.ArrowRight) {
       this.rotation.y += 0.05;
     }
   }

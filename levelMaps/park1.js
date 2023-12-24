@@ -11,6 +11,8 @@ import { DirectionalLight, AmbientLight,
 
 import {Entities, Enty, Move, Spin, KeyWalk, Meep } from "../entities/basicEntites";
 
+import {Cube} from "../alexandria/primitives/cube";
+
 export class Park1 extends LevelMap{
 
   constructor(){
@@ -30,35 +32,30 @@ export class Park1 extends LevelMap{
     this.add( floor );
     window.floor = floor;
     }
-    
-    const geometry = new BoxGeometry( 1, 1, 1 );
-    const material = new MeshStandardMaterial( { color: 0x00ff00 } );
-    const cube = new Mesh( geometry, material );
-    cube.castShadow = true;
+
+    const cube = new Cube({size: 0.2,debug: true, color:0xffffff});
     cube.position.y = 1;
-    const axesHelper = new AxesHelper( 1 );
-    cube.add( axesHelper );
     
+    // cube.update = function(){
+      //   // debugger
+      //   this.position.x += 0.01;
+      //   console.log(this.name);
+      // }
+      
+
     this.add( cube );
     cube.name = "sldkfndsf";
     
     _a.animationPool.add(cube);
-    
-    // cube.update = function(){
-    //   // debugger
-    //   this.position.x += 0.01;
-    //   console.log(this.name);
-    // }
-    
-    
     cube.entities = new Entities(cube);
-    // cube.entities.add(new Move());
+    
     cube.entities.add(new Spin(cube));
     
+    // cube.entities.add(new Move());
     // now just some arbitary builder
     // cube.entities.add( Meep( "moop", function(){ this.position.z += 0.01 } ) );
     
-    cube.entities.add(new KeyWalk(cube));
+    cube.entities.add(new KeyWalk(cube, 0.01, 0.01));
     
     
     

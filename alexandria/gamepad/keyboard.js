@@ -4,8 +4,9 @@
 
 // for now heres the basic example
 
+// https://stackoverflow.com/questions/1828613/check-if-a-key-is-down
+
 export class Keyboard{
-  
   
   keys = {};
   // keyCodes = {};
@@ -21,7 +22,7 @@ export class Keyboard{
       // _this.keysCode[ev.keyCode] = true; 
       _this.keys[ev.key] = true; 
       // console.log(pressedKeysCode);
-      console.log(_this.keys);
+      // console.log(_this.keys);
     }
   }
   
