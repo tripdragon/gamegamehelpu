@@ -1,5 +1,5 @@
-import Hello from './hello';
 import ECS from './ecs';
+import Keyboard from './keyboard';
 import Physics from './physics';
 import threeStart from './threeStart';
 
@@ -8,7 +8,7 @@ export default async function(store) {
   const initializers = [
     ECS,
     Physics,
-    Hello,
+    Keyboard,
     threeStart
   ];
 

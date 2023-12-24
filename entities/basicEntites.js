@@ -1,4 +1,4 @@
-import { fakeStore as _b } from '../logics/fakeStore';
+import { store } from 'alexandria/store';
 
 export class Entities {
   entities = [];
@@ -71,45 +71,44 @@ export class KeyWalk extends Enty {
   //   }
   // }
   update() {
-    // if(_b.keyboard.keys.w || _b.keyboard.keys.ArrowUp) {
+    // if(store.state.keyboard.keys.w || store.state.keyboard.keys.ArrowUp) {
     //   debugger
     //   this.translateZ( this.walkSpeed );
     // }
-    // if(_b.keyboard.keys.s || _b.keyboard.keys.ArrowDown) {
+    // if(store.state.keyboard.keys.s || store.state.keyboard.keys.ArrowDown) {
     //   this.translateZ( -this.walkSpeed );
     // }
-    // if(_b.keyboard.keys.a || _b.keyboard.keys.ArrowLeft) {
+    // if(store.state.keyboard.keys.a || store.state.keyboard.keys.ArrowLeft) {
     //   this.rotation.y += -this.spinSpeed;
     // }
-    // if(_b.keyboard.keys.d || _b.keyboard.keys.ArrowRight) {
+    // if(store.state.keyboard.keys.d || store.state.keyboard.keys.ArrowRight) {
     //   this.rotation.y += this.spinSpeed;
     // }
-debugger
-// const _b = fakeStore;
+    // debugger
     // doubling up the keys gives more POWER!!!
     // cant yet use the this.speed attrs cause this is from .call
-    if(_b.keyboard.keys.w) {
+    if(store.state.keyboard.keys.w) {
       this.translateZ( 0.05 );
     }
-    if(_b.keyboard.keys.ArrowUp) {
+    if(store.state.keyboard.keys.ArrowUp) {
       this.translateZ( 0.05 );
     }
-    if(_b.keyboard.keys.s) {
+    if(store.state.keyboard.keys.s) {
       this.translateZ( -0.05);
     }
-    if(_b.keyboard.keys.ArrowDown) {
+    if(store.state.keyboard.keys.ArrowDown) {
       this.translateZ( -0.05);
     }
-    if(_b.keyboard.keys.a) {
+    if(store.state.keyboard.keys.a) {
       this.rotation.y += 0.05;
     }
-    if(_b.keyboard.keys.ArrowLeft) {
+    if(store.state.keyboard.keys.ArrowLeft) {
       this.rotation.y += 0.05;
     }
-    if(_b.keyboard.keys.d) {
+    if(store.state.keyboard.keys.d) {
       this.rotation.y += -0.05;
     }
-    if(_b.keyboard.keys.ArrowRight) {
+    if(store.state.keyboard.keys.ArrowRight) {
       this.rotation.y += -0.05;
     }
   }
