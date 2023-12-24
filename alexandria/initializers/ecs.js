@@ -7,3 +7,7 @@
 //   addComponent,
 //   pipe
 // } from 'bitecs';
+
+export default () => {
+
+};

@@ -1,6 +1,6 @@
 import { sayHello } from '../utils/sayHello';
 
-export default () => {
+export default (store) => {
 
-  sayHello();
+  sayHello(store);
 };
