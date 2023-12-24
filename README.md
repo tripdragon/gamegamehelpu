@@ -1,5 +1,5 @@
 
-https://tripdragon.github.io/gamegamehelpu/party/
+https://tripdragon.github.io/gamegamehelpu/react_toss/party/
 
 # gamegamehelpu
 game help u
