@@ -19,6 +19,7 @@
     },
     "dependencies": {
         "bitecs": "^0.3.40",
+        "rollup-plugin-import-map": "^3.0.0",
         "three": "^0.160.0"
     }
 }
