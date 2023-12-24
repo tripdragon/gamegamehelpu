@@ -1,7 +1,7 @@
 import ECS from './ecs';
 import Keyboard from './keyboard';
 import Physics from './physics';
-import threeStart from './threeStart';
+import threeStart_CM from './threeStart_CM';
 
 export default async function(store) {
 
@@ -9,7 +9,7 @@ export default async function(store) {
     ECS,
     Physics,
     Keyboard,
-    threeStart
+    threeStart_CM // not a class
   ];
 
   // Pass store to initializers

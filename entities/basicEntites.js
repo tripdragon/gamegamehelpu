@@ -88,16 +88,16 @@ export class KeyWalk extends Enty {
     // doubling up the keys gives more POWER!!!
     // cant yet use the this.speed attrs cause this is from .call
     if(store.state.keyboard.keys.w) {
-      this.translateZ( 0.05 );
+      this.translateZ( 0.1 );
     }
     if(store.state.keyboard.keys.ArrowUp) {
-      this.translateZ( 0.05 );
+      this.translateZ( 0.1 );
     }
     if(store.state.keyboard.keys.s) {
-      this.translateZ( -0.05);
+      this.translateZ( -0.1);
     }
     if(store.state.keyboard.keys.ArrowDown) {
-      this.translateZ( -0.05);
+      this.translateZ( -0.1);
     }
     if(store.state.keyboard.keys.a) {
       this.rotation.y += 0.05;

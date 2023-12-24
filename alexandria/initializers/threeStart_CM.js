@@ -11,11 +11,13 @@ import {
 } from 'three';
 
 import { store } from 'alexandria/store';
-import { renderLoop } from 'logics/renderLoop';
+// import { renderLoop } from 'logics/renderLoop';
 
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 // import {fakeStore as _b} from 'logics/fakeStore';
+
+// levels
 import {Park1} from 'levelMaps/park1';
 
 export default () => {
@@ -59,16 +61,10 @@ export default () => {
 
   const parkLevel = new Park1();
   scene.add(parkLevel);
-  // add to scene grapth
+  // #TODO: add to scene grapth
 
   const axesHelper = new AxesHelper( 5 );
   scene.add( axesHelper );
-
-  // store.renderer = renderer;
-  // store.scene = scene;
-  // store.camera = camera;
-  // store.controls = controls;
-  //
 
   store.setState({
     game: {
@@ -79,8 +75,6 @@ export default () => {
     }
   });
 
-  // debugger
-  // renderLoop.bind(store);
-  // Kickoff render loop!
-  renderLoop(0, store);
+  // // Kickoff render loop!
+  // renderLoop(0, store);
 };
