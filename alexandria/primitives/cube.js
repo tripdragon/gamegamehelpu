@@ -1,7 +1,7 @@
 
 
 
-import { Mesh, BoxGeometry, MeshStandardMaterial, AxesHelper} from "three";
+import { Mesh, BoxGeometry, MeshStandardMaterial, AxesHelper} from 'three';
 
 
 export class Cube extends Mesh{
@@ -22,7 +22,7 @@ export class Cube extends Mesh{
       this.add( axesHelper );
     }
     
-    this.name = "cubey";
+    this.name = 'cubey';
     
   }
   

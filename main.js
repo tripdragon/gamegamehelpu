@@ -1,12 +1,12 @@
-import "./style-3d-fix.css";
+import './style-3d-fix.css';
 
-import { store } from "alexandria/store";
-import Initializers from "alexandria/initializers/index";
+import { store } from 'alexandria/store';
+import Initializers from 'alexandria/initializers/index';
 
-import { fish } from "narf";
+import { fish } from 'narf';
 
-import { Keyboard } from "alexandria/gamepad/keyboard";
-import { patchObject3D_CM } from "alexandria/initializers/patchObject3D";
+import { Keyboard } from 'alexandria/gamepad/keyboard';
+import { patchObject3D_CM } from 'alexandria/initializers/patchObject3D';
 
 // import * as THREE from 'three';
 import {
@@ -19,17 +19,17 @@ import {
   AxesHelper,
   PCFSoftShadowMap,
   Color
-} from "three";
+} from 'three';
 
 // import * as THREE from 'three';
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 // import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 // const controls = new OrbitControls( camera, renderer.domElement );
 // const loader = new GLTFLoader();
 
-import {fakeStore as _a} from "logics/fakeStore";
-import {Park1} from "levelMaps/park1";
+import {fakeStore as _a} from 'logics/fakeStore';
+import {Park1} from 'levelMaps/park1';
 
 const init = async () => {
 
@@ -37,7 +37,7 @@ const init = async () => {
 
   patchObject3D_CM();
 
-  console.log("store", store);
+  console.log('store', store);
 
   window._a = _a;
 

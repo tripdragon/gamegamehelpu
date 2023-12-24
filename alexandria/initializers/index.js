@@ -1,6 +1,6 @@
-import Hello from "./hello";
-import ECS from "./ecs";
-import Physics from "./physics";
+import Hello from './hello';
+import ECS from './ecs';
+import Physics from './physics';
 
 export default async function(store) {
 

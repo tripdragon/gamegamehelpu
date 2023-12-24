@@ -1,6 +1,6 @@
 
-import { Group } from "three";
-import { simplePhysics } from "./simplePhysics";
+import { Group } from 'three';
+import { simplePhysics } from './simplePhysics';
 
 export class PhysicsBodySimple extends Group{
   

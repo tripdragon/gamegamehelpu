@@ -1,23 +1,21 @@
+import { fakeStore as _a } from '../logics/fakeStore';
 
-import {fakeStore as _a} from "../logics/fakeStore";
-
-
-export class Entities{
+export class Entities {
   entities = [];
   owner = null;
-  constructor(owner){
+  constructor(owner) {
     this.owner = owner;
   }
   // this is redundant
-  setOwner(owner){
+  setOwner(owner) {
     this.owner = owner;
   }
-  add(item){
+  add(item) {
     this.entities.push(item);
     // item.owner = this.owner;
     item.setup(item.owner);
   }
-  run(){
+  run() {
     for (var i = 0; i < this.entities.length; i++) {
       this.entities[i].update.call(this.owner);
     }
@@ -26,11 +24,11 @@ export class Entities{
 
 export class Enty {
   // owner = null;
-  name = "";
-  update(){}
-  start(){}
-  setup(){}
-  constructor(name = ""){
+  name = '';
+  update() {}
+  start() {}
+  setup() {}
+  constructor(name = ''){
     this.name = name;
   }
 }
@@ -48,13 +46,9 @@ export class Spin extends Enty {
   }
 }
 
-
-
-
 export class KeyWalk extends Enty {
-  setup(owner){
-  	// document.addEventListener( 'mousemove', onDocumentMouseMove );
-    
+  setup(owner) {
+    // document.addEventListener( 'mousemove', onDocumentMouseMove );
     // document.addEventListener("keydown", (event) => this.stuff.bind(owner, event) );
   }
   constructor(walkSpeed = 0.1, spinSpeed = 0.05){
@@ -63,7 +57,7 @@ export class KeyWalk extends Enty {
     this.walkSpeed = walkSpeed;
     this.spinSpeed = spinSpeed;
   }
-  // 
+  //
   // stuff(ev){
   //   // debugger
   //   if(ev.key === "w") {
@@ -76,7 +70,7 @@ export class KeyWalk extends Enty {
   //     this.translateZ( -0.1 );
   //   }
   // }
-  update(){
+  update() {
     // if(_a.keyboard.keys.w || _a.keyboard.keys.ArrowUp) {
     //   debugger
     //   this.translateZ( this.walkSpeed );
@@ -90,7 +84,7 @@ export class KeyWalk extends Enty {
     // if(_a.keyboard.keys.d || _a.keyboard.keys.ArrowRight) {
     //   this.rotation.y += this.spinSpeed;
     // }
-    
+
     // doubling up the keys gives more POWER!!!
     // cant yet use the this.speed attrs cause this is from .call
     if(_a.keyboard.keys.w) {
@@ -136,9 +130,7 @@ export class KeyWalk extends Enty {
   // }
 }
 
-
-
-export function Meep(name, func){
+export function Meep(name, func) {
   const aa = new Enty();
   aa.update = func;
   return aa;

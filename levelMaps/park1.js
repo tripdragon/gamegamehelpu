@@ -1,18 +1,18 @@
 
-import LevelMap from "./levelMap";
+import LevelMap from './levelMap';
 
-import {fakeStore as _a} from "../logics/fakeStore";
+import {fakeStore as _a} from '../logics/fakeStore';
 
 import { DirectionalLight, AmbientLight,
   BoxGeometry, MeshBasicMaterial, Mesh, MeshStandardMaterial, PlaneGeometry,
   DoubleSide, AxesHelper
-} from "three";
+} from 'three';
 
 
-import {Entities, Enty, Move, Spin, KeyWalk, Meep } from "../entities/basicEntites";
+import {Entities, Enty, Move, Spin, KeyWalk, Meep } from '../entities/basicEntites';
 
-import {Cube} from "../alexandria/primitives/cube";
-import {randomInRange} from "../alexandria/math/mathMore";
+import {Cube} from '../alexandria/primitives/cube';
+import {randomInRange} from '../alexandria/math/mathMore';
 
 export class Park1 extends LevelMap{
 
@@ -45,7 +45,7 @@ export class Park1 extends LevelMap{
       
 
     this.add( cube );
-    cube.name = "sldkfndsf";
+    cube.name = 'sldkfndsf';
     
     _a.animationPool.add(cube);
     cube.entities = new Entities(cube);
@@ -66,7 +66,7 @@ export class Park1 extends LevelMap{
         
 
       this.add( cube );
-      cube.name = "sldkfndsf" + i;
+      cube.name = 'sldkfndsf' + i;
       
       _a.animationPool.add(cube);
       cube.entities = new Entities(cube);

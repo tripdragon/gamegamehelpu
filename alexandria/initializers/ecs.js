@@ -1,4 +1,4 @@
-import * as BitECS from "bitecs";
+import * as BitECS from 'bitecs';
 
 export default (store) => {
 
