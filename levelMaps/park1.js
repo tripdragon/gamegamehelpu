@@ -1,7 +1,8 @@
 
 import LevelMap from './levelMap';
 
-import {fakeStore as _a} from '../logics/fakeStore';
+// import {fakeStore as _a} from '../logics/fakeStore';
+import {fakeStore as _b} from '../logics/fakeStore';
 
 import { DirectionalLight, AmbientLight,
   BoxGeometry, MeshBasicMaterial, Mesh, MeshStandardMaterial, PlaneGeometry,
@@ -47,7 +48,7 @@ export class Park1 extends LevelMap{
     this.add( cube );
     cube.name = 'sldkfndsf';
     
-    _a.animationPool.add(cube);
+    _b.animationPool.add(cube);
     cube.entities = new Entities(cube);
     
     cube.entities.add(new Spin(cube));
@@ -68,7 +69,7 @@ export class Park1 extends LevelMap{
       this.add( cube );
       cube.name = 'sldkfndsf' + i;
       
-      _a.animationPool.add(cube);
+      _b.animationPool.add(cube);
       cube.entities = new Entities(cube);
       
       cube.entities.add(new Spin(cube));

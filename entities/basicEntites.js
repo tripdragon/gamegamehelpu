@@ -1,4 +1,4 @@
-import { fakeStore as _a } from '../logics/fakeStore';
+import { fakeStore as _b } from '../logics/fakeStore';
 
 export class Entities {
   entities = [];
@@ -47,7 +47,7 @@ export class Spin extends Enty {
 }
 
 export class KeyWalk extends Enty {
-  setup(owner) {
+  setup() {
     // document.addEventListener( 'mousemove', onDocumentMouseMove );
     // document.addEventListener("keydown", (event) => this.stuff.bind(owner, event) );
   }
@@ -71,44 +71,45 @@ export class KeyWalk extends Enty {
   //   }
   // }
   update() {
-    // if(_a.keyboard.keys.w || _a.keyboard.keys.ArrowUp) {
+    // if(_b.keyboard.keys.w || _b.keyboard.keys.ArrowUp) {
     //   debugger
     //   this.translateZ( this.walkSpeed );
     // }
-    // if(_a.keyboard.keys.s || _a.keyboard.keys.ArrowDown) {
+    // if(_b.keyboard.keys.s || _b.keyboard.keys.ArrowDown) {
     //   this.translateZ( -this.walkSpeed );
     // }
-    // if(_a.keyboard.keys.a || _a.keyboard.keys.ArrowLeft) {
+    // if(_b.keyboard.keys.a || _b.keyboard.keys.ArrowLeft) {
     //   this.rotation.y += -this.spinSpeed;
     // }
-    // if(_a.keyboard.keys.d || _a.keyboard.keys.ArrowRight) {
+    // if(_b.keyboard.keys.d || _b.keyboard.keys.ArrowRight) {
     //   this.rotation.y += this.spinSpeed;
     // }
-
+debugger
+// const _b = fakeStore;
     // doubling up the keys gives more POWER!!!
     // cant yet use the this.speed attrs cause this is from .call
-    if(_a.keyboard.keys.w) {
+    if(_b.keyboard.keys.w) {
       this.translateZ( 0.05 );
     }
-    if(_a.keyboard.keys.ArrowUp) {
+    if(_b.keyboard.keys.ArrowUp) {
       this.translateZ( 0.05 );
     }
-    if(_a.keyboard.keys.s) {
+    if(_b.keyboard.keys.s) {
       this.translateZ( -0.05);
     }
-    if(_a.keyboard.keys.ArrowDown) {
+    if(_b.keyboard.keys.ArrowDown) {
       this.translateZ( -0.05);
     }
-    if(_a.keyboard.keys.a) {
+    if(_b.keyboard.keys.a) {
       this.rotation.y += 0.05;
     }
-    if(_a.keyboard.keys.ArrowLeft) {
+    if(_b.keyboard.keys.ArrowLeft) {
       this.rotation.y += 0.05;
     }
-    if(_a.keyboard.keys.d) {
+    if(_b.keyboard.keys.d) {
       this.rotation.y += -0.05;
     }
-    if(_a.keyboard.keys.ArrowRight) {
+    if(_b.keyboard.keys.ArrowRight) {
       this.rotation.y += -0.05;
     }
   }
