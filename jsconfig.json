@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "narf": ["alexandria/tacos/narf"],
+      "alexandria": ["alexandria"]
+    }
+  }
+}

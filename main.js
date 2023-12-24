@@ -3,11 +3,10 @@ import './style-3d-fix.css';
 import { store } from 'alexandria/store';
 import Initializers from 'alexandria/initializers/index';
 
-// import { fish } from './alexandria/tacos/narf.js';
 import { fish } from 'narf';
 
-import {Keyboard} from './alexandria/gamepad/keyboard';
-import {patchObject3D_CM} from './alexandria/initializers/patchObject3D';
+import {Keyboard} from 'alexandria/gamepad/keyboard';
+import {patchObject3D_CM} from 'alexandria/initializers/patchObject3D';
 
 // import * as THREE from 'three';
 import {Vector3, Scene, WebGLRenderer, PerspectiveCamera,
