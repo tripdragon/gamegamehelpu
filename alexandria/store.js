@@ -2,7 +2,7 @@
 const listeners = [];
 const internals = {};
 
-export const store = {
+export const store = window.store = window._a = {
   state: {},
   setState: (newState) => {
     const changedSelectors = [];
