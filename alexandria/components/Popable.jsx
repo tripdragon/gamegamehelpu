@@ -98,7 +98,8 @@ function Popable(props, ref) {
     
     function onCollide(other){
       // console.log("other", other);
-      // datas.thisRef.current.visible = false;
+      datas.thisRef.current.visible = false;
+      
     }
     
     

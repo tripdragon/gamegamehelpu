@@ -78,7 +78,8 @@ export default function PhysicsGrapth1Compo(props) {
               
                 if (boxA.intersectsBox(boxB)) {
                   // debugger
-                  nn.visible = false;
+                  // nn.visible = false;
+                  nn.onCollide(pp);
                 }
               }
               // debugger
@@ -92,7 +93,8 @@ export default function PhysicsGrapth1Compo(props) {
                 boxA.copy(pp.collider).applyMatrix4( pp.matrixWorld );
                 
                 if (boxA.intersectsSphere(sphereA)) {
-                  nn.visible = false;
+                  // nn.visible = false;
+                  nn.onCollide(pp);
                 }
               }
               
