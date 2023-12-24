@@ -19,8 +19,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 // const controls = new OrbitControls( camera, renderer.domElement );
 // const loader = new GLTFLoader();
 
-import {fakeStore as _a} from './logics/fakeStore';
-import {Park1} from './levelMaps/park1';
+import {fakeStore as _a} from 'logics/fakeStore';
+import {Park1} from 'levelMaps/park1';
 
 const init = async () => {
 

@@ -3,7 +3,9 @@
     "baseUrl": ".",
     "paths": {
       "narf": ["alexandria/tacos/narf"],
-      "alexandria": ["alexandria"]
+      "alexandria": ["alexandria"],
+      "logics": ["logics"],
+      "levelMaps": ["levelMaps"]
     }
   }
 }
