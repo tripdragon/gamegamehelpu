@@ -6,6 +6,7 @@ export default async (store) => {
 
   store.setState({ physics: {
     lib: Physics,
+    // fyi val 9 is hard on games in goofyness styles
     world: new Physics.World({ x: 0.0, y: -9.81, z: 0.0 })
   }});
 };
