@@ -1,6 +1,7 @@
 import { babel } from '@rollup/plugin-babel';
 import html from '@rollup/plugin-html';
 import serve from 'rollup-plugin-serve';
+import livereload from 'rollup-plugin-livereload';
 
 export default {
   input: 'main.js', // Entry file
@@ -14,6 +15,9 @@ export default {
     serve({
       open: true,
       contentBase: ['party']
+    }),
+    livereload({
+      watch: 'party'
     })
   ]
 };
