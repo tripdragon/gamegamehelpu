@@ -18,11 +18,12 @@ class Entities{
   }
   add(item){
     this.entities.push(item);
-    item.owner = this.owner;
+    // item.owner = this.owner;
+    // item.update.bind(this.owner);
   }
   run(){
     for (var i = 0; i < this.entities.length; i++) {
-      this.entities[i].update(this.owner);
+      this.entities[i].update.call(this.owner);
     }
   }
 }
@@ -30,7 +31,7 @@ class Entities{
 // have to solve .owner out as just .this
 
 class Enty {
-  owner = null;
+  // owner = null;
   name = '';
   update(){}
   constructor(name = ""){
@@ -40,31 +41,24 @@ class Enty {
 
 class Move extends Enty {
   update(){
-    this.owner.position.x += 0.01;
+    this.position.x += 0.01;
     // console.log(this.name);
   }
 }
 
 class Spin extends Enty {
   update(){
-    this.owner.rotation.y += 0.01;
+    this.rotation.y += 0.01;
   }
 }
 
-// function Meep(name, func){
-//   debugger
-//   const aa = new Enty();
-//   aa.update = function(){
-// 
-//     // func;
-//   }
-//   return aa;
-// }
-// 
-// function tacos(mmm){
-//   console.log("fooowsh");
-//   debugger
-// }
+function Meep(name, func){
+  // debugger
+  const aa = new Enty();
+  aa.update = func;
+  return aa;
+}
+
 
 
 // Meep( "moop", () => { this.owner.position.z += 0.1 } )
@@ -113,7 +107,7 @@ export class Park1 extends LevelMap{
     cube.entities.add(new Move());
     cube.entities.add(new Spin());
     // debugger
-    // cube.entities.add( Meep( "moop", () => { this.owner.position.z += 1 } ) );
+    cube.entities.add( Meep( "moop", function(){ this.position.z += 0.01 } ) );
     
     // debugger
     
