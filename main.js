@@ -6,4 +6,6 @@ import Initializers from './alexandria/initializers/index';
 
 Initializers(store);
 
+console.log('store', store);
+
 // fish();

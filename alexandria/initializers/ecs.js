@@ -1,18 +1,18 @@
-// import {
-//   createWorld,
-//   // Types,
-//   // defineComponent,
-//   // defineQuery,
-//   // addEntity,
-//   // addComponent,
-//   // pipe
-// } from 'bitecs';
+import {
+  createWorld,
+  // Types,
+  // defineComponent,
+  // defineQuery,
+  // addEntity,
+  // addComponent,
+  // pipe
+} from 'bitecs';
 
-// export default (store) => {
+export default (store) => {
 
-//   store.setState({
-//     ecs: {
-//       world: createWorld()
-//     }
-//   });
-// };
+  store.setState({
+    ecs: {
+      world: createWorld()
+    }
+  });
+};
