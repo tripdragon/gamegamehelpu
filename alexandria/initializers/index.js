@@ -10,7 +10,7 @@ export default async function(store) {
     Hello
   ];
 
-  // Pass context or w/e to initializers
+  // Pass store to initializers
   for (const init of initializers) {
     await init(store);
   }
