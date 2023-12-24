@@ -2,7 +2,7 @@ import Hello from './hello';
 import ECS from './ecs';
 import Physics from './physics';
 
-export default function(store) {
+export default async function(store) {
 
   const initializers = [
     ECS,
@@ -11,5 +11,7 @@ export default function(store) {
   ];
 
   // Pass context or w/e to initializers
-  initializers.forEach((init) => init(store));
+  for (const init of initializers) {
+    await init(store);
+  }
 }

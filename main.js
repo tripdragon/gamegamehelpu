@@ -1,11 +1,16 @@
 import { store } from './alexandria/store';
 import Initializers from './alexandria/initializers/index';
 
-import {fish} from './alexandria/tacos/narf.js';
+import { fish } from './alexandria/tacos/narf.js';
 // import {fish} from 'narf';
 
-Initializers(store);
+const init = async () => {
 
-console.log('store', store);
+  await Initializers(store);
 
-fish();
+  console.log('store', store);
+
+  fish();
+};
+
+init();
