@@ -31,7 +31,7 @@ export const store = {
   }
 };
 
-internals.deepMerge = (target, source, changedSelectors, currentSelector = '') => {
+internals.deepMerge = (target, source, changedSelectors, currentSelector = "") => {
   for (const key in source) {
     // eslint-disable-next-line no-prototype-builtins
     if (source.hasOwnProperty(key)) {
@@ -51,7 +51,7 @@ internals.deepMerge = (target, source, changedSelectors, currentSelector = '') =
 
 internals.notifyListeners = (changedSelectors) => {
   listeners.forEach(listener => {
-    const selectorParts = listener.selector.split('.');
+    const selectorParts = listener.selector.split(".");
     const matchingSelectors = changedSelectors.filter(selector =>
       selectorParts.some(part => selector.startsWith(part))
     );

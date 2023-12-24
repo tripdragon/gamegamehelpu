@@ -1,6 +1,6 @@
 
 
-import { Vector3 } from 'three';
+import { Vector3 } from "three";
 
 const _forceV = new Vector3();
 
@@ -72,11 +72,11 @@ export class simplePhysics{
   }
   
   clearAcceleration(){
-      this.acceleration.set(0,0,0);
+    this.acceleration.set(0,0,0);
   }
 
   clearAngularAcceleration(){
-      this.angularAcceleration.set(0,0,0);
+    this.angularAcceleration.set(0,0,0);
   }
   
   
@@ -92,63 +92,63 @@ export class simplePhysics{
   
   
   update() {
-// console.log("force",this.force);
-      // this makes it fricken jitter infinitely
-      // getFriction(_this., _this.selected.velocity, _this.force.coefriction);
+    // console.log("force",this.force);
+    // this makes it fricken jitter infinitely
+    // getFriction(_this., _this.selected.velocity, _this.force.coefriction);
 
-      // if(_this.type === "spring"){
-      //   this.applySpringForce(_this.selected, _this.force, _this.forceWork, _this.force.damping);
-      // }
-      // else if (_this.type === "impulse") {
-      //   // console.log("¿");
-      // }
-      // this.applyForce();
+    // if(_this.type === "spring"){
+    //   this.applySpringForce(_this.selected, _this.force, _this.forceWork, _this.force.damping);
+    // }
+    // else if (_this.type === "impulse") {
+    //   // console.log("¿");
+    // }
+    // this.applyForce();
       
     // this.updateFriction();
-      this.updateForce();
+    this.updateForce();
       
 
-      // todo: this does not belong here
-      // _this.selected.rotateY( _this.selected.velocity.length()* Math.PI * 9);
-      // applyAngularForce(_this.selected, _this.angularForceWork, _this.angularForce.damping);
+    // todo: this does not belong here
+    // _this.selected.rotateY( _this.selected.velocity.length()* Math.PI * 9);
+    // applyAngularForce(_this.selected, _this.angularForceWork, _this.angularForce.damping);
 
 
-      // More animations states would start here
-      // if they were like a cache
+    // More animations states would start here
+    // if they were like a cache
 
-      // matOpacity += fadeInRate;
-      // _this.selected.setOpacity(matOpacity);
+    // matOpacity += fadeInRate;
+    // _this.selected.setOpacity(matOpacity);
 
-      // materials.forEach
-      //   opacity = Math.Clamp(0,1, opacity + rate);
-      //
-      // spartikles system, bast a few
-      // use reverse atractor
-      // spin them a bit
-      // deltaTime >= lim
-      //
-
-
+    // materials.forEach
+    //   opacity = Math.Clamp(0,1, opacity + rate);
+    //
+    // spartikles system, bast a few
+    // use reverse atractor
+    // spin them a bit
+    // deltaTime >= lim
+    //
 
 
-      this.clearAcceleration();
-      this.clearAngularAcceleration();
 
-      // // if ( Math.abs( _this.selected.velocity.length() ) >= 0.00001) {
-      // if ( Math.abs( _this.selected.velocity.length() && _this.selected.angularVelocity.length() ) >= 0.0001) {
-      // // if (true) {
-      //   // console.log(" reloop ");
-      //   _this.loopId = requestAnimationFrame(_this.loopR);
-      // }
-      // else {
-      //   console.log("done??¿¿?¿");
-      // }
-      // 
-      // 
-      // // console.log(_this.selected.position);
-      // // start it
-      // _this.loopR();
-  };
+
+    this.clearAcceleration();
+    this.clearAngularAcceleration();
+
+    // // if ( Math.abs( _this.selected.velocity.length() ) >= 0.00001) {
+    // if ( Math.abs( _this.selected.velocity.length() && _this.selected.angularVelocity.length() ) >= 0.0001) {
+    // // if (true) {
+    //   // console.log(" reloop ");
+    //   _this.loopId = requestAnimationFrame(_this.loopR);
+    // }
+    // else {
+    //   console.log("done??¿¿?¿");
+    // }
+    // 
+    // 
+    // // console.log(_this.selected.position);
+    // // start it
+    // _this.loopR();
+  }
 
 
 }
