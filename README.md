@@ -13,7 +13,7 @@ Overall back to THREE but thus far it does remain in node.js. There is some adde
 
 importmaps a KEY feature of nested js imports is not yet supported properly in vite.js or rollup.js. We had to use babel plugins BUT it works!!
 
-#ECS's
+##ECS's
 The latest hotness
 Ideally you can add a behavior/trait to an object and it just does it or does not
 So if we would like barking pigeons
@@ -24,6 +24,6 @@ pidgeon
 Should be that simple...
 There are plugins, oh joy. But the core concept is simple. Store arrays of functions in a cache and run in the gameloop
 
-#Object3D + Physics
+##Object3D + Physics
 Object3D is a top level class in threejs, so then EVERYTHING in 3D is that. Mesh, Group, Loader gltf models, etc...
 So it seems to be obvious the top level should handle rigidbody physics, like having a bounds and force. But by default Object3D does not have concept of geometry or force. We could make an external object and matrix match them like physics engines. And that is still totes a real plan, but for the most basic things like small pool collisions and selecting and force we might as well just force stuff into Object3D.prototype before anything loads~!!!
