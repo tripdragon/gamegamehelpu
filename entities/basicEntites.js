@@ -26,7 +26,7 @@ export class Entities{
 
 export class Enty {
   // owner = null;
-  name = '';
+  name = "";
   update(){}
   start(){}
   setup(){}
