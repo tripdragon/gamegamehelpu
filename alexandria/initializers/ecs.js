@@ -1,18 +1,11 @@
-import {
-  createWorld,
-  // Types,
-  // defineComponent,
-  // defineQuery,
-  // addEntity,
-  // addComponent,
-  // pipe
-} from 'bitecs';
+import * as BitECS from 'bitecs';
 
 export default (store) => {
 
   store.setState({
     ecs: {
-      world: createWorld()
+      lib: BitECS,
+      world: BitECS.createWorld()
     }
   });
 };
