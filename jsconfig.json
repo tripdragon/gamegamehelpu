@@ -4,8 +4,10 @@
     "paths": {
       "narf": ["alexandria/tacos/narf"],
       "alexandria": ["alexandria"],
+      "entities": ["entities"],
+      "levelMaps": ["levelMaps"],
       "logics": ["logics"],
-      "levelMaps": ["levelMaps"]
+      "utils": ["alexandria/utils"]
     }
   }
 }

@@ -1,4 +1,4 @@
-import { sayHello } from '../utils/sayHello';
+import { sayHello } from 'utils/sayHello';
 import { fish } from 'narf';
 import ECSThingy from 'alexandria/initializers/ecs';
 
