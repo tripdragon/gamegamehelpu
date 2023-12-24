@@ -1,4 +1,4 @@
 export function sayHello() {
 
-  alert('ZZZello from utils!');
+  console.log('ZZZello from utils! 44444');
 }
