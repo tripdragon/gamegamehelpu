@@ -11,7 +11,9 @@ It was ~ok~ it did not really add anything that is not doable in straight THREE.
 
 Overall back to THREE but thus far it does remain in node.js. There is some added complexity to now having a more data centric store class instead of a simple object. It should produce fruit and have some new utilty like snapshots or events.
 
-importmaps a KEY feature of nested js imports is not yet supported properly in vite.js or rollup.js. We had to use babel plugins BUT it works!!
+## importmaps
+a KEY feature of nested js imports is not yet supported properly in vite.js or rollup.js. We had to use babel plugins BUT it works!!
+edit ```.babelrc```
 
 ## ECS's
 The latest hotness
