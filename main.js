@@ -1,27 +1,17 @@
-
 import './style-3d-fix.css';
 
-
-import { store } from './alexandria/store';
-import Initializers from './alexandria/initializers/index';
+import { store } from 'alexandria/store';
+import Initializers from 'alexandria/initializers/index';
 
 // import { fish } from './alexandria/tacos/narf.js';
 import { fish } from 'narf';
 
-
 import {Keyboard} from './alexandria/gamepad/keyboard';
 import {patchObject3D_CM} from './alexandria/initializers/patchObject3D';
-
-
-
-
-
 
 // import * as THREE from 'three';
 import {Vector3, Scene, WebGLRenderer, PerspectiveCamera,
   DirectionalLight, AmbientLight, AxesHelper, PCFSoftShadowMap, Color} from 'three';
-
-
 
 // import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -32,10 +22,6 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 import {fakeStore as _a} from './logics/fakeStore';
 import {Park1} from './levelMaps/park1';
-
-
-
-
 
 const init = async () => {
 

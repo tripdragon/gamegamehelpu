@@ -4,8 +4,8 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
-        "dev": "rollup --config rollup.dev.config.js -w",
-        "build": "rollup --config rollup.prod.config.js"
+        "dev": "ROLLUP_ENV=development rollup -c -w",
+        "build": "ROLLUP_ENV=production rollup -c"
     },
     "devDependencies": {
         "@babel/core": "^7.23.6",
