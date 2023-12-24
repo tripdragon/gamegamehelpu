@@ -9,14 +9,15 @@ export default {
   input: 'main.js', // Entry file
   output: {
     file: 'party/bundle.js', // Output file
-    format: 'esm' // ES Module format
+    format: 'esm', // ES Module format
+    sourcemap: true
   },
   plugins: [
     babel({ babelHelpers: 'bundled' }),
     nodeResolve(),
     html({ title: 'GameGame sdfsdf' }),
     serve({
-      open: true,
+      open: false,
       contentBase: ['party']
     }),
     livereload({
