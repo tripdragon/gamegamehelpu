@@ -1,6 +1,6 @@
 {
   "imports": {
     "alexandria" : "./alexandria",
-    "narf", "./alexandria/tacos/narf.js"
+    "narf" : "./alexandria/tacos/narf.js"
   }
 }
