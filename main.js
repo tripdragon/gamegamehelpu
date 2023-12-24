@@ -5,12 +5,21 @@ import Initializers from "alexandria/initializers/index";
 
 import { fish } from "narf";
 
-import {Keyboard} from "alexandria/gamepad/keyboard";
-import {patchObject3D_CM} from "alexandria/initializers/patchObject3D";
+import { Keyboard } from "alexandria/gamepad/keyboard";
+import { patchObject3D_CM } from "alexandria/initializers/patchObject3D";
 
 // import * as THREE from 'three';
-import {Vector3, Scene, WebGLRenderer, PerspectiveCamera,
-  DirectionalLight, AmbientLight, AxesHelper, PCFSoftShadowMap, Color} from "three";
+import {
+  Vector3,
+  Scene,
+  WebGLRenderer,
+  PerspectiveCamera,
+  DirectionalLight,
+  AmbientLight,
+  AxesHelper,
+  PCFSoftShadowMap,
+  Color
+} from "three";
 
 // import * as THREE from 'three';
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
