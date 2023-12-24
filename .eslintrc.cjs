@@ -23,6 +23,9 @@ module.exports = {
     'ecmaVersion': 'latest',
     'sourceType': 'module'
   },
+  'globals': {
+    'process': true
+  },
   'rules': {
     'indent': [
       'warn',

@@ -5,8 +5,8 @@ import './style-3d-fix.css';
 import { store } from './alexandria/store';
 import Initializers from './alexandria/initializers/index';
 
-import { fish } from './alexandria/tacos/narf.js';
-// import {fish} from 'narf';
+// import { fish } from './alexandria/tacos/narf.js';
+import { fish } from 'narf';
 
 
 import {Keyboard} from './alexandria/gamepad/keyboard';

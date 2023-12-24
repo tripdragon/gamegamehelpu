@@ -1,0 +1,11 @@
+{
+  "plugins": [
+    ["module-resolver", {
+      "root": ["./src"],
+      "alias": {
+        "narf": "./alexandria/tacos/narf",
+        "alexandria": "./alexandria"
+      }
+    }]
+  ]
+}

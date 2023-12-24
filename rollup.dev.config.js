@@ -3,9 +3,9 @@ import html from '@rollup/plugin-html';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload';
-// import { rollupImportMapPlugin } from "rollup-plugin-import-map";
+import 'dotenv/config';
 
-import css from "rollup-plugin-import-css";
+import css from 'rollup-plugin-import-css';
 
 export default {
   input: 'main.js', // Entry file
@@ -19,13 +19,12 @@ export default {
     nodeResolve(),
     html({ title: 'GameGame sdfsdf' }),
     serve({
-      open: false,
+      open: process.env.ROLLUP_SERVE_OPEN_BROWSER === 'true',
       contentBase: ['party']
     }),
     livereload({
       watch: 'party'
     }),
     css()
-    // rollupImportMapPlugin('./import-map.json')
   ]
 };
