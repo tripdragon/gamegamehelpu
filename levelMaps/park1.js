@@ -5,70 +5,15 @@ import {fakeStore as _a} from "../logics/fakeStore";
 
 import { DirectionalLight, AmbientLight,
   BoxGeometry, MeshBasicMaterial, Mesh, MeshStandardMaterial, PlaneGeometry,
-  DoubleSide
+  DoubleSide, AxesHelper
 } from 'three';
 
 
-
-class Entities{
-  entities = [];
-  owner = null;
-  constructor(owner){
-    this.owner = owner;
-  }
-  add(item){
-    this.entities.push(item);
-    // item.owner = this.owner;
-    // item.update.bind(this.owner);
-  }
-  run(){
-    for (var i = 0; i < this.entities.length; i++) {
-      this.entities[i].update.call(this.owner);
-    }
-  }
-}
-
-// have to solve .owner out as just .this
-
-class Enty {
-  // owner = null;
-  name = '';
-  update(){}
-  constructor(name = ""){
-    this.name = name;
-  }
-}
-
-class Move extends Enty {
-  update(){
-    this.position.x += 0.01;
-    // console.log(this.name);
-  }
-}
-
-class Spin extends Enty {
-  update(){
-    this.rotation.y += 0.01;
-  }
-}
-
-function Meep(name, func){
-  // debugger
-  const aa = new Enty();
-  aa.update = func;
-  return aa;
-}
-
-
-
-// Meep( "moop", () => { this.owner.position.z += 0.1 } )
-
+import {Entities, Enty, Move, Spin, KeyWalk, Meep } from "../entities/basicEntites";
 
 export class Park1 extends LevelMap{
-  
-  // parent;
-  
-  constructor(parent){
+
+  constructor(){
     super();
     this.init();
   }
@@ -91,6 +36,9 @@ export class Park1 extends LevelMap{
     const cube = new Mesh( geometry, material );
     cube.castShadow = true;
     cube.position.y = 1;
+    const axesHelper = new AxesHelper( 1 );
+    cube.add( axesHelper );
+    
     this.add( cube );
     cube.name = "sldkfndsf";
     
@@ -104,12 +52,13 @@ export class Park1 extends LevelMap{
     
     
     cube.entities = new Entities(cube);
-    cube.entities.add(new Move());
-    cube.entities.add(new Spin());
-    // debugger
-    cube.entities.add( Meep( "moop", function(){ this.position.z += 0.01 } ) );
+    // cube.entities.add(new Move());
+    cube.entities.add(new Spin(cube));
     
-    // debugger
+    // now just some arbitary builder
+    // cube.entities.add( Meep( "moop", function(){ this.position.z += 0.01 } ) );
+    
+    cube.entities.add(new KeyWalk(cube));
     
     
     
