@@ -1,8 +1,10 @@
 import Hello from './hello';
+// import ECS from './ecs';
 
 export default function(store) {
 
   const initializers = [
+    // ECS,
     Hello
   ];
 
