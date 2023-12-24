@@ -11,10 +11,11 @@ import {
 } from 'three';
 
 import { store } from 'alexandria/store';
+import { renderLoop } from 'logics/renderLoop';
 
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-import {fakeStore as _b} from 'logics/fakeStore';
+// import {fakeStore as _b} from 'logics/fakeStore';
 import {Park1} from 'levelMaps/park1';
 
 export default () => {
@@ -83,28 +84,3 @@ export default () => {
   // Kickoff render loop!
   renderLoop(0, store);
 };
-
-// eslint-disable-next-line no-unused-vars
-function renderLoop(delta) {
-
-  // debugger
-  requestAnimationFrame(renderLoop);
-  // const st = store.getState().game;
-  const st = store.getState().game;
-
-  st.renderer.render( st.scene, st.camera );
-  st.controls.update();
-
-  // debugger
-  // would like this is be a subclass of array
-  // for (var i = 0; i < store.animationPool.cache.length; i++) {
-  //   // store.animationPool.cache[i].update();
-  //   let pick = store.animationPool.cache[i];
-  //   pick.entities.run();
-  // }
-  for (var i = 0; i < _b.animationPool.cache.length; i++) {
-    // store.animationPool.cache[i].update();
-    let pick = _b.animationPool.cache[i];
-    pick.entities.run();
-  }
-}
