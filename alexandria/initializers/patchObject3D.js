@@ -1,11 +1,9 @@
-
-
 // we need a core patch of object3D to have interfaces
 // so this is the simpliest route
 
 import { Object3D, Vector3 } from "three";
 
-export function patchObject3D_CM(){
+export function patchObject3D_CM() {
 
   Object3D.prototype.fish = "neat!!";
   Object3D.prototype.entities = {};
@@ -15,7 +13,4 @@ export function patchObject3D_CM(){
     accelration : new Vector3(),
     force: new Vector3()
   }
-
-
-
 }
