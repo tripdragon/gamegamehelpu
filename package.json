@@ -4,26 +4,19 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "open http://localhost:5173 && vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "lint": "eslint --fix main.jsx ./components/*"
+    "dev": "rollup --config rollup.dev.config.js",
+    "build": "rollup --config rollup.prod.config.js"
   },
   "devDependencies": {
+    "@babel/core": "^7.23.6",
+    "@babel/preset-env": "^7.23.6",
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-html": "^1.0.3",
     "eslint": "^8.54.0",
-    "eslint-plugin-react": "^7.33.2",
-    "vite": "^5.0.0",
-    "vite-tsconfig-paths": "^4.2.1"
+    "rollup": "^4.9.1",
+    "rollup-plugin-serve": "^1.1.1"
   },
   "dependencies": {
-    "@react-three/drei": "^9.88.17",
-    "@react-three/fiber": "^8.15.11",
-    "@types/three": "^0.158.3",
-    "esbuild": "^0.19.8",
-    "react": "^18.2.0",
-    "rollup": "^4.6.0",
-    "styled-components": "^6.1.1",
-    "three": "^0.158.0",
-    "zustand": "^4.4.7"
+    "three": "^0.160.0"
   }
 }
