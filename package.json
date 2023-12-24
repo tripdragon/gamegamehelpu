@@ -4,22 +4,22 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
-        "dev": "rollup --config rollup.dev.config.js -w",
-        "build": "rollup --config rollup.prod.config.js"
+      "dev": "rollup --config rollup.dev.config.js -w",
+      "build": "rollup --config rollup.prod.config.js"
     },
     "devDependencies": {
-        "@babel/core": "^7.23.6",
-        "@babel/preset-env": "^7.23.6",
-        "@rollup/plugin-babel": "^6.0.4",
-        "@rollup/plugin-html": "^1.0.3",
-        "eslint": "^8.54.0",
-        "rollup": "^4.9.1",
-        "rollup-plugin-livereload": "^2.0.5",
-        "rollup-plugin-serve": "^1.1.1"
+      "@babel/core": "^7.23.6",
+      "@babel/preset-env": "^7.23.6",
+      "@rollup/plugin-babel": "^6.0.4",
+      "@rollup/plugin-html": "^1.0.3",
+      "eslint": "^8.54.0",
+      "rollup": "^4.9.1",
+      "rollup-plugin-livereload": "^2.0.5",
+      "rollup-plugin-serve": "^1.1.1"
     },
     "dependencies": {
-        "bitecs": "^0.3.40",
-        "rollup-plugin-import-map": "^3.0.0",
-        "three": "^0.160.0"
+      "bitecs": "^0.3.40",
+      "rollup-plugin-import-map": "^3.0.0",
+      "three": "^0.160.0"
     }
 }
