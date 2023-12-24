@@ -1,4 +1,3 @@
-// src/main.js
-import { sayHello } from './utils/sayHello';
+import Initializers from './initializers/index';
 
-sayHello();
+Initializers();
