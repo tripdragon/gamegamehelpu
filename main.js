@@ -10,6 +10,8 @@ import { fish } from './alexandria/tacos/narf.js';
 
 
 import {Keyboard} from "./alexandria/gamepad/keyboard";
+import {patchObject3D_CM} from "./alexandria/initializers/patchObject3D";
+
 
 
 
@@ -39,6 +41,8 @@ import {Park1} from "./levelMaps/park1";
 const init = async () => {
 
   await Initializers(store);
+  
+  patchObject3D_CM();
 
   console.log('store', store);
   

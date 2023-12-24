@@ -12,6 +12,7 @@ import { DirectionalLight, AmbientLight,
 import {Entities, Enty, Move, Spin, KeyWalk, Meep } from "../entities/basicEntites";
 
 import {Cube} from "../alexandria/primitives/cube";
+import {randomInRange} from "../alexandria/math/mathMore";
 
 export class Park1 extends LevelMap{
 
@@ -56,6 +57,33 @@ export class Park1 extends LevelMap{
     // cube.entities.add( Meep( "moop", function(){ this.position.z += 0.01 } ) );
     
     cube.entities.add(new KeyWalk(cube, 0.01, 0.01));
+    
+    
+    for (var i = 0; i < 22; i++) {
+      
+      
+      const cube = new Cube({size: 0.2,debug: true, color:Math.random()* 0xffffff});
+        
+
+      this.add( cube );
+      cube.name = "sldkfndsf" + i;
+      
+      _a.animationPool.add(cube);
+      cube.entities = new Entities(cube);
+      
+      cube.entities.add(new Spin(cube));
+      
+      cube.position.set(randomInRange(4, -4), 1, randomInRange(4, -4))
+      cube.rotation.y = Math.random() * Math.PI * 2;
+      
+      // cube.entities.add(new Move());
+      // now just some arbitary builder
+      // cube.entities.add( Meep( "moop", function(){ this.position.z += 0.01 } ) );
+      
+      cube.entities.add(new KeyWalk(cube, 0.01, 0.01));
+      
+      
+    }
     
     
     

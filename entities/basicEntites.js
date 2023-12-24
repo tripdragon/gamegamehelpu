@@ -8,6 +8,10 @@ export class Entities{
   constructor(owner){
     this.owner = owner;
   }
+  // this is redundant
+  setOwner(owner){
+    this.owner = owner;
+  }
   add(item){
     this.entities.push(item);
     // item.owner = this.owner;
