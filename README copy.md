@@ -5,4 +5,4 @@ https://tripdragon.github.io/gamegamehelpu/party/
 game help u
 
 react fiber version moved to 
-/react v tossy
+/react_toss
