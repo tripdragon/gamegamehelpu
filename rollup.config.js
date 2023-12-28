@@ -7,6 +7,8 @@ import 'dotenv/config';
 
 import css from 'rollup-plugin-import-css';
 
+import copy from 'rollup-plugin-copy';
+
 const devPlugins = [
   serve({
     open: process.env.ROLLUP_SERVE_OPEN_BROWSER === 'true',
@@ -27,8 +29,16 @@ export default {
   plugins: [
     babel({ babelHelpers: 'bundled' }),
     nodeResolve(),
+    // html({ title: 'GameGame sdfsdf', template:{} }),
     html({ title: 'GameGame sdfsdf' }),
     css(),
-    ...(process.env.ROLLUP_ENV === 'development' ? devPlugins : [])
+    copy({
+      targets: [
+        { src: 'index222.html', dest: 'party' }
+        // { src: ['assets/fonts/arial.woff', 'assets/fonts/arial.woff2'], dest: 'dist/public/fonts' },
+        // { src: 'assets/images/**/*', dest: 'dist/public/images' }
+      ]
+    }),
+    ...(process.env.ROLLUP_ENV === 'development' ? devPlugins : []),
   ]
 };
