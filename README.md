@@ -4,6 +4,17 @@ https://tripdragon.github.io/gamegamehelpu/react_toss/party/
 # gamegamehelpu
 game help u
 
+## Path
++ index.html should hold the css
++ main.js boots app
++ Initializers /alexandria/initializers/index.js holds stuff that loads for async. You have to duplicate one of them to get a template
+
++ access global enough object grapth
+# ```_a.state.game.scene``` 
+also 
+# ```store.getState().game```
+
+
 
 # Abouty
 Threejs React Fiber r3j t3rj whatever its called. It was kicked from the project. You can view it in /react_toss
