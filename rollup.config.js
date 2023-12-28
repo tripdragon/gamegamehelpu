@@ -39,7 +39,11 @@ export default {
       // template :  ({ attributes, bundle, files, publicPath, title })=>{return bbb222()}
       
       template :  ({ attributes, bundle, files, publicPath, title })=>{return fakeindex({ attributes, bundle, files, publicPath, title })}
-      
+      // chat gpt said do this
+      // template: 'indextemplate.html', // Path to your custom HTML template
+      // but we get
+      // TypeError: template is not a function
+
     }),
     
     css(),
