@@ -24,6 +24,28 @@ export class Park1 extends LevelMap{
   
   init(){
     
+  
+    const ambientLight = new AmbientLight();
+    ambientLight.intensity = 1.01;
+    this.add(ambientLight);
+
+    const directionalLight = new DirectionalLight();
+    directionalLight.castShadow = true;
+    // directionalLight.position.set(2.5, 4, 0);
+    directionalLight.position.set(2.5, 4, 12);
+    directionalLight.intensity = 2.7;
+    // directionalLight.color.setHex(0xffff80);
+    directionalLight.color.setHex(0xfffff);
+    this.add(directionalLight);
+
+    //Set up shadow properties for the light
+    directionalLight.shadow.mapSize.width = 512;
+    directionalLight.shadow.mapSize.height = 512;
+    directionalLight.shadow.camera.near = 0.5;
+    directionalLight.shadow.camera.far = 500;
+
+
+    
     {
       const geometry = new PlaneGeometry( 1, 1 );
       const material = new MeshStandardMaterial( {color: 0xfffff} );
