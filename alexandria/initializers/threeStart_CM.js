@@ -16,6 +16,7 @@ import { store } from 'alexandria/store';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 // import {fakeStore as _b} from 'logics/fakeStore';
+import {Levels, Game} from 'logics/fakeStore';
 
 // levels
 import {Park1} from 'levelMaps/park1';
@@ -38,43 +39,50 @@ export default () => {
 
   const controls = new OrbitControls( camera, renderer.domElement );
 
-
-  const ambientLight = new AmbientLight();
-  ambientLight.intensity = 1.01;
-  scene.add(ambientLight);
-
-  const directionalLight = new DirectionalLight();
-  directionalLight.castShadow = true;
-  directionalLight.position.set(2.5, 4, 0);
-  directionalLight.intensity = 2.7;
-  // directionalLight.color.setHex(0xffff80);
-  directionalLight.color.setHex(0xfffff);
-  scene.add(directionalLight);
-
-  //Set up shadow properties for the light
-  directionalLight.shadow.mapSize.width = 512;
-  directionalLight.shadow.mapSize.height = 512;
-  directionalLight.shadow.camera.near = 0.5;
-  directionalLight.shadow.camera.far = 500;
-
-
+  // lights moved into levels
+  //
+  // const ambientLight = new AmbientLight();
+  // ambientLight.intensity = 1.01;
+  // scene.add(ambientLight);
+  // 
+  // const directionalLight = new DirectionalLight();
+  // directionalLight.castShadow = true;
+  // directionalLight.position.set(2.5, 4, 0);
+  // directionalLight.intensity = 2.7;
+  // // directionalLight.color.setHex(0xffff80);
+  // directionalLight.color.setHex(0xfffff);
+  // scene.add(directionalLight);
+  // 
+  // //Set up shadow properties for the light
+  // directionalLight.shadow.mapSize.width = 512;
+  // directionalLight.shadow.mapSize.height = 512;
+  // directionalLight.shadow.camera.near = 0.5;
+  // directionalLight.shadow.camera.far = 500;
+  // 
+  
+  const levelsCache = new Levels();
 
   const parkLevel = new Park1();
   scene.add(parkLevel);
-  // #TODO: add to scene grapth
+  levelsCache.add(parkLevel);
 
   const axesHelper = new AxesHelper( 5 );
   scene.add( axesHelper );
 
   store.setState({
-    game: {
-      renderer: renderer,
-      scene: scene,
-      camera: camera,
-      controls: controls
-    }
+    // this part belongs somewhere else
+    // so its not so stashed away in this file
+    game: new Game({
+        renderer: renderer,
+        scene: scene,
+        camera: camera,
+        controls: controls,
+        currentLevelMap : parkLevel,
+        levels : levelsCache
+      })
   });
-
-  // // Kickoff render loop!
-  // renderLoop(0, store);
+  
+  // renderloop moved to later process
+  
+  
 };

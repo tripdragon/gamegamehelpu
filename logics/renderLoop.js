@@ -24,9 +24,9 @@ export function renderLoop(delta) {
   // }
   
   
-  for (var i = 0; i < _b.animationPool.cache.length; i++) {
+  for (var i = 0; i < _b.animationPool.length; i++) {
     // store.animationPool.cache[i].update();
-    let pick = _b.animationPool.cache[i];
+    let pick = _b.animationPool[i];
     pick.entities.run();
   }
 }
