@@ -1,4 +1,5 @@
 import './basestyles.css';
+
 // import './style-3d-fix.css';
 
 import { store } from 'alexandria/store';
@@ -13,7 +14,7 @@ import { patchObject3D_CM } from 'alexandria/initializers/patchObject3D';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { Plane, Vector3 } from 'three';
 
-import {fakeStore as _b} from 'logics/fakeStore';
+// import {fakeStore as _b} from 'logics/fakeStore';
 import {GetPositionOfRaycasterFromFloor, GetMousePositionToScreen} from 'alexandria/mousetools/mouseScreenTools.js';
 
 const init = async () => {
@@ -41,6 +42,7 @@ async function loadereee3894() {
   var result = await new GLTFLoader().loadAsync("./models/trees_mwoie_1.glb");
   var piece1 = result.scene;
   piece1.scale.setScalar(0.1);
+  piece1.name = "trees_mwoie_1";
   
   // model needs shadows
   piece1.traverse((item) => {
@@ -52,6 +54,8 @@ async function loadereee3894() {
   
 
   store.state.game.scene.add(piece1);
+  store.state.game.importedModels.add(piece1);
+  
   // _b.geoPath1.addPiece(piece1, "corner", "bottomRight");
   
   const floorPlane = new Plane(new Vector3(0,1,0), 0);

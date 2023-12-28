@@ -29,12 +29,19 @@ class PlanningBoard extends CheapPool{
   cachuplevel(){
     return cachuplevel_CM(this);
   }
-  
 }
 
 
 
 export class Levels extends CheapPool{
+  constructor(){
+    super();
+  }
+}
+
+// will need guid?
+// what distinguishes the model with a same name an a reload?
+export class ImportedModels extends CheapPool{
   constructor(){
     super();
   }
@@ -53,6 +60,7 @@ export class Game{
     this.planningBoard = new PlanningBoard(),
     this.currentLevelMap = props.currentLevelMap || null,
     this.levels = props.levels || new Levels()
+    this.importedModels = props.importedModels || new ImportedModels()
   }
 }
 
