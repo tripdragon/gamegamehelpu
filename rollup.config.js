@@ -34,22 +34,26 @@ export default {
     // html({ title: 'GameGame sdfsdf' }),
     // html({ title: 'GameGame sdfsdf', template:{} }),
     
-    html({
-      // template :  ({ attributes, bundle, files, publicPath, title })=>{return"narf333"}
-      // template :  ({ attributes, bundle, files, publicPath, title })=>{return bbb222()}
-      
-      template :  ({ attributes, bundle, files, publicPath, title })=>{return fakeindex({ attributes, bundle, files, publicPath, title })}
-      // chat gpt said do this
-      // template: 'indextemplate.html', // Path to your custom HTML template
-      // but we get
-      // TypeError: template is not a function
-
-    }),
+    // html({
+    //   title: 'GameGame sdfsdf',
+    //   // template :  ({ attributes, bundle, files, publicPath, title })=>{return"narf333"}
+    //   // template :  ({ attributes, bundle, files, publicPath, title })=>{return bbb222()}
+    // 
+    //   // template :  ({ attributes, bundle, files, publicPath, title })=>{return fakeindex({ attributes, bundle, files, publicPath, title })}
+    //   template :  ({ attributes, bundle, files, publicPath, title })=>{return fakeindex({ attributes, bundle, files, publicPath, title })}
+    // 
+    //   // chat gpt said do this
+    //   // template: 'indextemplate.html', // Path to your custom HTML template
+    //   // but we get
+    //   // TypeError: template is not a function
+    // 
+    // }),
     
     css(),
     copy({
       targets: [
-        { src: 'index222.html', dest: 'party' }
+        { src: 'index.html', dest: 'party' },
+        { src: 'basestyles.css', dest: 'party' }
         // { src: ['assets/fonts/arial.woff', 'assets/fonts/arial.woff2'], dest: 'dist/public/fonts' },
         // { src: 'assets/images/**/*', dest: 'dist/public/images' }
       ]
