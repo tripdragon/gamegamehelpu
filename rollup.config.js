@@ -5,10 +5,10 @@ import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload';
 import 'dotenv/config';
 
-import css from 'rollup-plugin-import-css';
+// import css from 'rollup-plugin-import-css';
 
 import copy from 'rollup-plugin-copy';
-import {fakeindex, bbb222} from './fakeindex.js';
+// import {fakeindex, bbb222} from './fakeindex.js';
 
 const devPlugins = [
   serve({
@@ -31,6 +31,8 @@ export default {
   plugins: [
     babel({ babelHelpers: 'bundled' }),
     nodeResolve(),
+    
+    // html plugin sucks so we skip it and just use copy plugin
     // html({ title: 'GameGame sdfsdf' }),
     // html({ title: 'GameGame sdfsdf', template:{} }),
     
@@ -49,7 +51,7 @@ export default {
     // 
     // }),
     
-    css(),
+    // css(),
     copy({
       targets: [
         { src: 'index.html', dest: 'party' },
