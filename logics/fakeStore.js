@@ -45,6 +45,15 @@ export class ImportedModels extends CheapPool{
   constructor(){
     super();
   }
+  // how this will handle same named files that have no name is a mystery....
+  findModel(search) {
+    for (var i = 0; i < this.length; i++) {
+      if (this[i].name === search) {
+        return this[i];
+      }
+    }
+    return null;
+  }
 }
 
 

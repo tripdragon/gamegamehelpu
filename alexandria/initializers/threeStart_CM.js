@@ -7,7 +7,8 @@ import {
   AmbientLight,
   AxesHelper,
   PCFSoftShadowMap,
-  Color
+  Color,
+  SRGBColorSpace
 } from 'three';
 
 import { store } from 'alexandria/store';
@@ -31,13 +32,28 @@ export default () => {
   camera.position.fromArray([0.9625265375798292, 4.0272857200013625, 4.984509277416068]);
   camera.lookAt(new Vector3());
 
-  const renderer = new WebGLRenderer();
+  const renderer = new WebGLRenderer({antialias:true});
   renderer.setSize( window.innerWidth, window.innerHeight );
+  renderer.setPixelRatio( window.devicePixelRatio );
   renderer.shadowMap.enabled = true;
+  // renderer.outputEncoding = sRGBEncoding;
+  // renderer.outputColorSpace = SRGBColorSpace;
+
   renderer.shadowMap.type = PCFSoftShadowMap; // default THREE.PCFShadowMap
+  // renderer.antialias = true; https://stackoverflow.com/a/34786482
+  // renderer.powerPreference = "high-performance";
   document.body.appendChild( renderer.domElement );
 
   const controls = new OrbitControls( camera, renderer.domElement );
+
+  function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize( window.innerWidth, window.innerHeight );
+  }
+  
+  window.addEventListener( 'resize', onWindowResize, false );
+
 
   // lights moved into levels
   //
@@ -67,7 +83,7 @@ export default () => {
   levelsCache.add(parkLevel);
 
   const axesHelper = new AxesHelper( 5 );
-  scene.add( axesHelper );
+  // scene.add( axesHelper );
 
   store.setState({
     // this part belongs somewhere else

@@ -11,7 +11,11 @@ import {Group} from 'three';
 
 export default class LevelMap extends Group{
   isLevel = true;
+  lights;
+  sunLight = null;
   constructor(){
     super();
+    this.lights = new Group();
+    this.add( this.lights );
   }
 }

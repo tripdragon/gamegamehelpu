@@ -13,6 +13,8 @@ import { patchObject3D_CM } from 'alexandria/initializers/patchObject3D';
 
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { Plane, Vector3 } from 'three';
+import { loadModelAsync } from 'alexandria/utils/loadModel';
+import { randomInRange } from 'alexandria/utils/stuff';
 
 // import {fakeStore as _b} from 'logics/fakeStore';
 import {GetPositionOfRaycasterFromFloor, GetMousePositionToScreen} from 'alexandria/mousetools/mouseScreenTools.js';
@@ -38,19 +40,11 @@ init();
 
 
 async function loadereee3894() {
-  
-  var result = await new GLTFLoader().loadAsync("./models/trees_mwoie_1.glb");
-  var piece1 = result.scene;
+
+  var piece1 = await loadModelAsync("./models/trees_mwoie_1.glb");
   piece1.scale.setScalar(0.1);
-  piece1.name = "trees_mwoie_1";
-  
-  // model needs shadows
-  piece1.traverse((item) => {
-    if (item.isMesh) {
-      item.castShadow = true;
-      item.receiveShadow = true;
-    }
-  });
+  piece1.position.x = randomInRange(-4,4);
+  piece1.position.z = randomInRange(-4,4);
   
 
   store.state.game.scene.add(piece1);
@@ -81,9 +75,10 @@ async function loadereee3894() {
   }
 
 
-  // window.cachuplevel = cachuplevel;
-
-
-  
+  var piece2 = await loadModelAsync("./models/bench1.glb");
+  // piece2.scale.setScalar(0.1);
+  store.state.game.scene.add(piece2);
+  store.state.game.importedModels.add(piece2);
+  piece2.scale.setScalar(0.2);
   
 }
