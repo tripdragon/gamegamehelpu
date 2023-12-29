@@ -8,7 +8,8 @@ import { store } from 'alexandria/store';
 
 import { DirectionalLight, AmbientLight,
   BoxGeometry, MeshBasicMaterial, Mesh, MeshStandardMaterial, PlaneGeometry,
-  DoubleSide, AxesHelper, TextureLoader, RepeatWrapping, SRGBColorSpace
+  DoubleSide, AxesHelper, TextureLoader, RepeatWrapping, SRGBColorSpace, CameraHelper,
+  HemisphereLight
 } from 'three';
 
 
@@ -43,14 +44,29 @@ export class Park1 extends LevelMap{
     this.lights.add(sunLight);
 
     //Set up shadow properties for the light
-    sunLight.shadow.mapSize.width = 512;
-    sunLight.shadow.mapSize.height = 512;
+    sunLight.shadow.mapSize.width = 512 * 2;
+    sunLight.shadow.mapSize.height = 512 * 2;
     sunLight.shadow.camera.near = 0.5;
-    sunLight.shadow.camera.far = 500;
+    sunLight.shadow.camera.far = 50;
+    
+    // and need it to be in 3d space instead of vector space
+    sunLight.position.multiplyScalar(5);
+    
+    // need a larger size for shadows
+    var side = 8;
+    sunLight.shadow.camera.top = side;
+    sunLight.shadow.camera.bottom = -side;
+    sunLight.shadow.camera.left = side;
+    sunLight.shadow.camera.right = -side;
+    
+    // var shadowHelper = new CameraHelper( sunLight.shadow.camera );
+    // this.add( shadowHelper );
     
     this.sunLight = sunLight;
     
-    
+    // 
+    // const hemiLight = new HemisphereLight( 0x0000ff, 0x00ff00, 0.6 ); 
+    // this.add(hemiLight);
 
     
     {

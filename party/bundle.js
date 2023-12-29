@@ -3871,11 +3871,30 @@ class Park1 extends LevelMap {
     this.lights.add(sunLight);
 
     //Set up shadow properties for the light
-    sunLight.shadow.mapSize.width = 512;
-    sunLight.shadow.mapSize.height = 512;
+    sunLight.shadow.mapSize.width = 512 * 2;
+    sunLight.shadow.mapSize.height = 512 * 2;
     sunLight.shadow.camera.near = 0.5;
-    sunLight.shadow.camera.far = 500;
+    sunLight.shadow.camera.far = 50;
+
+    // and need it to be in 3d space instead of vector space
+    sunLight.position.multiplyScalar(5);
+
+    // need a larger size for shadows
+    var side = 8;
+    sunLight.shadow.camera.top = side;
+    sunLight.shadow.camera.bottom = -side;
+    sunLight.shadow.camera.left = side;
+    sunLight.shadow.camera.right = -side;
+
+    // var shadowHelper = new CameraHelper( sunLight.shadow.camera );
+    // this.add( shadowHelper );
+
     this.sunLight = sunLight;
+
+    // 
+    // const hemiLight = new HemisphereLight( 0x0000ff, 0x00ff00, 0.6 ); 
+    // this.add(hemiLight);
+
     {
       const geometry = new PlaneGeometry(1, 1);
       const material = new MeshStandardMaterial({
@@ -3958,6 +3977,7 @@ var threeStart_CM = (() => {
   const renderer = new WebGLRenderer({
     antialias: true
   });
+  // renderer.antialias = true; https://stackoverflow.com/a/34786482
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.shadowMap.enabled = true;
@@ -3965,7 +3985,6 @@ var threeStart_CM = (() => {
   // renderer.outputColorSpace = SRGBColorSpace;
 
   renderer.shadowMap.type = PCFSoftShadowMap; // default THREE.PCFShadowMap
-  // renderer.antialias = true; https://stackoverflow.com/a/34786482
   // renderer.powerPreference = "high-performance";
   document.body.appendChild(renderer.domElement);
   const controls = new OrbitControls(camera, renderer.domElement);
@@ -4032,11 +4051,40 @@ async function Initializers (store) {
 
 // eslint-disable-next-line no-unused-vars
 function renderLoop(delta) {
-  requestAnimationFrame(renderLoop);
-
-  // debugger
   // const st = store.getState().game; // this spams with objects
   const st = store.state.game;
+  // OY
+  // if(useComposer && composer === null){
+  //   console.log("><><>");
+  //   composer = new EffectComposer( st.renderer );
+  //   renderPass = new RenderPass( st.scene, st.camera );
+  //   composer.addPass( renderPass );
+  //   saoPass = new SAOPass( st.scene, st.camera );
+  //   saoPass.saoIntensity = 0.001;
+  //   saoPass.saoScale = 0.001;
+  //   composer.addPass( saoPass );
+  //   const outputPass = new OutputPass();
+  //   composer.addPass( outputPass );
+  // }
+
+  requestAnimationFrame(renderLoop);
+
+  // if(stats){
+  //   stats.begin();
+  //   st.renderer.render( st.scene, st.camera );
+  //   stats.end();
+  // }
+  // else {
+  //   if (useComposer && composer) {
+  //     composer.render();
+  //     // console.log("¿");
+  //   }
+  //   else {
+  //     st.renderer.render( st.scene, st.camera );
+  //   }
+  // }
+
+  // filters needs work for setup
   st.renderer.render(st.scene, st.camera);
   st.controls.update();
 
@@ -6986,7 +7034,7 @@ function addPrimitiveAttributes(geometry, primitiveDef, parser) {
 // note your calling function needs to start with async
 // it also auto centers
 
-async function loadModelAsync(path, customName, addShadows = true) {
+async function loadModelAsync(path, customName, addShadows = true, receiveShadow = true) {
   var result = await new GLTFLoader().loadAsync(path);
   var item = result.scene;
   result.scene.children[0].position.setScalar(0);

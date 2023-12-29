@@ -12,7 +12,12 @@ import {
 } from 'three';
 
 import { store } from 'alexandria/store';
-// import { renderLoop } from 'logics/renderLoop';
+
+// import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+
+
+
+
 
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
@@ -33,6 +38,7 @@ export default () => {
   camera.lookAt(new Vector3());
 
   const renderer = new WebGLRenderer({antialias:true});
+  // renderer.antialias = true; https://stackoverflow.com/a/34786482
   renderer.setSize( window.innerWidth, window.innerHeight );
   renderer.setPixelRatio( window.devicePixelRatio );
   renderer.shadowMap.enabled = true;
@@ -40,7 +46,6 @@ export default () => {
   // renderer.outputColorSpace = SRGBColorSpace;
 
   renderer.shadowMap.type = PCFSoftShadowMap; // default THREE.PCFShadowMap
-  // renderer.antialias = true; https://stackoverflow.com/a/34786482
   // renderer.powerPreference = "high-performance";
   document.body.appendChild( renderer.domElement );
 
