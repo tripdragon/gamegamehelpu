@@ -5,7 +5,9 @@ import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload';
 import 'dotenv/config';
 
-// import css from 'rollup-plugin-import-css';
+import css from 'rollup-plugin-import-css';
+
+// import scss from 'rollup-plugin-scss';
 
 import copy from 'rollup-plugin-copy';
 // import {fakeindex, bbb222} from './fakeindex.js';
@@ -51,11 +53,15 @@ export default {
     // 
     // }),
     
-    // css(),
+    // does nothing yet
+    // scss({ fileName: 'bundle.css' }), // will output compiled styles to "bundle.css"
+
+    css(),
     copy({
       targets: [
         { src: 'index.html', dest: 'party' },
-        { src: 'basestyles.css', dest: 'party' }
+        { src: 'basestyles.css', dest: 'party' },
+        { src: './notlilgui/notlilguistyle.css', dest: 'party' }
         // { src: ['assets/fonts/arial.woff', 'assets/fonts/arial.woff2'], dest: 'dist/public/fonts' },
         // { src: 'assets/images/**/*', dest: 'dist/public/images' }
       ]

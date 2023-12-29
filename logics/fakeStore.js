@@ -63,6 +63,7 @@ export class Game{
     this.camera = props.camera || null,
     this.scene = props.scene || null,
     this.renderer = props.renderer || null,
+    this.domElement = props.domElement || null,
     this.controls = props.controls || null,
     this.animationPool = new AnimationPool(),
     this.sceneGrapth = new SceneGrapth(),

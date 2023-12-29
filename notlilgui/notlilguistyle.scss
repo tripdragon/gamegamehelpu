@@ -1,0 +1,24 @@
+
+#notlilgui {
+  position: absolute;
+  ___overflow: hidden;
+  top: 0px;
+  left: 0px;
+  z-index: 2;
+  background: #000000ba;
+  width: 120px;
+  min-height: 600px;
+  padding: 20px 0 0 0;
+  border-right : 1px #3c3c3c solid;
+  /* flex box */
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-content: stretch;
+  align-items: center;
+  
+  .fish{
+    background: green;
+  }
+}

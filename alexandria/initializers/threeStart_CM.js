@@ -95,6 +95,7 @@ export default () => {
     // so its not so stashed away in this file
     game: new Game({
         renderer: renderer,
+        domElement : renderer.domElement,
         scene: scene,
         camera: camera,
         controls: controls,

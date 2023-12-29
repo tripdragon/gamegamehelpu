@@ -3614,7 +3614,7 @@ class ImportedModels extends CheapPool {
 }
 class Game {
   constructor(props) {
-    this.camera = props.camera || null, this.scene = props.scene || null, this.renderer = props.renderer || null, this.controls = props.controls || null, this.animationPool = new AnimationPool(), this.sceneGrapth = new SceneGrapth(), this.planningBoard = new PlanningBoard(), this.currentLevelMap = props.currentLevelMap || null, this.levels = props.levels || new Levels();
+    this.camera = props.camera || null, this.scene = props.scene || null, this.renderer = props.renderer || null, this.domElement = props.domElement || null, this.controls = props.controls || null, this.animationPool = new AnimationPool(), this.sceneGrapth = new SceneGrapth(), this.planningBoard = new PlanningBoard(), this.currentLevelMap = props.currentLevelMap || null, this.levels = props.levels || new Levels();
     this.importedModels = props.importedModels || new ImportedModels();
   }
 }
@@ -3876,6 +3876,7 @@ class Park1 extends LevelMap {
     sunLight.shadow.camera.near = 0.5;
     sunLight.shadow.camera.far = 50;
 
+    // see link for more https://stackoverflow.com/a/56015860
     // and need it to be in 3d space instead of vector space
     sunLight.position.multiplyScalar(5);
 
@@ -4028,6 +4029,7 @@ var threeStart_CM = (() => {
     // so its not so stashed away in this file
     game: new Game({
       renderer: renderer,
+      domElement: renderer.domElement,
       scene: scene,
       camera: camera,
       controls: controls,
@@ -7104,6 +7106,122 @@ function GetPositionOfRaycasterFromFloor({
   raycaster.ray.intersectPlane(floorPlane, vector3in);
 }
 
+// might be based on lilgui
+// might not
+// task is to get selector and transform tools
+// this or somethingelse might deal with thumbnails shelf
+
+// import './notlilguistyle.css';
+// import stylesgg from "./notlilguistyle.css"; /* import the styles as a string */
+
+// import styles from "./notlilguistyle.css" assert { type: "css" }; /* import the styles as a CSSStyleSheet */
+
+class MiniCache extends Array {
+  add(item) {
+    this.push(item);
+  }
+}
+class Notlilgui {
+  panel;
+  cache = new MiniCache();
+  checkboxes = new MiniCache();
+  constructor() {}
+  attach() {
+    // var gg = document.getElementById("gamespace");
+    // gg.innerHTML = "";
+    // document.body.appendChild(controls);
+    // var gamestyles = document.getElementById("gamestyles");
+    var panel = document.createElement('div');
+    this.panel = panel;
+    panel.id = "notlilgui";
+
+    // debugger
+    // panel.style.cssText = stylesgg;
+
+    // ugh inine
+    // panel.style.cssText = `
+    //   position: absolute;
+    //   ___overflow: hidden;
+    //   top: 0px;
+    //   left: 0px;
+    //   z-index: 2;
+    //   background: #000000ba;
+    //   width: 120px;
+    //   min-height: 600px;
+    //   padding: 20px 0 0 0;
+    //   border-right : 1px #3c3c3c solid;
+    //   /* flex box */
+    //   display: flex;
+    //   flex-direction: column;
+    //   flex-wrap: nowrap;
+    //   justify-content: flex-start;
+    //   align-content: stretch;
+    //   align-items: center;
+    // `;
+
+    document.body.appendChild(panel);
+  }
+  checkBoxChanged(item) {
+    for (var i = 0; i < this.checkboxes.length; i++) {
+      if (item !== this.checkboxes[i]) {
+        this.checkboxes[i].checked = false;
+      }
+    }
+  }
+
+  // @ type checkbox etc
+  // function ToolCheckBoxFactory(parent, cache, tool, imageURL){
+  addItem({
+    type = "",
+    imageurl = ""
+  } = {}) {
+    // var item = document.createElement('div');
+    // item.classList.add('item');
+    // this.panel.appendChild(item);
+
+    const box = this.buildCheckbox();
+    this.panel.appendChild(box);
+    this.cache.add(box);
+    this.checkboxes.add(box);
+  }
+  buildCheckbox({
+    imageurl
+  } = {}) {
+    // this.tool = tool;
+
+    // needs more robotting
+    const box = document.createElement('input');
+    box.classList.add("item");
+    box.classList.add("checkbox");
+    box.type = "checkbox";
+    // item.style.backgroundImage = "url(./Cast/Alien2.png)";
+    box.style.backgroundImage = imageurl;
+    box.style.backgroundColor = "#000000";
+    // parent.appendChild(box);
+    // cache.push(box);
+
+    var _this = this;
+    box.onclick = function (ev) {
+      _this.checkBoxChanged(ev.target);
+      console.log(ev.target.checked);
+      if (ev.target.checked) {
+        console.log("checked yes");
+        // EditorMagic.changeTool(_this.tool);
+        // make this an event
+      } else if (!ev.target.checked) {
+        console.log("checked no");
+        // EditorMagic.stopTool(_this.tool);
+        // make this an event
+      }
+    };
+    return box;
+
+    // this.click = function(){
+    //   box.click();
+    // }
+  }
+}
+
 // import './basestyles.css';
 
 const init = async () => {
@@ -7115,6 +7233,7 @@ const init = async () => {
   console.log('store', store);
   fish();
   loadereee3894();
+  attachLeftShelf();
 };
 init();
 async function loadereee3894() {
@@ -7129,7 +7248,7 @@ async function loadereee3894() {
 
   const floorPlane = new Plane(new Vector3(0, 1, 0), 0);
   const targetVecOfPlane = new Vector3();
-  window.addEventListener("pointerdown", onPointerDown324);
+  store.state.game.domElement.addEventListener("pointerdown", onPointerDown324);
   function onPointerDown324(ev) {
     console.log(ev);
     let piece2 = piece1.clone();
@@ -7154,5 +7273,17 @@ async function loadereee3894() {
   store.state.game.scene.add(piece2);
   store.state.game.importedModels.add(piece2);
   piece2.scale.setScalar(0.2);
+}
+function attachLeftShelf() {
+  let gg = new Notlilgui();
+  gg.attach();
+  gg.addItem();
+  // gg.addItem();
+  // gg.addItem();
+  // gg.addItem();
+  // gg.addItem();
+  // for (var i = 0; i < 40; i++) {
+  //   gg.addItem();
+  // }
 }
 //# sourceMappingURL=bundle.js.map

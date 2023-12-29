@@ -49,6 +49,7 @@ export class Park1 extends LevelMap{
     sunLight.shadow.camera.near = 0.5;
     sunLight.shadow.camera.far = 50;
     
+    // see link for more https://stackoverflow.com/a/56015860
     // and need it to be in 3d space instead of vector space
     sunLight.position.multiplyScalar(5);
     

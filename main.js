@@ -19,6 +19,8 @@ import { randomInRange } from 'alexandria/utils/stuff';
 // import {fakeStore as _b} from 'logics/fakeStore';
 import {GetPositionOfRaycasterFromFloor, GetMousePositionToScreen} from 'alexandria/mousetools/mouseScreenTools.js';
 
+import {Notlilgui} from './notlilgui/notlilgui.js';
+
 const init = async () => {
 
   patchObject3D_CM();
@@ -33,6 +35,8 @@ const init = async () => {
   fish();
   
   loadereee3894();
+  
+  attachLeftShelf();
   
 };
 
@@ -56,7 +60,7 @@ async function loadereee3894() {
   
   const targetVecOfPlane = new Vector3();
   
-  window.addEventListener("pointerdown", onPointerDown324);
+  store.state.game.domElement.addEventListener("pointerdown", onPointerDown324);
   
   function onPointerDown324(ev){
     console.log(ev);
@@ -80,5 +84,20 @@ async function loadereee3894() {
   store.state.game.scene.add(piece2);
   store.state.game.importedModels.add(piece2);
   piece2.scale.setScalar(0.2);
+  
+}
+
+
+function attachLeftShelf() {
+  let gg = new Notlilgui();
+  gg.attach();
+  gg.addItem();
+  // gg.addItem();
+  // gg.addItem();
+  // gg.addItem();
+  // gg.addItem();
+  // for (var i = 0; i < 40; i++) {
+  //   gg.addItem();
+  // }
   
 }
