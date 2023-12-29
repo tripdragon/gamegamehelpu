@@ -91,7 +91,8 @@ async function loadereee3894() {
 function attachLeftShelf() {
   let gg = new Notlilgui();
   gg.attach();
-  gg.addItem();
+  gg.addItem({imageurl:"./icons/tree_NFT_NFT_NFT_upon.png"});
+  gg.addItem({imageurl:"./icons/bench_NFT_apples_upon.png"});
   // gg.addItem();
   // gg.addItem();
   // gg.addItem();

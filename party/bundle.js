@@ -7179,7 +7179,9 @@ class Notlilgui {
     // item.classList.add('item');
     // this.panel.appendChild(item);
 
-    const box = this.buildCheckbox();
+    const box = this.buildCheckbox({
+      imageurl
+    });
     this.panel.appendChild(box);
     this.cache.add(box);
     this.checkboxes.add(box);
@@ -7195,8 +7197,9 @@ class Notlilgui {
     box.classList.add("checkbox");
     box.type = "checkbox";
     // item.style.backgroundImage = "url(./Cast/Alien2.png)";
-    box.style.backgroundImage = imageurl;
-    box.style.backgroundColor = "#000000";
+    console.log(imageurl);
+    box.style.backgroundImage = `url(${imageurl})`;
+    // box.style.backgroundColor = "#000000";
     // parent.appendChild(box);
     // cache.push(box);
 
@@ -7277,7 +7280,12 @@ async function loadereee3894() {
 function attachLeftShelf() {
   let gg = new Notlilgui();
   gg.attach();
-  gg.addItem();
+  gg.addItem({
+    imageurl: "./icons/tree_NFT_NFT_NFT_upon.png"
+  });
+  gg.addItem({
+    imageurl: "./icons/bench_NFT_apples_upon.png"
+  });
   // gg.addItem();
   // gg.addItem();
   // gg.addItem();

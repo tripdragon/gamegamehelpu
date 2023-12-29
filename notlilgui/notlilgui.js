@@ -82,7 +82,7 @@ export class Notlilgui{
     // item.classList.add('item');
     // this.panel.appendChild(item);
     
-    const box = this.buildCheckbox();
+    const box = this.buildCheckbox({imageurl});
     this.panel.appendChild(box);
     this.cache.add(box);
     this.checkboxes.add(box);
@@ -98,8 +98,9 @@ export class Notlilgui{
     box.classList.add("checkbox");
     box.type = "checkbox";
     // item.style.backgroundImage = "url(./Cast/Alien2.png)";
-    box.style.backgroundImage = imageurl;
-    box.style.backgroundColor = "#000000";
+    console.log(imageurl);
+    box.style.backgroundImage = `url(${imageurl})`;
+    // box.style.backgroundColor = "#000000";
     // parent.appendChild(box);
     // cache.push(box);
     
