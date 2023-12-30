@@ -5,7 +5,11 @@
 // this or somethingelse might deal with thumbnails shelf
 
 // import './notlilguistyle.css';
-import './notlilguistyle.scss'; /* import the styles as a string */
+// import './notlilguistyle.scss'; /* import the styles as a string */
+// import styles from './notlilguistyle.css'; /* import the styles as a CSSStyleSheet */
+
+// import styles from './notlilguistyle.scss'; /* import the styles as a CSSStyleSheet */
+
 // import styles from './notlilguistyle.css' assert { type: 'css' }; /* import the styles as a CSSStyleSheet */
 
 class MiniCache extends Array{
@@ -24,18 +28,67 @@ export class Notlilgui{
 
   attach(){
     // debugger
+    
     // console.log(styles);
 
-    var file = location.pathname.split( '/' ).pop();
 
-var link = document.createElement( 'link' );
-// link.href = file.substr( 0, file.lastIndexOf( '.' ) ) + '.css';
-link.href = './notlilguistyle.css'
-link.type = 'text/css';
-link.rel = 'stylesheet';
-link.media = 'screen,print';
+    // YUCK.....
+    // its fugllllly but it works vs trying to make node imports work
+    const inlinestyles = `
 
-// document.getElementsByTagName( 'head' )[0].appendChild( link );
+    #notlilgui {
+      position: absolute;
+      overflow: auto;
+      height: auto;
+      top: 0px;
+      left: 0px;
+      z-index: 2;
+      background: #000000ba;
+      width: 120px;
+      /* min-height: 600px; */
+      padding: 20px 0;
+      border-right : 1px #3c3c3c solid;
+      /* flex box */
+      display: flex;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      align-content: stretch;
+      align-items: center;
+    }
+
+    #notlilgui .item{
+
+      background: white;
+      width: 40px;
+      height: 40px;
+      margin-bottom: 12px;
+      /* ___padding: 20px 0 0 0px; */
+      border : 1px white solid;
+      border-radius: 12px;
+      appearance: none;
+      background-position: center center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-color: transparent;
+      overflow: hidden;
+
+      /* order: 0; */
+      /* flex: 0 1 auto; */
+      /* align-self: auto; */
+
+    }
+
+    #notlilgui .item:checked {
+      appearance: checkbox;
+      border-radius: 12px;
+    }
+    `;
+
+    document.head.insertAdjacentHTML("beforeend", `<style>${inlinestyles}</style>`);
+
+
+
 
 
     // var gg = document.getElementById('gamespace');

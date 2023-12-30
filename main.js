@@ -36,6 +36,9 @@ const init = async () => {
 
   attachLeftShelf();
 
+  // document.head.insertAdjacentHTML("beforeend", `<style>body{background:red}</style>`)
+// document.head.insertAdjacentHTML("beforeend", `<style>*{padding:120px;}</style>`)
+
 };
 
 init();
