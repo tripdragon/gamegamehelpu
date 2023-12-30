@@ -4,9 +4,9 @@ import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload';
 import 'dotenv/config';
 
-import css from 'rollup-plugin-import-css';
+// import css from 'rollup-plugin-import-css';
 
-// import scss from 'rollup-plugin-scss';
+import scss from 'rollup-plugin-scss';
 
 import copy from 'rollup-plugin-copy';
 // import {fakeindex, bbb222} from './fakeindex.js';
@@ -34,8 +34,8 @@ export default {
   plugins: [
     babel({ babelHelpers: 'bundled' }),
     nodeResolve(),
-    // scss({ fileName: 'bundle.css' }),
-    css(),
+    scss({ fileName: 'bundle.css' }),
+    // css(),
     copy({
       targets: [
         { src: 'index.html', dest: 'party' },

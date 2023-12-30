@@ -5,10 +5,8 @@
 // this or somethingelse might deal with thumbnails shelf
 
 // import './notlilguistyle.css';
-import styles from "./notlilguistyle.css"; /* import the styles as a string */
-
-// import styles from "./notlilguistyle.css" assert { type: "css" }; /* import the styles as a CSSStyleSheet */
-
+import './notlilguistyle.scss'; /* import the styles as a string */
+// import styles from './notlilguistyle.css' assert { type: 'css' }; /* import the styles as a CSSStyleSheet */
 
 class MiniCache extends Array{
   add(item){
@@ -17,40 +15,40 @@ class MiniCache extends Array{
 }
 
 export class Notlilgui{
-  
+
   panel;
   cache = new MiniCache();
   checkboxes = new MiniCache();
-  
+
   constructor(){}
-  
+
   attach(){
-    debugger
-    console.log(styles);
-    
-    var file = location.pathname.split( "/" ).pop();
+    // debugger
+    // console.log(styles);
 
-var link = document.createElement( "link" );
-// link.href = file.substr( 0, file.lastIndexOf( "." ) ) + ".css";
-link.href = "./notlilguistyle.css"
-link.type = "text/css";
-link.rel = "stylesheet";
-link.media = "screen,print";
+    var file = location.pathname.split( '/' ).pop();
 
-// document.getElementsByTagName( "head" )[0].appendChild( link );
-    
-    
-    // var gg = document.getElementById("gamespace");
-    // gg.innerHTML = "";
+var link = document.createElement( 'link' );
+// link.href = file.substr( 0, file.lastIndexOf( '.' ) ) + '.css';
+link.href = './notlilguistyle.css'
+link.type = 'text/css';
+link.rel = 'stylesheet';
+link.media = 'screen,print';
+
+// document.getElementsByTagName( 'head' )[0].appendChild( link );
+
+
+    // var gg = document.getElementById('gamespace');
+    // gg.innerHTML = '';
     // document.body.appendChild(controls);
-    // var gamestyles = document.getElementById("gamestyles");
+    // var gamestyles = document.getElementById('gamestyles');
     var panel = document.createElement('div');
     this.panel = panel;
-    panel.id = "notlilgui";
-    
+    panel.id = 'notlilgui';
+
     // debugger
     // panel.style.cssText = stylesgg;
-    
+
     // ugh inine
     // panel.style.cssText = `
     //   position: absolute;
@@ -71,12 +69,12 @@ link.media = "screen,print";
     //   align-content: stretch;
     //   align-items: center;
     // `;
-    
+
     document.body.appendChild(panel);
 
   }
-  
-  
+
+
 
   checkBoxChanged(item) {
     for (var i = 0; i < this.checkboxes.length; i++) {
@@ -89,59 +87,59 @@ link.media = "screen,print";
 
   // @ type checkbox etc
   // function ToolCheckBoxFactory(parent, cache, tool, imageURL){
-  addItem({type = "", imageurl = ""} = {}){
+  addItem({type = '', imageurl = ''} = {}){
     // var item = document.createElement('div');
     // item.classList.add('item');
     // this.panel.appendChild(item);
-    
+
     const box = this.buildCheckbox({imageurl});
     this.panel.appendChild(box);
     this.cache.add(box);
     this.checkboxes.add(box);
   }
-  
+
   buildCheckbox({imageurl} = {}){
-    
+
     // this.tool = tool;
-    
+
     // needs more robotting
     const box = document.createElement('input');
-    box.classList.add("item");
-    box.classList.add("checkbox");
-    box.type = "checkbox";
-    // item.style.backgroundImage = "url(./Cast/Alien2.png)";
+    box.classList.add('item');
+    box.classList.add('checkbox');
+    box.type = 'checkbox';
+    // item.style.backgroundImage = 'url(./Cast/Alien2.png)';
     console.log(imageurl);
     box.style.backgroundImage = `url(${imageurl})`;
-    // box.style.backgroundColor = "#000000";
+    // box.style.backgroundColor = '#000000';
     // parent.appendChild(box);
     // cache.push(box);
-    
+
     var _this = this;
-    
+
     box.onclick = function(ev){
       _this.checkBoxChanged(ev.target);
       console.log(ev.target.checked);
       if(ev.target.checked){
-        console.log("checked yes");
+        console.log('checked yes');
         // EditorMagic.changeTool(_this.tool);
         // make this an event
       }
       else if( ! ev.target.checked){
-        console.log("checked no");
+        console.log('checked no');
         // EditorMagic.stopTool(_this.tool);
         // make this an event
       }
     }
-    
+
     return box;
-    
+
     // this.click = function(){
     //   box.click();
     // }
-    
-  }
-  
-  
 
-  
+  }
+
+
+
+
 }

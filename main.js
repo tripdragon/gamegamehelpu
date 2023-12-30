@@ -1,5 +1,4 @@
-import './basestyles.css';
-import './notlilgui/notlilguistyle.scss'
+import './basestyles.scss';
 
 import { store } from 'alexandria/store';
 import Initializers from 'alexandria/initializers/index';
