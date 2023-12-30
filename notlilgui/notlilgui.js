@@ -5,7 +5,7 @@
 // this or somethingelse might deal with thumbnails shelf
 
 // import './notlilguistyle.css';
-// import stylesgg from "./notlilguistyle.css"; /* import the styles as a string */
+import styles from "./notlilguistyle.css"; /* import the styles as a string */
 
 // import styles from "./notlilguistyle.css" assert { type: "css" }; /* import the styles as a CSSStyleSheet */
 
@@ -25,7 +25,19 @@ export class Notlilgui{
   constructor(){}
   
   attach(){
+    debugger
+    console.log(styles);
     
+    var file = location.pathname.split( "/" ).pop();
+
+var link = document.createElement( "link" );
+// link.href = file.substr( 0, file.lastIndexOf( "." ) ) + ".css";
+link.href = "./notlilguistyle.css"
+link.type = "text/css";
+link.rel = "stylesheet";
+link.media = "screen,print";
+
+// document.getElementsByTagName( "head" )[0].appendChild( link );
     
     
     // var gg = document.getElementById("gamespace");
