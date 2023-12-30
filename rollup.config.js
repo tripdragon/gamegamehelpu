@@ -1,13 +1,12 @@
 import { babel } from '@rollup/plugin-babel';
-import html from '@rollup/plugin-html';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload';
 import 'dotenv/config';
 
-import css from 'rollup-plugin-import-css';
+// import css from 'rollup-plugin-import-css';
 
-// import scss from 'rollup-plugin-scss';
+import scss from 'rollup-plugin-scss';
 
 import copy from 'rollup-plugin-copy';
 // import {fakeindex, bbb222} from './fakeindex.js';
@@ -33,30 +32,7 @@ export default {
   plugins: [
     babel({ babelHelpers: 'bundled' }),
     nodeResolve(),
-    
-    // html plugin sucks so we skip it and just use copy plugin
-    // html({ title: 'GameGame sdfsdf' }),
-    // html({ title: 'GameGame sdfsdf', template:{} }),
-    
-    // html({
-    //   title: 'GameGame sdfsdf',
-    //   // template :  ({ attributes, bundle, files, publicPath, title })=>{return"narf333"}
-    //   // template :  ({ attributes, bundle, files, publicPath, title })=>{return bbb222()}
-    // 
-    //   // template :  ({ attributes, bundle, files, publicPath, title })=>{return fakeindex({ attributes, bundle, files, publicPath, title })}
-    //   template :  ({ attributes, bundle, files, publicPath, title })=>{return fakeindex({ attributes, bundle, files, publicPath, title })}
-    // 
-    //   // chat gpt said do this
-    //   // template: 'indextemplate.html', // Path to your custom HTML template
-    //   // but we get
-    //   // TypeError: template is not a function
-    // 
-    // }),
-    
-    // does nothing yet
-    // scss({ fileName: 'bundle.css' }), // will output compiled styles to "bundle.css"
-
-    css(),
+    scss({ fileName: 'bundle.css' }),
     copy({
       targets: [
         { src: 'index.html', dest: 'party' },
