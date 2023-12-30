@@ -4,6 +4,7 @@
 // task is to get selector and transform tools
 // this or somethingelse might deal with thumbnails shelf
 
+// none of these import systems work now with scss also doing something
 // import './notlilguistyle.css';
 // import './notlilguistyle.scss'; /* import the styles as a string */
 // import styles from './notlilguistyle.css'; /* import the styles as a CSSStyleSheet */
@@ -27,10 +28,7 @@ export class Notlilgui{
   constructor(){}
 
   attach(){
-    // debugger
-    
     // console.log(styles);
-
 
     // YUCK.....
     // its fugllllly but it works vs trying to make node imports work
@@ -87,41 +85,9 @@ export class Notlilgui{
 
     document.head.insertAdjacentHTML("beforeend", `<style>${inlinestyles}</style>`);
 
-
-
-
-
-    // var gg = document.getElementById('gamespace');
-    // gg.innerHTML = '';
-    // document.body.appendChild(controls);
-    // var gamestyles = document.getElementById('gamestyles');
     var panel = document.createElement('div');
     this.panel = panel;
     panel.id = 'notlilgui';
-
-    // debugger
-    // panel.style.cssText = stylesgg;
-
-    // ugh inine
-    // panel.style.cssText = `
-    //   position: absolute;
-    //   ___overflow: hidden;
-    //   top: 0px;
-    //   left: 0px;
-    //   z-index: 2;
-    //   background: #000000ba;
-    //   width: 120px;
-    //   min-height: 600px;
-    //   padding: 20px 0 0 0;
-    //   border-right : 1px #3c3c3c solid;
-    //   /* flex box */
-    //   display: flex;
-    //   flex-direction: column;
-    //   flex-wrap: nowrap;
-    //   justify-content: flex-start;
-    //   align-content: stretch;
-    //   align-items: center;
-    // `;
 
     document.body.appendChild(panel);
 
