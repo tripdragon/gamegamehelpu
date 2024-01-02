@@ -63,7 +63,7 @@ async function loadereee3894() {
   piece1.name = 'trees_mwoie_1';
 
 
-  debugger
+  // debugger
 
   store.state.game.scene.add(piece1);
   store.state.game.importedModels.add(piece1);
