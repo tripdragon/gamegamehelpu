@@ -7762,6 +7762,12 @@ class ToolsShelfEditor extends Editor {
 
     // these are so boilerplate they can be factories
 
+    // We could either do
+    // item.onCheckedOn = ()=> nerf.changeTool(selectTool);
+
+    // or put in the addItem as ({tool: tool})
+    // but would still need to have the overwrite option
+
     const selectTool = new SelectTool({
       domElement: st.domElement
     });
@@ -7860,6 +7866,7 @@ async function loadereee3894() {
   // we need some name auto system here
   // temp name for now
   piece1.name = "trees_mwoie_1";
+  debugger;
   store.state.game.scene.add(piece1);
   store.state.game.importedModels.add(piece1);
 

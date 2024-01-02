@@ -56,7 +56,6 @@ export class Tool {
   
   hasStarted = false;
 
-  
   // pointerUp(){}
   // pointerDown(){}
   // pointerMove(){}

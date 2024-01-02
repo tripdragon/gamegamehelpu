@@ -62,10 +62,13 @@ async function loadereee3894() {
   // temp name for now
   piece1.name = "trees_mwoie_1";
   
+  debugger
 
 
   store.state.game.scene.add(piece1);
   store.state.game.importedModels.add(piece1);
+
+
 
   // _b.geoPath1.addPiece(piece1, "corner", "bottomRight");
 
