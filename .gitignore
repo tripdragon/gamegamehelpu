@@ -16,7 +16,7 @@ package-lock.json
 node_modules/
 
 # Dist folder
-party/
+#party/
 
 # Optional npm cache directory
 .npm
