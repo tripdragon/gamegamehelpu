@@ -5,7 +5,6 @@ var stats = null;
 var useStats = false;
 
 import { store } from 'alexandria/store';
-import {fakeStore as _b} from 'logics/fakeStore';
 
 
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
@@ -77,9 +76,9 @@ export function renderLoop(delta) {
   // }
   
   
-  for (var i = 0; i < _b.animationPool.length; i++) {
+  for (var i = 0; i < st.animationPool.length; i++) {
     // store.animationPool.cache[i].update();
-    let pick = _b.animationPool[i];
+    let pick = st.animationPool[i];
     pick.entities.run();
   }
 }

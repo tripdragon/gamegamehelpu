@@ -12,7 +12,8 @@ import {
 } from 'three';
 
 import { store } from 'alexandria/store';
-import {Levels, GameGrapth} from 'logics/fakeStore';
+// import {Levels} from 'alexandria/grapths/levels.js';
+import {GameGrapth} from 'alexandria/grapths/gameGrapth.js';
 
 // import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
@@ -30,7 +31,10 @@ export default () => {
 
   const scene = new Scene();
   scene.background = new Color();
-
+  
+  // early optimisations, see readme #code: scene28475#
+  scene.matrixAutoUpdate = false;
+  
   const camera = new PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
   // camera.position.z = 5;
   camera.position.fromArray([0.9625265375798292, 4.0272857200013625, 4.984509277416068]);
@@ -59,6 +63,25 @@ export default () => {
   window.addEventListener( 'resize', onWindowResize, false );
 
 
+  // #TODO: fix some of these and GameGrapth to be arrays instead
+  // #code: gaaame238 #
+  store.setState({
+    // this part belongs somewhere else
+    // so its not so stashed away in this file
+    game: new GameGrapth({
+        renderer: renderer,
+        domElement : renderer.domElement,
+        scene: scene,
+        camera: camera,
+        controls: controls,
+        // currentLevelMap : parkLevel,
+        // levels : levelsCache
+      })
+  });
+  
+  const st = store.state.game;
+
+
   // lights moved into levels
   //
   // const ambientLight = new AmbientLight();
@@ -80,31 +103,34 @@ export default () => {
   // directionalLight.shadow.camera.far = 500;
   // 
   
-  const levelsCache = new Levels();
+  // const levelsCache = new Levels();
 
   const parkLevel = new Park1();
   scene.add(parkLevel);
-  levelsCache.add(parkLevel);
+  st.levels.add(parkLevel);
+  
+  st.currentLevelMap = parkLevel;
 
   const axesHelper = new AxesHelper( 5 );
   // scene.add( axesHelper );
 
-  // #TODO: fix some of these and GameGrapth to be arrays instead
-  // #code: gaaame238 #
-  store.setState({
-    // this part belongs somewhere else
-    // so its not so stashed away in this file
-    game: new GameGrapth({
-        renderer: renderer,
-        domElement : renderer.domElement,
-        scene: scene,
-        camera: camera,
-        controls: controls,
-        currentLevelMap : parkLevel,
-        levels : levelsCache
-      })
-  });
-  
+
+  // // #TODO: fix some of these and GameGrapth to be arrays instead
+  // // #code: gaaame238 #
+  // store.setState({
+  //   // this part belongs somewhere else
+  //   // so its not so stashed away in this file
+  //   game: new GameGrapth({
+  //       renderer: renderer,
+  //       domElement : renderer.domElement,
+  //       scene: scene,
+  //       camera: camera,
+  //       controls: controls,
+  //       currentLevelMap : parkLevel,
+  //       levels : levelsCache
+  //     })
+  // });
+  // 
   // renderloop moved to later process
   
   

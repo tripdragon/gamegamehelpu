@@ -10,11 +10,11 @@ import { fish } from 'narf';
 import { patchObject3D_CM } from 'alexandria/initializers/patchObject3D';
 
 // import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-// import { Plane, Vector3 } from 'three';
+import { Box3, Vector3, Box3Helper } from 'three';
 import { loadModelAsync } from 'alexandria/utils/loadModel';
 import { randomInRange } from 'alexandria/utils/stuff';
 
-// import {fakeStore as _b} from 'logics/fakeStore';
+
 // import { GetPositionOfRaycasterFromFloor, GetMousePositionToScreen } from 'alexandria/mousetools/mouseScreenTools.js';
 
 // import { Notlilgui } from './notlilgui/notlilgui.js';
@@ -62,15 +62,32 @@ async function loadereee3894() {
   // temp name for now
   piece1.name = 'trees_mwoie_1';
 
-
+console.log(Box3Helper);
   // debugger
+  
+
 
   store.state.game.scene.add(piece1);
   store.state.game.importedModels.add(piece1);
 
+  // 
+  // piece1.updateMatrix()
+  // piece1.updateMatrixWorld()
+  // const box = new Box3();
+  // box.setFromObject(piece1)
+  // 
+  // 
+  // const helper = new Box3Helper( box, 0xffff00 );
+  // const scene = store.state.game.scene.add(piece1);
+  // // scene.add( helper );
+  // piece1.add(helper)
+  // helper.scale.setScalar(1.9);
+  // helper.scale.addScalar(4)
+  // // helper.updateMatrixWorld()
+
+// window.mm = helper
 
 
-  // _b.geoPath1.addPiece(piece1, "corner", "bottomRight");
 
   var piece2 = await loadModelAsync('./models/bench1.glb');
   // piece2.scale.setScalar(0.1);

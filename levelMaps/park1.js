@@ -1,8 +1,7 @@
 
 import LevelMap from './levelMap';
 
-// import {fakeStore as _a} from '../logics/fakeStore';
-import {fakeStore as _b} from '../logics/fakeStore';
+
 import { store } from 'alexandria/store';
 
 
@@ -27,6 +26,8 @@ export class Park1 extends LevelMap{
   
   init(){
     
+    const st = store.state.game;
+    // debugger
   
     const ambientLight = new AmbientLight();
     ambientLight.intensity = 2.01;
@@ -108,7 +109,7 @@ export class Park1 extends LevelMap{
     this.add( cube );
     cube.name = 'sldkfndsf';
     
-    _b.animationPool.add(cube);
+    st.animationPool.add(cube);
     cube.entities = new Entities(cube);
     
     cube.entities.add(new Spin(cube));
@@ -129,7 +130,7 @@ export class Park1 extends LevelMap{
       this.add( cube );
       cube.name = 'sldkfndsf' + i;
       
-      _b.animationPool.add(cube);
+      st.animationPool.add(cube);
       cube.entities = new Entities(cube);
       
       cube.entities.add(new Spin(cube));
