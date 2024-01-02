@@ -23,6 +23,12 @@ when something is super related in source there are codes like so
 // #code: gaaame238 #
 which act as bookmarks in search all
 
+#early optimisations #code: scene28475#
+https://discourse.threejs.org/t/question-about-object3d-updatematrixworld/6925/4
+https://github.com/mrdoob/three.js/pull/14138
+https://github.com/mrdoob/three.js/pull/15706
+scene.matrixAutoUpdate = false;
+
 
 # Abouty
 Threejs React Fiber r3j t3rj whatever its called. It was kicked from the project. You can view it in /react_toss
