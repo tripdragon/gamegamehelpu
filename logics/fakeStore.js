@@ -1,13 +1,17 @@
 
+// // #gaaame238#
+
 import { Vector3 } from 'three';
+import { CheapPool } from 'alexandria/utils/cheapPool.js';
+
 
 // this acts as a scene grapth
-export class CheapPool extends Array{
-  // cache = [];
-  add(item){
-    this.push(item);
-  }
-}
+// export class CheapPool extends Array{
+//   // cache = [];
+//   add(item){
+//     this.push(item);
+//   }
+// }
 
 
 class AnimationPool extends CheapPool{
@@ -46,7 +50,7 @@ export class ImportedModels extends CheapPool{
     super();
   }
   // how this will handle same named files that have no name is a mystery....
-  findModel(search) {
+  findModelByName(search) {
     for (var i = 0; i < this.length; i++) {
       if (this[i].name === search) {
         return this[i];
@@ -58,7 +62,36 @@ export class ImportedModels extends CheapPool{
 
 
 
-export class Game{
+// // import {fakeStore as _b} from 'logics/fakeStore';
+// need to work this out
+export const fakeStore = {
+  camera : null,
+  scene : null,
+  renderer : null,
+  animationPool : new AnimationPool(),
+  sceneGrapth : new SceneGrapth(),
+  planningBoard : new PlanningBoard(),
+  currentLevelMap : null,
+  levels : new Levels()
+}
+
+// export const fakeStore = new Game({
+//   animationPool : new AnimationPool(),
+//   sceneGrapth : new SceneGrapth(),
+//   planningBoard : new PlanningBoard(),
+//   currentLevelMap : null,
+//   levels : new Levels()
+// });
+// skdfms
+
+
+
+
+// #TODO: fix some of these and GameGrapth to be arrays instead
+// #TODO: replace fakeStore fully for this namely animationPool where referenced for fakestore
+// export class Game{
+// #code: gaaame238 #
+export class GameGrapth{
   constructor(props){
     this.camera = props.camera || null,
     this.scene = props.scene || null,
@@ -69,39 +102,10 @@ export class Game{
     this.sceneGrapth = new SceneGrapth(),
     this.planningBoard = new PlanningBoard(),
     this.currentLevelMap = props.currentLevelMap || null,
-    this.levels = props.levels || new Levels()
+    this.levels = props.levels || new Levels(),
     this.importedModels = props.importedModels || new ImportedModels()
   }
 }
-
-
-
-// // import {fakeStore as _b} from 'logics/fakeStore';
-// export const fakeStore = {
-//   camera : null,
-//   scene : null,
-//   renderer : null,
-//   animationPool : new AnimationPool(),
-//   sceneGrapth : new SceneGrapth(),
-//   planningBoard : new PlanningBoard(),
-//   currentLevelMap : null,
-//   levels : new Levels()
-// }
-export const fakeStore = new Game({
-  animationPool : new AnimationPool(),
-  sceneGrapth : new SceneGrapth(),
-  planningBoard : new PlanningBoard(),
-  currentLevelMap : null,
-  levels : new Levels()
-});
-// skdfms
-
-
-
-
-
-
-
 
 
 

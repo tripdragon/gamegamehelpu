@@ -8,7 +8,8 @@
         "entities": "./entities",
         "levelMaps": "./levelMaps",
         "logics": "./logics",
-        "utils": "./alexandria/utils"
+        "utils": "./alexandria/utils",
+        "notlilgui": "./notlilgui"
       }
     }]
   ]

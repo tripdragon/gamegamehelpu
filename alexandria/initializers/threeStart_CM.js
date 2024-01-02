@@ -12,6 +12,7 @@ import {
 } from 'three';
 
 import { store } from 'alexandria/store';
+import {Levels, GameGrapth} from 'logics/fakeStore';
 
 // import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
@@ -21,8 +22,6 @@ import { store } from 'alexandria/store';
 
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-// import {fakeStore as _b} from 'logics/fakeStore';
-import {Levels, Game} from 'logics/fakeStore';
 
 // levels
 import {Park1} from 'levelMaps/park1';
@@ -90,10 +89,12 @@ export default () => {
   const axesHelper = new AxesHelper( 5 );
   // scene.add( axesHelper );
 
+  // #TODO: fix some of these and GameGrapth to be arrays instead
+  // #code: gaaame238 #
   store.setState({
     // this part belongs somewhere else
     // so its not so stashed away in this file
-    game: new Game({
+    game: new GameGrapth({
         renderer: renderer,
         domElement : renderer.domElement,
         scene: scene,

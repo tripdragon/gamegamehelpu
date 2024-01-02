@@ -11,6 +11,7 @@ const raycaster = new Raycaster();
 
 // GetMousePositionToScreen(touchStartPos.x, touchStartPos.y, _o.renderer.domElement,  pointer2D);
 
+// use   GetMousePositionToScreen(ev.clientX, ev.clientY, domElement,  vector2In);
 export function GetMousePositionToScreen(xx,yy, domElement, vector2In){
   rect = domElement.getBoundingClientRect();
   vector2In.x = ( ( xx - rect.left ) / ( rect.right - rect.left ) ) * 2 - 1;

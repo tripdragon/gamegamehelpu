@@ -11,6 +11,10 @@ export async function loadModelAsync(path, customName, addShadows = true, receiv
   var item = result.scene;
   result.scene.children[0].position.setScalar(0);
   // item.scale.setScalar(0.1);
+  
+  // #TODO: must solve some auto name thing here
+  // #Code: nnnanananame38744 #
+  console.warn("#TODO: must solve some auto name thing here");
 
   if (customName) item.name = customName;
 

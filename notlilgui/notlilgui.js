@@ -103,20 +103,23 @@ export class Notlilgui{
     }
   }
 
-
+  
   // @ type checkbox etc
   // function ToolCheckBoxFactory(parent, cache, tool, imageURL){
+  // returns element
   addItem({type = '', imageurl = ''} = {}){
-    // var item = document.createElement('div');
-    // item.classList.add('item');
-    // this.panel.appendChild(item);
 
+    // an if goes here but for now its just building a checkbox
+    
     const box = this.buildCheckbox({imageurl});
     this.panel.appendChild(box);
     this.cache.add(box);
     this.checkboxes.add(box);
+    
+    return box;
   }
 
+  // returns element
   buildCheckbox({imageurl} = {}){
 
     // this.tool = tool;
@@ -130,8 +133,8 @@ export class Notlilgui{
     console.log(imageurl);
     box.style.backgroundImage = `url(${imageurl})`;
     // box.style.backgroundColor = '#000000';
-    // parent.appendChild(box);
-    // cache.push(box);
+
+    
 
     var _this = this;
 
@@ -139,14 +142,18 @@ export class Notlilgui{
       _this.checkBoxChanged(ev.target);
       console.log(ev.target.checked);
       if(ev.target.checked){
-        console.log('checked yes');
+        // console.log('checked yes');
         // EditorMagic.changeTool(_this.tool);
         // make this an event
+        const event = new CustomEvent("checkedOn", { detail: box });
+        this.dispatchEvent(event);
       }
       else if( ! ev.target.checked){
-        console.log('checked no');
+        // console.log('checked no');
         // EditorMagic.stopTool(_this.tool);
         // make this an event
+        const event = new CustomEvent("checkedOff", { detail: box });
+        this.dispatchEvent(event);
       }
     }
 

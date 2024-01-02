@@ -14,6 +14,10 @@ game help u
 also 
 # ```store.getState().game```
 
+# codes
+when something is super related in source there are codes like so
+// #code: gaaame238 #
+which act as bookmarks in search all
 
 
 # Abouty
