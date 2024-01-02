@@ -102,6 +102,7 @@ async function loadereee3894() {
   store.state.game.scene.add(piece2);
   store.state.game.importedModels.add(piece2);
   piece2.scale.setScalar(0.2);
+  piece2.name = "bench1";
 
 }
 // 

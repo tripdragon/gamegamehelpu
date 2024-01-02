@@ -7752,7 +7752,7 @@ class ToolsShelfEditor extends Editor {
     const treeItem = gg.addItem({
       imageurl: "./icons/tree_NFT_NFT_NFT_upon.png"
     });
-    gg.addItem({
+    const benchItem = gg.addItem({
       imageurl: "./icons/bench_NFT_apples_upon.png"
     });
     const nerf = this;
@@ -7809,6 +7809,27 @@ class ToolsShelfEditor extends Editor {
     treeItem.addEventListener("checkedOff", ev => {
       console.log("tree off");
       nerf.stopTool(treeTool);
+    }, false);
+
+    // bench stamp bench1
+    // let piece2 = foundItem1.clone();
+    // debugger
+    const parkBenchTool = new StampTool({
+      store: store,
+      // the object is not yet loaded, so ref by name
+      // targetObject:foundItem1,
+      targetObjectName: "bench1",
+      targetScene: st.currentLevelMap,
+      domElement: st.domElement
+    });
+    this.addTool(parkBenchTool);
+    benchItem.addEventListener("checkedOn", ev => {
+      console.log("parkBench on");
+      nerf.changeTool(parkBenchTool);
+    }, false);
+    benchItem.addEventListener("checkedOff", ev => {
+      console.log("parkBench off");
+      nerf.stopTool(parkBenchTool);
     }, false);
   }
 }
@@ -7876,6 +7897,7 @@ async function loadereee3894() {
   store.state.game.scene.add(piece2);
   store.state.game.importedModels.add(piece2);
   piece2.scale.setScalar(0.2);
+  piece2.name = "bench1";
 }
 // 
 // 

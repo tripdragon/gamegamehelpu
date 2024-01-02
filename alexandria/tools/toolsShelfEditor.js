@@ -97,6 +97,31 @@ export class ToolsShelfEditor extends Editor {
       },false
     );
     
+    
+    // bench stamp bench1
+    // let piece2 = foundItem1.clone();
+    // debugger
+    const parkBenchTool = new StampTool({
+      store:store, 
+      // the object is not yet loaded, so ref by name
+      // targetObject:foundItem1,
+      targetObjectName: "bench1",
+      targetScene:st.currentLevelMap, 
+      domElement:st.domElement});
+    this.addTool(parkBenchTool);
+    
+    benchItem.addEventListener("checkedOn",(ev) => {
+        console.log("parkBench on");
+        nerf.changeTool(parkBenchTool);
+      },false
+    );
+    benchItem.addEventListener("checkedOff",(ev) => {
+        
+        console.log("parkBench off");
+        nerf.stopTool(parkBenchTool);
+      },false
+    );
+    
 
   }
 }
