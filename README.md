@@ -1,6 +1,10 @@
 
 https://tripdragon.github.io/gamegamehelpu/react_toss/party/
 
+use pixel paint tool for icons, pow 2-12
+https://tripdragon.github.io/infinitesimal-game-engine/System1/Demos/paintgrid.html?pow=6
+
+
 # gamegamehelpu
 game help u
 
