@@ -37,6 +37,13 @@ export class ToolsShelfEditor extends Editor {
     
     // these are so boilerplate they can be factories
     
+    // We could either do
+    // item.onCheckedOn = ()=> nerf.changeTool(selectTool);
+    
+    // or put in the addItem as ({tool: tool})
+    // but would still need to have the overwrite option
+    
+    
     const selectTool = new SelectTool({domElement:st.domElement});
     this.addTool(selectTool);
     
