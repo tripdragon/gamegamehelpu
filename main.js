@@ -39,8 +39,8 @@ const init = async () => {
   loadereee3894();
 
   // attachLeftShelf();
-  
-  
+
+
 
   store.setState({
     toolsShelfEditor: new ToolsShelfEditor()
@@ -61,7 +61,7 @@ async function loadereee3894() {
   // we need some name auto system here
   // temp name for now
   piece1.name = "trees_mwoie_1";
-  
+
 
 
   store.state.game.scene.add(piece1);
@@ -70,15 +70,15 @@ async function loadereee3894() {
   // _b.geoPath1.addPiece(piece1, "corner", "bottomRight");
 
                         // const floorPlane = new Plane(new Vector3(0,1,0), 0);
-                        // 
+                        //
                         // const targetVecOfPlane = new Vector3();
-                        // 
+                        //
                         // store.state.game.domElement.addEventListener("pointerdown", onPointerDown324);
-                        // 
+                        //
                         // // findModel
-                        // 
+                        //
                         // const foundItem1 = store.state.game.importedModels.findModelByName("trees_mwoie_1");
-                        // 
+                        //
                         // function onPointerDown324(ev){
                         //   // console.log(ev);
                         //   let piece2 = foundItem1.clone();
@@ -89,11 +89,11 @@ async function loadereee3894() {
                         //   piece2.position.x = Math.random() * 4;
                         //   piece2.position.z = Math.random() * 4;
                         //   _o.planningBoard.add(piece2);
-                        // 
+                        //
                         //   GetPositionOfRaycasterFromFloor({domElement:_o.renderer.domElement, ev:ev, camera: _o.camera, floorPlane:floorPlane, vector3in: targetVecOfPlane});
                         //   // _o.onConsole.log("isdownBbb", "isdownBbb");
                         //   piece2.position.copy(targetVecOfPlane);
-                        // 
+                        //
                         // }
 
 
@@ -104,9 +104,17 @@ async function loadereee3894() {
   piece2.scale.setScalar(0.2);
   piece2.name = "bench1";
 
+
+
+  const piece3 = await loadModelAsync("./models/poly-cat.glb");
+  // piece2.scale.setScalar(0.1);
+  store.state.game.scene.add(piece3);
+  store.state.game.importedModels.add(piece3);
+  piece3.scale.setScalar(0.02);
+  piece3.name = "poly-cat";
 }
-// 
-// 
+//
+//
 // function attachLeftShelf() {
 //   let gg = new Notlilgui();
 //   gg.attach();
@@ -120,5 +128,5 @@ async function loadereee3894() {
 //   // for (var i = 0; i < 40; i++) {
 //   //   gg.addItem();
 //   // }
-// 
+//
 // }
