@@ -16,7 +16,10 @@ package-lock.json
 node_modules/
 
 # Dist folder
-party/
+party/*
+!party/models/
+!party/icons/
+!party/textures/
 
 # Optional npm cache directory
 .npm

@@ -7755,6 +7755,9 @@ class ToolsShelfEditor extends Editor {
     const benchItem = gg.addItem({
       imageurl: "./icons/bench_NFT_apples_upon.png"
     });
+    const polyCatItem = gg.addItem({
+      imageurl: "./icons/bench_NFT_apples_upon.png"
+    });
     const nerf = this;
     const st = store.state.game;
 
@@ -7837,6 +7840,27 @@ class ToolsShelfEditor extends Editor {
       console.log("parkBench off");
       nerf.stopTool(parkBenchTool);
     }, false);
+
+    // bench stamp bench1
+    // let piece2 = foundItem1.clone();
+    // debugger
+    const polyCatTool = new StampTool({
+      store: store,
+      // the object is not yet loaded, so ref by name
+      // targetObject:foundItem1,
+      targetObjectName: "poly-cat",
+      targetScene: st.currentLevelMap,
+      domElement: st.domElement
+    });
+    this.addTool(polyCatTool);
+    polyCatItem.addEventListener("checkedOn", ev => {
+      console.log("polyCat on");
+      nerf.changeTool(polyCatTool);
+    }, false);
+    polyCatItem.addEventListener("checkedOff", ev => {
+      console.log("polyCat off");
+      nerf.stopTool(polyCatTool);
+    }, false);
   }
 }
 
@@ -7873,15 +7897,15 @@ async function loadereee3894() {
   // _b.geoPath1.addPiece(piece1, "corner", "bottomRight");
 
   // const floorPlane = new Plane(new Vector3(0,1,0), 0);
-  // 
+  //
   // const targetVecOfPlane = new Vector3();
-  // 
+  //
   // store.state.game.domElement.addEventListener("pointerdown", onPointerDown324);
-  // 
+  //
   // // findModel
-  // 
+  //
   // const foundItem1 = store.state.game.importedModels.findModelByName("trees_mwoie_1");
-  // 
+  //
   // function onPointerDown324(ev){
   //   // console.log(ev);
   //   let piece2 = foundItem1.clone();
@@ -7892,11 +7916,11 @@ async function loadereee3894() {
   //   piece2.position.x = Math.random() * 4;
   //   piece2.position.z = Math.random() * 4;
   //   _o.planningBoard.add(piece2);
-  // 
+  //
   //   GetPositionOfRaycasterFromFloor({domElement:_o.renderer.domElement, ev:ev, camera: _o.camera, floorPlane:floorPlane, vector3in: targetVecOfPlane});
   //   // _o.onConsole.log("isdownBbb", "isdownBbb");
   //   piece2.position.copy(targetVecOfPlane);
-  // 
+  //
   // }
 
   var piece2 = await loadModelAsync("./models/bench1.glb");
@@ -7905,9 +7929,15 @@ async function loadereee3894() {
   store.state.game.importedModels.add(piece2);
   piece2.scale.setScalar(0.2);
   piece2.name = "bench1";
+  const piece3 = await loadModelAsync("./models/poly-cat.glb");
+  // piece2.scale.setScalar(0.1);
+  store.state.game.scene.add(piece3);
+  store.state.game.importedModels.add(piece3);
+  piece3.scale.setScalar(0.02);
+  piece3.name = "poly-cat";
 }
-// 
-// 
+//
+//
 // function attachLeftShelf() {
 //   let gg = new Notlilgui();
 //   gg.attach();
@@ -7921,6 +7951,6 @@ async function loadereee3894() {
 //   // for (var i = 0; i < 40; i++) {
 //   //   gg.addItem();
 //   // }
-// 
+//
 // }
 //# sourceMappingURL=bundle.js.map

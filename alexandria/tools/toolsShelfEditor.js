@@ -16,8 +16,8 @@ export class ToolsShelfEditor extends Editor {
   }
 
   launch_CM(){
-    
-    
+
+
 
 
     let gg = new Notlilgui();
@@ -28,13 +28,14 @@ export class ToolsShelfEditor extends Editor {
     const selectItem = gg.addItem({imageurl:"./icons/cursor_a_NFT_cash_mices.png"});
     const treeItem = gg.addItem({imageurl:"./icons/tree_NFT_NFT_NFT_upon.png"});
     const benchItem = gg.addItem({imageurl:"./icons/bench_NFT_apples_upon.png"});
-    
-    
+    const polyCatItem = gg.addItem({imageurl:"./icons/bench_NFT_apples_upon.png"});
+
+
     const nerf = this;
     const st = store.state.game;
 
     // here we are assigning logic factories to each item now
-    
+
     // these are so boilerplate they can be factories
     
     // We could either do
@@ -46,7 +47,7 @@ export class ToolsShelfEditor extends Editor {
     
     const selectTool = new SelectTool({domElement:st.domElement});
     this.addTool(selectTool);
-    
+
     selectItem.addEventListener("checkedOn",(ev) => {
         console.log("ev", ev.detail);
         console.log("nerf", nerf);
@@ -59,12 +60,12 @@ export class ToolsShelfEditor extends Editor {
         nerf.stopTool(selectTool);
       },false
     );
-    
-    
-    
+
+
+
     const nothingTool = new NothingTool({domElement:st.domElement});
     this.addTool(nothingTool);
-    
+
     nothingItem.addEventListener("checkedOn",(ev) => {
         // console.log("ev", ev.detail);
         // console.log("nerf", nerf);
@@ -77,20 +78,20 @@ export class ToolsShelfEditor extends Editor {
         nerf.stopTool(nothingTool);
       },false
     );
-    
-    
-    
+
+
+
     // let piece2 = foundItem1.clone();
     // debugger
     const treeTool = new StampTool({
-      store:store, 
+      store:store,
       // the object is not yet loaded, so ref by name
       // targetObject:foundItem1,
       targetObjectName: "trees_mwoie_1",
-      targetScene:st.currentLevelMap, 
+      targetScene:st.currentLevelMap,
       domElement:st.domElement});
     this.addTool(treeTool);
-    
+
     treeItem.addEventListener("checkedOn",(ev) => {
 
         console.log("tree on");
@@ -98,37 +99,61 @@ export class ToolsShelfEditor extends Editor {
       },false
     );
     treeItem.addEventListener("checkedOff",(ev) => {
-        
+
         console.log("tree off");
         nerf.stopTool(treeTool);
       },false
     );
-    
-    
+
+
     // bench stamp bench1
     // let piece2 = foundItem1.clone();
     // debugger
     const parkBenchTool = new StampTool({
-      store:store, 
+      store:store,
       // the object is not yet loaded, so ref by name
       // targetObject:foundItem1,
       targetObjectName: "bench1",
-      targetScene:st.currentLevelMap, 
+      targetScene:st.currentLevelMap,
       domElement:st.domElement});
     this.addTool(parkBenchTool);
-    
+
     benchItem.addEventListener("checkedOn",(ev) => {
         console.log("parkBench on");
         nerf.changeTool(parkBenchTool);
       },false
     );
     benchItem.addEventListener("checkedOff",(ev) => {
-        
+
         console.log("parkBench off");
         nerf.stopTool(parkBenchTool);
       },false
     );
-    
 
+
+
+    // bench stamp bench1
+    // let piece2 = foundItem1.clone();
+    // debugger
+    const polyCatTool = new StampTool({
+      store:store,
+      // the object is not yet loaded, so ref by name
+      // targetObject:foundItem1,
+      targetObjectName: "poly-cat",
+      targetScene:st.currentLevelMap,
+      domElement:st.domElement});
+    this.addTool(polyCatTool);
+
+    polyCatItem.addEventListener("checkedOn",(ev) => {
+        console.log("polyCat on");
+        nerf.changeTool(polyCatTool);
+      },false
+    );
+    polyCatItem.addEventListener("checkedOff",(ev) => {
+
+        console.log("polyCat off");
+        nerf.stopTool(polyCatTool);
+      },false
+    );
   }
 }
