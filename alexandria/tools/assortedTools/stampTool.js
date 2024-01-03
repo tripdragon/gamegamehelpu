@@ -132,24 +132,15 @@ export class StampTool extends Tool {
     _o.planningBoard.add(piece2);
     
     GetPositionOfRaycasterFromFloor({domElement: this.domElement, ev:ev, camera: _o.camera, floorPlane:this.floorPlane, vector3in: this.targetVecOfPlane});
-    // _o.onConsole.log("isdownBbb", "isdownBbb");
     
     piece2.position.copy(this.targetVecOfPlane);
     piece2.updateMatrix();
     
     // _o.controls.enabled = false;
-    
-    
-    
-    const box = new Box3();
-    box.setFromObject(piece2)
 
-    // const helper = new Box3Helper( box, 0xffff00 );
-    const helper = new Box3Helper( box, 0x0000ff );
-    piece2.boxHelperPointer = helper;
-    store.state.game.helpersGroup.add(helper);
-    
-    
+    // piece2.buildBoxHelper(store.state.game.helpersGroup);
+    // piece2.computeLocalAndWorldBounds();
+    piece2.postClone_CM({targetGroup:store.state.game.helpersGroup});
     
   }
   

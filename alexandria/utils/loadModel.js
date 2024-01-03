@@ -47,6 +47,9 @@ export async function loadModelAsync({path, customName, addShadows = true, recei
   // #code: scene28475#
   item.matrixAutoUpdate = false;
   
+  // dont rely on this here as its typical that the model will need to be resized after
+  // item.computeLocalAndWorldBounds();
+  
   return item;
 
 }

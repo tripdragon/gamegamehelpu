@@ -107,7 +107,11 @@ async function loadereee3894() {
   piece1.name = 'trees_mwoie_1';
 
   // need to update box after a transform like scale
-  piece1.boxHelperPointer?.box.setFromObject(piece1);
+  // piece1.boxHelperPointer?.box.setFromObject(piece1);
+  // piece1.refreshBoxHelper();
+  piece1.postClone_CM({targetGroup:store.state.game.helpersGroup});
+  
+  
 
 
   store.state.game.scene.add(piece1);
@@ -139,6 +143,9 @@ async function loadereee3894() {
   piece2.name = 'bench1';
   
   store.state.game.selectableItems.add(piece2);
+  // piece2.refreshBoxHelper();
+  piece2.postClone_CM({targetGroup:store.state.game.helpersGroup});
+  
   
 
 
@@ -151,7 +158,7 @@ async function loadereee3894() {
   piece3.name = 'poly-cat';
   
   store.state.game.selectableItems.add(piece3);
-  
+  piece3.postClone_CM({targetGroup:store.state.game.helpersGroup});
   
   
 }
