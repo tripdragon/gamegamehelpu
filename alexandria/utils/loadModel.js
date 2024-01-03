@@ -1,12 +1,15 @@
 
+import { Box3, Vector3, Box3Helper } from 'three';
+
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-// import { Plane, Vector3 } from 'three';
 
 
-// note your calling function needs to start with async
+import { store } from 'alexandria/store';
+
+// note you are calling a function that needs to start with async
 // it also auto centers
 
-export async function loadModelAsync(path, customName, addShadows = true, receiveShadow = true){
+export async function loadModelAsync({path, customName, addShadows = true, receiveShadow = true, addBoxHelper = false} ){
   var result = await new GLTFLoader().loadAsync(path);
   var item = result.scene;
   result.scene.children[0].position.setScalar(0);
@@ -27,6 +30,22 @@ export async function loadModelAsync(path, customName, addShadows = true, receiv
       }
     });
   }
+  
+  if(addBoxHelper){
+    // item.updateMatrix()
+    // item.updateMatrixWorld();
+    const box = new Box3();
+    box.setFromObject(item)
+
+    // const helper = new Box3Helper( box, 0xffff00 );
+    const helper = new Box3Helper( box, 0x0000ff );
+    item.boxHelperPointer = helper;
+    store.state.game.helpersGroup.add(helper);
+    // window.mm = helper
+  }
+  
+  // #code: scene28475#
+  item.matrixAutoUpdate = false;
   
   return item;
 

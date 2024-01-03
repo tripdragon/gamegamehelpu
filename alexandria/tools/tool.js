@@ -101,9 +101,10 @@ export class Tool {
   }
   
   // @ system is store in this app
-  constructor({domElement, system, name = "tool", displayName = ""} = {}){
+  constructor({store, domElement, system, name = "tool", displayName = ""} = {}){
     this.name = name;
     this.displayName = displayName;
+    this.store = store;
     this.system = system;
     if (!domElement) {
       console.warn("domElement is Suuuuuper required");

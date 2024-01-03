@@ -28,6 +28,9 @@ https://discourse.threejs.org/t/question-about-object3d-updatematrixworld/6925/4
 https://github.com/mrdoob/three.js/pull/14138
 https://github.com/mrdoob/three.js/pull/15706
 scene.matrixAutoUpdate = false;
+but this also means any transform you do you HAVE to run
+piece3.updateMatrix(); right after, which is annoying and forgetfull
+but it saves performance with lots of things!!!!
 
 
 # Abouty

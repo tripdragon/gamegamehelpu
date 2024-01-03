@@ -23,6 +23,34 @@ import { randomInRange } from 'alexandria/utils/stuff';
 import {ToolsShelfEditor} from 'alexandria/tools/toolsShelfEditor';
 
 
+
+
+class AltBox3Helper extends Box3Helper{
+  constructor( box, color = 0xffff00 ) {
+    super(box, color = 0xffff00)
+  }
+
+  updateMatrixWorld( force ) {
+
+		const box = this.box;
+
+		if ( box.isEmpty() ) return;
+
+		box.getCenter( this.position );
+
+		box.getSize( this.scale );
+
+		this.scale.multiplyScalar( 0.5 );
+
+		super.updateMatrixWorld( force );
+
+	}
+  
+}
+
+
+
+
 const init = async () => {
 
   patchObject3D_CM();
@@ -46,6 +74,21 @@ const init = async () => {
     toolsShelfEditor: new ToolsShelfEditor()
   });
 
+  window.Vector3 = Vector3;
+  window.Box3 = Box3;
+  window.Box3Helper = Box3Helper;
+  window.AltBox3Helper = AltBox3Helper;
+  // console.log("vectorA", vectorA);
+  
+  
+  // forcing optimisations
+  // #code: scene28475#
+  store.state.game.scene.traverse((item) => {
+    item.matrixAutoUpdate = false;
+  });
+
+  
+  
 };
 
 init();
@@ -53,23 +96,27 @@ init();
 
 async function loadereee3894() {
 
-  var piece1 = await loadModelAsync('./models/trees_mwoie_1.glb');
+  var piece1 = await loadModelAsync({path:'./models/trees_mwoie_1.glb', addBoxHelper: true});
   piece1.scale.setScalar(0.1);
   piece1.position.x = randomInRange(-4,4);
   piece1.position.z = randomInRange(-4,4);
+  piece1.updateMatrix();
   // #Code: nnnanananame38744 #
   // we need some name auto system here
   // temp name for now
   piece1.name = 'trees_mwoie_1';
 
-console.log(Box3Helper);
-  // debugger
-  
+  // need to update box after a transform like scale
+  piece1.boxHelperPointer?.box.setFromObject(piece1);
 
 
   store.state.game.scene.add(piece1);
   store.state.game.importedModels.add(piece1);
-
+  
+  store.state.game.selectableItems.add(piece1);
+  
+  
+  // 
   // 
   // piece1.updateMatrix()
   // piece1.updateMatrixWorld()
@@ -78,33 +125,37 @@ console.log(Box3Helper);
   // 
   // 
   // const helper = new Box3Helper( box, 0xffff00 );
-  // const scene = store.state.game.scene.add(piece1);
-  // // scene.add( helper );
-  // piece1.add(helper)
-  // helper.scale.setScalar(1.9);
-  // helper.scale.addScalar(4)
-  // // helper.updateMatrixWorld()
-
-// window.mm = helper
+  // piece1.boxHelperPointer = helper;
+  // store.state.game.helpersGroup.add(helper);
+  // 
 
 
-
-  var piece2 = await loadModelAsync('./models/bench1.glb');
+  var piece2 = await loadModelAsync({path:'./models/bench1.glb'});
   // piece2.scale.setScalar(0.1);
   store.state.game.scene.add(piece2);
   store.state.game.importedModels.add(piece2);
   piece2.scale.setScalar(0.2);
+  piece2.updateMatrix();
   piece2.name = 'bench1';
+  
+  store.state.game.selectableItems.add(piece2);
+  
 
 
-
-  const piece3 = await loadModelAsync('./models/poly-cat.glb');
+  const piece3 = await loadModelAsync({path:'./models/poly-cat.glb'});
   // piece2.scale.setScalar(0.1);
   store.state.game.scene.add(piece3);
   store.state.game.importedModels.add(piece3);
   piece3.scale.setScalar(0.02);
+  piece3.updateMatrix();
   piece3.name = 'poly-cat';
+  
+  store.state.game.selectableItems.add(piece3);
+  
+  
+  
 }
+
 //
 //
 // function attachLeftShelf() {

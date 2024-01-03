@@ -80,5 +80,8 @@ export function renderLoop(delta) {
     // store.animationPool.cache[i].update();
     let pick = st.animationPool[i];
     pick.entities.run();
+    // we are forcing everything off in main, so make sure to update here
+    // #code: scene28475#
+    pick.updateMatrix();
   }
 }

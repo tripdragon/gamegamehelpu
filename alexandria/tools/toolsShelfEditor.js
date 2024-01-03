@@ -45,7 +45,7 @@ export class ToolsShelfEditor extends Editor {
     // but would still need to have the overwrite option
     
     
-    const selectTool = new SelectTool({domElement:st.domElement});
+    const selectTool = new SelectTool({store:store,domElement:st.domElement});
     this.addTool(selectTool);
 
     selectItem.addEventListener("checkedOn",(ev) => {

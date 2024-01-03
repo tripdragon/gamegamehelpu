@@ -30,9 +30,13 @@ pointInBoundingBoxScreenSpace(point, plat)
 */
 
 
+import { Raycaster } from 'three';
+
 import { Tool } from "../tool.js";
 
 export class SelectTool extends Tool {
+  
+  raycaster = new Raycaster();
   
   selectedObject = null;
   
@@ -73,8 +77,8 @@ export class SelectTool extends Tool {
 
 
 
-  constructor({domElement, system, name = "SelectTool", displayName = "Select Tool"} = {}){
-    super({domElement, system, name, displayName});
+  constructor({store,domElement, system, name = "SelectTool", displayName = "Select Tool"} = {}){
+    super({store, domElement, system, name, displayName});
   }
   
   
@@ -111,6 +115,21 @@ export class SelectTool extends Tool {
     //   // this.selectedObject.moveyThingTool.pointerDown(this.data);
     // }
     console.log("select down");
+    
+    let _o = this.store.state.game;
+    // sdklvfmdfgmdfgh
+    // 
+    // need to have saved box onto model
+    // see nifftyshoes and the react game
+    // otherwise you can do a live box3 and then intersect box3 instead
+    // somewhere theres exaustion
+    
+    var intersects = this.raycaster.intersectObjects( _o.selectableItems, true );
+    for (var i = 0; i < intersects.length; i++) {
+      intersects[i].position.y += 0.1;
+    }
+    
+    
   }
   pointerUp(){
     this.isMouseDown = false;

@@ -8,7 +8,8 @@ import {
   AxesHelper,
   PCFSoftShadowMap,
   Color,
-  SRGBColorSpace
+  SRGBColorSpace,
+  Group
 } from 'three';
 
 import { store } from 'alexandria/store';
@@ -28,12 +29,16 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import {Park1} from 'levelMaps/park1';
 
 export default () => {
-
+  
+  
   const scene = new Scene();
   scene.background = new Color();
-  
   // early optimisations, see readme #code: scene28475#
   scene.matrixAutoUpdate = false;
+  
+  const helpersGroup = new Group();
+  scene.add(helpersGroup);
+  helpersGroup.matrixAutoUpdate = false;
   
   const camera = new PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
   // camera.position.z = 5;
@@ -61,7 +66,9 @@ export default () => {
   }
   
   window.addEventListener( 'resize', onWindowResize, false );
-
+  
+  //
+  // setup state and other
 
   // #TODO: fix some of these and GameGrapth to be arrays instead
   // #code: gaaame238 #
@@ -74,36 +81,14 @@ export default () => {
         scene: scene,
         camera: camera,
         controls: controls,
-        // currentLevelMap : parkLevel,
-        // levels : levelsCache
+        helpersGroup: helpersGroup
       })
   });
   
+  
   const st = store.state.game;
 
-
   // lights moved into levels
-  //
-  // const ambientLight = new AmbientLight();
-  // ambientLight.intensity = 1.01;
-  // scene.add(ambientLight);
-  // 
-  // const directionalLight = new DirectionalLight();
-  // directionalLight.castShadow = true;
-  // directionalLight.position.set(2.5, 4, 0);
-  // directionalLight.intensity = 2.7;
-  // // directionalLight.color.setHex(0xffff80);
-  // directionalLight.color.setHex(0xfffff);
-  // scene.add(directionalLight);
-  // 
-  // //Set up shadow properties for the light
-  // directionalLight.shadow.mapSize.width = 512;
-  // directionalLight.shadow.mapSize.height = 512;
-  // directionalLight.shadow.camera.near = 0.5;
-  // directionalLight.shadow.camera.far = 500;
-  // 
-  
-  // const levelsCache = new Levels();
 
   const parkLevel = new Park1();
   scene.add(parkLevel);
@@ -115,22 +100,7 @@ export default () => {
   // scene.add( axesHelper );
 
 
-  // // #TODO: fix some of these and GameGrapth to be arrays instead
-  // // #code: gaaame238 #
-  // store.setState({
-  //   // this part belongs somewhere else
-  //   // so its not so stashed away in this file
-  //   game: new GameGrapth({
-  //       renderer: renderer,
-  //       domElement : renderer.domElement,
-  //       scene: scene,
-  //       camera: camera,
-  //       controls: controls,
-  //       currentLevelMap : parkLevel,
-  //       levels : levelsCache
-  //     })
-  // });
-  // 
+
   // renderloop moved to later process
   
   

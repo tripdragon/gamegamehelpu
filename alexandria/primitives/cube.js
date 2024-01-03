@@ -24,6 +24,11 @@ export class Cube extends Mesh{
     
     this.name = 'cubey';
     
+    // pick.matrixWorldAutoUpdate
+    // debugger
+    this.matrixAutoUpdate = false;
+
+    
   }
   
 }

@@ -8,6 +8,13 @@ import { PlanningBoard } from './planningBoard.js';
 import { Levels } from './levels.js';
 
 
+export class SelectableItems extends CheapPool{
+  constructor(){
+    super();
+  }
+}
+
+
 // #TODO: fix some of these and GameGrapth to be arrays instead
 // #code: gaaame238 #
 export class GameGrapth{
@@ -22,7 +29,9 @@ export class GameGrapth{
     this.planningBoard = new PlanningBoard(),
     this.currentLevelMap = props.currentLevelMap || null,
     this.levels = props.levels || new Levels(),
-    this.importedModels = props.importedModels || new ImportedModels()
+    this.importedModels = props.importedModels || new ImportedModels(),
+    this.helpersGroup = props.helpersGroup,
+    this.selectableItems = new SelectableItems()
   }
 }
 

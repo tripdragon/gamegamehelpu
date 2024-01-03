@@ -2,6 +2,8 @@
 import { Tool } from "../tool.js";
 import { Vector3, Plane, Vector2 } from "three";
 
+import { Box3, Box3Helper } from 'three';
+
 import { GetPositionOfRaycasterFromFloor, GetMousePositionToScreen } from 'alexandria/mousetools/mouseScreenTools.js';
 
 
@@ -118,9 +120,11 @@ export class StampTool extends Tool {
   placeObject(ev){
     let _o = this.store.state.game;
     
+    this.targetObject.updateMatrix();
     let piece2 = this.targetObject.clone();
     
     this.targetScene.add(piece2);
+    store.state.game.selectableItems.add(piece2);
     
     piece2.position.x = Math.random() * 4;
     piece2.position.z = Math.random() * 4;
@@ -131,8 +135,21 @@ export class StampTool extends Tool {
     // _o.onConsole.log("isdownBbb", "isdownBbb");
     
     piece2.position.copy(this.targetVecOfPlane);
+    piece2.updateMatrix();
     
     // _o.controls.enabled = false;
+    
+    
+    
+    const box = new Box3();
+    box.setFromObject(piece2)
+
+    // const helper = new Box3Helper( box, 0xffff00 );
+    const helper = new Box3Helper( box, 0x0000ff );
+    piece2.boxHelperPointer = helper;
+    store.state.game.helpersGroup.add(helper);
+    
+    
     
   }
   
