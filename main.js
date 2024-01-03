@@ -96,7 +96,7 @@ init();
 
 async function loadereee3894() {
 
-  var piece1 = await loadModelAsync({path:'./models/trees_mwoie_1.glb', addBoxHelper: true});
+  var piece1 = await loadModelAsync({path:'./models/trees_mwoie_1.glb'});
   piece1.scale.setScalar(0.1);
   piece1.position.x = randomInRange(-4,4);
   piece1.position.z = randomInRange(-4,4);
@@ -105,35 +105,19 @@ async function loadereee3894() {
   // we need some name auto system here
   // temp name for now
   piece1.name = 'trees_mwoie_1';
+  store.state.game.scene.add(piece1);
+  store.state.game.importedModels.add(piece1);
+  store.state.game.selectableItems.add(piece1);
 
+// debugger
   // need to update box after a transform like scale
   // piece1.boxHelperPointer?.box.setFromObject(piece1);
   // piece1.refreshBoxHelper();
-  piece1.postClone_CM({targetGroup:store.state.game.helpersGroup});
+  piece1.moreBuild_CM({targetGroup:store.state.game.helpersGroup});
   
   
 
-
-  store.state.game.scene.add(piece1);
-  store.state.game.importedModels.add(piece1);
   
-  store.state.game.selectableItems.add(piece1);
-  
-  
-  // 
-  // 
-  // piece1.updateMatrix()
-  // piece1.updateMatrixWorld()
-  // const box = new Box3();
-  // box.setFromObject(piece1)
-  // 
-  // 
-  // const helper = new Box3Helper( box, 0xffff00 );
-  // piece1.boxHelperPointer = helper;
-  // store.state.game.helpersGroup.add(helper);
-  // 
-
-
   var piece2 = await loadModelAsync({path:'./models/bench1.glb'});
   // piece2.scale.setScalar(0.1);
   store.state.game.scene.add(piece2);
@@ -144,11 +128,11 @@ async function loadereee3894() {
   
   store.state.game.selectableItems.add(piece2);
   // piece2.refreshBoxHelper();
-  piece2.postClone_CM({targetGroup:store.state.game.helpersGroup});
+  piece2.moreBuild_CM({targetGroup:store.state.game.helpersGroup});
   
   
-
-
+  
+  
   const piece3 = await loadModelAsync({path:'./models/poly-cat.glb'});
   // piece2.scale.setScalar(0.1);
   store.state.game.scene.add(piece3);
@@ -158,7 +142,7 @@ async function loadereee3894() {
   piece3.name = 'poly-cat';
   
   store.state.game.selectableItems.add(piece3);
-  piece3.postClone_CM({targetGroup:store.state.game.helpersGroup});
+  piece3.moreBuild_CM({targetGroup:store.state.game.helpersGroup});
   
   
 }

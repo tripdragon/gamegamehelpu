@@ -96,6 +96,9 @@ export class Park1 extends LevelMap{
 
     }
 
+
+return
+
     const cube = new Cube({size: 0.2,debug: true, color:0xffffff});
     cube.position.y = 1;
     

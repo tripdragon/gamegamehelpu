@@ -29,53 +29,28 @@ pointInBoundingBoxScreenSpace(point, plat)
 
 */
 
+import { GetPositionOfRaycasterFromFloor, GetMousePositionToScreen } from 'alexandria/mousetools/mouseScreenTools.js';
 
-import { Raycaster } from 'three';
+import { Raycaster, Vector2 } from 'three';
 
 import { Tool } from "../tool.js";
+
+import { quickDrawLine } from "alexandria/utils/quickDrawLine.js";
+import { quickDrawBall } from "alexandria/utils/quickDrawBall.js";
+// window.quickDrawLine = quickDrawLine;
+
+import { TransformControls } from 'three/addons/controls/TransformControls.js';
+
 
 export class SelectTool extends Tool {
   
   raycaster = new Raycaster();
-  
-  selectedObject = null;
-  
-  isMouseDown = false;
-  // mPointerPos = new Vector3();
-  // mSelectedPos = new Vector3();
-  // 
-  // previousGoodPosition = new Vector3();
-  // workPos = new Vector3();
-  
-  
-  usePreventCollide = false;
-  // usePreventCollide = true;
-  
-  tapTimer = 0;
-  tapLimit = 0.2;
-  
-  
-  useGrid = false;
-  grid = null;
-
-  // posWorkVectorToMegas = new Vector3();
-  
-  data = {
-    
-  }
-
-  // need a grid
-  // so its .snap()
-  // 
-  // var grid = new Grid(40,20,40, this.system);
-  // // grid.snap(_this.system.pointer.client.x, _this.system.pointer.client.y).screenTo3D();
-  // // 
-  // // box2.x = grid.position3D.x;
-  // // box2.y = grid.position3D.y;
-  // 
-  // 
 
 
+  mPointerDown = new Vector2();
+  pointer = new Vector2();
+  
+  widgetControl = null;
 
   constructor({store,domElement, system, name = "SelectTool", displayName = "Select Tool"} = {}){
     super({store, domElement, system, name, displayName});
@@ -90,6 +65,9 @@ export class SelectTool extends Tool {
   
   mode = this.modes.mousing;
   
+  intersects = [];
+  
+  skipRaycast = false;
   
   start(){
     // this.start();
@@ -102,6 +80,34 @@ export class SelectTool extends Tool {
     // //   this.update();
     // // };
 
+    const _o = this.store.state.game;
+    this.widgetControl = new TransformControls( _o.camera, _o.domElement );
+    _o.scene.add( this.widgetControl );
+    
+
+    // this.widgetControl.addEventListener( 'pointerdown', function ( event ) {
+    this.widgetControl.addEventListener( 'mouseDown', function ( event ) {
+      // _o.controls.enabled = ! event.value;
+      // debugger
+      // debugger
+      _o.controls.enabled = false;
+      this.skipRaycast = true;
+		});
+    this.widgetControl.addEventListener( 'mouseUp', function ( event ) {
+      // _o.controls.enabled = ! event.value;
+      _o.controls.enabled = true;
+      this.skipRaycast = false;
+		});
+    
+    // this.widgetControl.addEventListener( 'dragging-changed', function ( event ) {
+    this.widgetControl.addEventListener( 'change', function ( event ) {
+      // _o.controls.enabled = ! event.value;
+      // this.widgetControl.object.updateMatrix();
+      // console.log("object", _o.controls.object);
+      console.log("¿¿¿¿¿");
+      this.object.updateMatrix();
+    });
+
   }
   
   update(){
@@ -109,7 +115,12 @@ export class SelectTool extends Tool {
     this.pointerMoving();
   }
   
-  pointerDown(){
+  tempArray = [];
+  
+  pointerDown(ev){
+    
+    
+    
     this.isMouseDown = true;
     // if(this.selectedObject !== null && this.selectedObject.moveyThingTool){
     //   // this.selectedObject.moveyThingTool.pointerDown(this.data);
@@ -118,20 +129,125 @@ export class SelectTool extends Tool {
     
     let _o = this.store.state.game;
     // sdklvfmdfgmdfgh
-    // 
+    
     // need to have saved box onto model
     // see nifftyshoes and the react game
     // otherwise you can do a live box3 and then intersect box3 instead
     // somewhere theres exaustion
     
-    var intersects = this.raycaster.intersectObjects( _o.selectableItems, true );
-    for (var i = 0; i < intersects.length; i++) {
-      intersects[i].position.y += 0.1;
+    GetMousePositionToScreen(ev.clientX, ev.clientY, _o.domElement,  this.mPointerDown);
+    // this.mPointerDown.set(ev.clientX, ev.clientY);
+    
+    // this.pointer.set(ev.clientX, ev.clientY);
+    this.raycaster.setFromCamera( this.mPointerDown, _o.camera );
+
+// quickDrawLine( this.raycaster.ray.origin, this.raycaster.ray.direction.clone().multiplyScalar(18).add(this.raycaster.ray.origin) )
+// quickDrawBall( this.raycaster.ray.direction.clone().multiplyScalar(8).add(this.raycaster.ray.origin), 0.1 )
+    
+    // const items = _a.state.game.selectableItems;
+    // this.intersects.length = 0;
+    // 
+    // for (var i = 0; i < items.length; i++) {  
+    //   this.raycaster.ray.intersectBox(items[i].worldBounds);
+    // }
+    // 
+    
+    // var intersects = this.raycaster.intersectObjects( _o.selectableItems, false );
+    // // for (var i = 0; i < intersects.length; i++) {
+    // //   // debugger
+    // //   intersects[i].object.position.y += 0.1;
+    // //   intersects[i].object.updateMatrix();
+    // // }
+    // if (intersects.length > 0) {
+    //   // debugger
+    //     intersects[0].object.position.y += 0.1;
+    //     intersects[0].object.updateMatrix();  
+    // }
+    // 
+    
+    const bb = new Box3();
+    const bb2 = new Box3();
+    
+    // showing boxes
+    // for (var i = 0; i < _o.selectableItems.length; i++) {
+    //   _o.selectableItems[i].updateMatrix();
+    //   _o.selectableItems[i].updateMatrixWorld();
+    //   // _o.selectableItems[i].computeBoundingBox();
+    // 
+    //   bb2.setFromObject(_o.selectableItems[i], true)//.applyMatrix4(_o.selectableItems[i].matrixWorld)
+    // 
+    //   // console.log(bb2);
+    // 
+    //   // var helper = new Box3Helper( _o.selectableItems[i].boundingBox, 0x00ffff );
+    //   // _a.state.game.scene.add(helper)
+    // 
+    //   var helper = new Box3Helper( bb2.clone(), 0x0000ff );
+    //   _a.state.game.scene.add(helper)
+    // 
+    // }
+    // 
+    // 
+    // return
+    // debugger
+    
+    // baaaasic hit testing
+    
+    console.log(bb2);
+    // for (var i = 0; i < _o.selectableItems.length; i++) {
+    // 
+    //   _o.selectableItems[i].updateMatrix();
+    //   _o.selectableItems[i].updateMatrixWorld();
+    //   if (_o.selectableItems[i].boundingBox === null) {
+    //     // _o.selectableItems[i].computeBoundingBox();
+    //   }
+    //   // bb.copy(_o.selectableItems[i].boundingBox).applyMatrix4(_o.selectableItems[i].matrixWorld)
+    //   // bb2.setFromObject(_o.selectableItems[i])
+    //   // bb2.setFromObject(_o.selectableItems[i], true).applyMatrix4(_o.selectableItems[i].matrixWorld)
+    // 
+    //   // NOTE!!! requuires percise true
+    //   // BUT applyMatrix4 messes it up
+    //   bb2.setFromObject(_o.selectableItems[i], true)//.applyMatrix4(_o.selectableItems[i].matrixWorld)
+    // 
+    //   // bb.copy(_o.selectableItems[i].boundingBox).applyMatrix4(_o.selectableItems[i].matrixWorld)
+    // 
+    //   // debugger
+    //   if(this.raycaster.ray.intersectsBox(bb2) ){
+    //     console.log("in");
+    //     // debugger
+    //     _o.selectableItems[i].position.y += 0.1;
+    //     _o.selectableItems[i].updateMatrix();
+    //   }
+    // }
+    
+    
+    // if(this.skipRaycast) return;
+    
+    ////////////
+    for (var i = 0; i < _o.selectableItems.length; i++) {
+      
+      _o.selectableItems[i].updateMatrix();
+      _o.selectableItems[i].updateMatrixWorld();
+      // _o.selectableItems[i].computeBoundingBox();
+      bb2.setFromObject(_o.selectableItems[i], true)
+      
+      var vv = new Vector3();
+      // if(this.raycaster.ray.intersectsBox(bb2) ){
+      //   this.raycaster.ray.intersectBox(bb2, vv)
+      //   quickDrawBall( vv, 0.1 )
+      // }
+      if( this.raycaster.ray.intersectBox(bb2, vv) !== null ){
+        
+        quickDrawBall( vv, 0.1 )
+
+        this.widgetControl.attach( _o.selectableItems[i] );
+
+      }
+      
     }
     
     
   }
-  pointerUp(){
+  pointerUp(ev){
     this.isMouseDown = false;
     // if(this.selectedObject !== null && this.selectedObject.moveyThingTool){
     //   this.selectedObject.moveyThingTool.pointerUp(this.data);
@@ -139,7 +255,7 @@ export class SelectTool extends Tool {
     console.log("select up");
   }
 
-  pointerMoving(){
+  pointerMoving(ev){
 
   }
   
