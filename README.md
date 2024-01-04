@@ -1,4 +1,6 @@
 
+https://tripdragon.github.io/gamegamehelpu/party/
+previous
 https://tripdragon.github.io/gamegamehelpu/react_toss/party/
 
 use pixel paint tool for icons, pow 2-12
