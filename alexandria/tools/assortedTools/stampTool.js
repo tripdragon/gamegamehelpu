@@ -140,7 +140,7 @@ export class StampTool extends Tool {
 
     // piece2.buildBoxHelper(store.state.game.helpersGroup);
     // piece2.computeLocalAndWorldBounds();
-    piece2.moreBuild_CM({targetGroup:store.state.game.helpersGroup});
+    // piece2.moreBuild_CM({targetGroup:store.state.game.helpersGroup});
     
   }
   

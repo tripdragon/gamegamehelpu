@@ -22,6 +22,7 @@ import { randomInRange } from 'alexandria/utils/stuff';
 // import {Editor} from 'logics/editor';
 import {ToolsShelfEditor} from 'alexandria/tools/toolsShelfEditor';
 
+import GUI from 'lil-gui';
 
 
 
@@ -69,7 +70,6 @@ const init = async () => {
   // attachLeftShelf();
 
 
-
   store.setState({
     toolsShelfEditor: new ToolsShelfEditor()
   });
@@ -86,8 +86,12 @@ const init = async () => {
   store.state.game.scene.traverse((item) => {
     item.matrixAutoUpdate = false;
   });
+  // EXCEPT widgets!!
+  store.state.game.widgetsGroup.traverse((item) => {
+    item.matrixAutoUpdate = true;
+  });
 
-  
+  buildLilGui(store.state.game);
   
 };
 
@@ -113,7 +117,7 @@ async function loadereee3894() {
   // need to update box after a transform like scale
   // piece1.boxHelperPointer?.box.setFromObject(piece1);
   // piece1.refreshBoxHelper();
-  piece1.moreBuild_CM({targetGroup:store.state.game.helpersGroup});
+  // piece1.moreBuild_CM({targetGroup:store.state.game.helpersGroup});
   
   
 
@@ -128,7 +132,7 @@ async function loadereee3894() {
   
   store.state.game.selectableItems.add(piece2);
   // piece2.refreshBoxHelper();
-  piece2.moreBuild_CM({targetGroup:store.state.game.helpersGroup});
+  // piece2.moreBuild_CM({targetGroup:store.state.game.helpersGroup});
   
   
   
@@ -142,10 +146,38 @@ async function loadereee3894() {
   piece3.name = 'poly-cat';
   
   store.state.game.selectableItems.add(piece3);
-  piece3.moreBuild_CM({targetGroup:store.state.game.helpersGroup});
+  // piece3.moreBuild_CM({targetGroup:store.state.game.helpersGroup});
   
   
 }
+
+
+function buildLilGui(gameConfig){
+  
+  // const _o = this.store.state.game;
+  // const _o = store.state.game;
+  
+  const gui = new GUI({width: 140 });
+  // gui.add( document, 'fish' );
+
+  const obj = {
+  	// myBoolean: true,
+  	// myString: 'lil-gui',
+  	// myNumber: 1,
+  	widgetTranslate: function() { gameConfig.transformWidget.mode = "translate" },
+  	widgetRotate: function() { gameConfig.transformWidget.mode = "rotate" },
+  	widgetScale: function() { gameConfig.transformWidget.mode = "scale" }
+  }
+
+  // gui.add( obj, 'myBoolean' ); 	// checkbox
+  // gui.add( obj, 'myString' ); 	// text field
+  // gui.add( obj, 'myNumber' ); 	// number field
+  gui.add( obj, 'widgetTranslate' ); 	// button
+  gui.add( obj, 'widgetRotate' ); 	// button
+  gui.add( obj, 'widgetScale' ); 	// button
+
+}
+
 
 //
 //

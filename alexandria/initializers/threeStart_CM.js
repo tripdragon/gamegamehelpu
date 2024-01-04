@@ -98,7 +98,10 @@ export default () => {
 
   const axesHelper = new AxesHelper( 5 );
   // scene.add( axesHelper );
-
+  
+  st.buildTransformWidget("translate");
+  st.buildTransformWidget("rotate");
+  st.buildTransformWidget("scale");
 
 
   // renderloop moved to later process

@@ -39,9 +39,6 @@ import { quickDrawLine } from "alexandria/utils/quickDrawLine.js";
 import { quickDrawBall } from "alexandria/utils/quickDrawBall.js";
 // window.quickDrawLine = quickDrawLine;
 
-import { TransformControls } from 'three/addons/controls/TransformControls.js';
-
-
 export class SelectTool extends Tool {
   
   raycaster = new Raycaster();
@@ -50,7 +47,6 @@ export class SelectTool extends Tool {
   mPointerDown = new Vector2();
   pointer = new Vector2();
   
-  widgetControl = null;
 
   constructor({store,domElement, system, name = "SelectTool", displayName = "Select Tool"} = {}){
     super({store, domElement, system, name, displayName});
@@ -80,34 +76,6 @@ export class SelectTool extends Tool {
     // //   this.update();
     // // };
 
-    const _o = this.store.state.game;
-    this.widgetControl = new TransformControls( _o.camera, _o.domElement );
-    _o.scene.add( this.widgetControl );
-    
-
-    // this.widgetControl.addEventListener( 'pointerdown', function ( event ) {
-    this.widgetControl.addEventListener( 'mouseDown', function ( event ) {
-      // _o.controls.enabled = ! event.value;
-      // debugger
-      // debugger
-      _o.controls.enabled = false;
-      this.skipRaycast = true;
-		});
-    this.widgetControl.addEventListener( 'mouseUp', function ( event ) {
-      // _o.controls.enabled = ! event.value;
-      _o.controls.enabled = true;
-      this.skipRaycast = false;
-		});
-    
-    // this.widgetControl.addEventListener( 'dragging-changed', function ( event ) {
-    this.widgetControl.addEventListener( 'change', function ( event ) {
-      // _o.controls.enabled = ! event.value;
-      // this.widgetControl.object.updateMatrix();
-      // console.log("object", _o.controls.object);
-      console.log("¿¿¿¿¿");
-      this.object.updateMatrix();
-    });
-
   }
   
   update(){
@@ -119,7 +87,11 @@ export class SelectTool extends Tool {
   
   pointerDown(ev){
     
+    let _o = this.store.state.game;
     
+    if (_o.pointerDownOnTransformWidget) {
+      return;
+    }
     
     this.isMouseDown = true;
     // if(this.selectedObject !== null && this.selectedObject.moveyThingTool){
@@ -127,7 +99,6 @@ export class SelectTool extends Tool {
     // }
     console.log("select down");
     
-    let _o = this.store.state.game;
     // sdklvfmdfgmdfgh
     
     // need to have saved box onto model
@@ -223,6 +194,7 @@ export class SelectTool extends Tool {
     // if(this.skipRaycast) return;
     
     ////////////
+    let wasSelected = false;
     for (var i = 0; i < _o.selectableItems.length; i++) {
       
       _o.selectableItems[i].updateMatrix();
@@ -237,13 +209,19 @@ export class SelectTool extends Tool {
       // }
       if( this.raycaster.ray.intersectBox(bb2, vv) !== null ){
         
-        quickDrawBall( vv, 0.1 )
+        // quickDrawBall( vv, 0.1 )
 
-        this.widgetControl.attach( _o.selectableItems[i] );
-
+        _o.transformWidget.attach( _o.selectableItems[i] );
+        // _o.translateWidget.attach( _o.selectableItems[i] );
+        // _o.rotateWidget.attach( _o.selectableItems[i] );
+        // _o.scaleWidget.attach( _o.selectableItems[i] );
+        wasSelected = true;
       }
       
     }
+    if (wasSelected === false && _o.transformWidget.visible) _o.transformWidget.detach ();
+      
+    
     
     
   }
