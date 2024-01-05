@@ -46,7 +46,7 @@ class AltBox3Helper extends Box3Helper{
 		super.updateMatrixWorld( force );
 
 	}
-  
+
 }
 
 
@@ -79,8 +79,8 @@ const init = async () => {
   window.Box3Helper = Box3Helper;
   window.AltBox3Helper = AltBox3Helper;
   // console.log("vectorA", vectorA);
-  
-  
+
+
   // forcing optimisations
   // #code: scene28475#
   store.state.game.scene.traverse((item) => {
@@ -92,7 +92,7 @@ const init = async () => {
   });
 
   buildLilGui(store.state.game);
-  
+
 };
 
 init();
@@ -118,10 +118,10 @@ async function loadereee3894() {
   // piece1.boxHelperPointer?.box.setFromObject(piece1);
   // piece1.refreshBoxHelper();
   // piece1.moreBuild_CM({targetGroup:store.state.game.helpersGroup});
-  
-  
 
-  
+
+
+
   var piece2 = await loadModelAsync({path:'./models/bench1.glb'});
   // piece2.scale.setScalar(0.1);
   store.state.game.scene.add(piece2);
@@ -129,34 +129,34 @@ async function loadereee3894() {
   piece2.scale.setScalar(0.2);
   piece2.updateMatrix();
   piece2.name = 'bench1';
-  
+
   store.state.game.selectableItems.add(piece2);
   // piece2.refreshBoxHelper();
   // piece2.moreBuild_CM({targetGroup:store.state.game.helpersGroup});
-  
-  
-  
-  
-  const piece3 = await loadModelAsync({path:'./models/poly-cat.glb'});
+
+
+
+
+  const piece3 = await loadModelAsync({path:'./models/poly-cat-w-hat.glb'});
   // piece2.scale.setScalar(0.1);
   store.state.game.scene.add(piece3);
   store.state.game.importedModels.add(piece3);
   piece3.scale.setScalar(0.02);
   piece3.updateMatrix();
   piece3.name = 'poly-cat';
-  
+
   store.state.game.selectableItems.add(piece3);
   // piece3.moreBuild_CM({targetGroup:store.state.game.helpersGroup});
-  
-  
+
+
 }
 
 
 function buildLilGui(gameConfig){
-  
+
   // const _o = this.store.state.game;
   // const _o = store.state.game;
-  
+
   const gui = new GUI({width: 140 });
   // gui.add( document, 'fish' );
 
