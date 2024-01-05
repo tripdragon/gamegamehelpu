@@ -28,7 +28,7 @@ export class ToolsShelfEditor extends Editor {
     const selectItem = gg.addItem({imageurl:"./icons/cursor_a_NFT_cash_mices.png"});
     const treeItem = gg.addItem({imageurl:"./icons/tree_NFT_NFT_NFT_upon.png"});
     const benchItem = gg.addItem({imageurl:"./icons/bench_NFT_apples_upon.png"});
-    const polyCatItem = gg.addItem({imageurl:"./icons/bench_NFT_apples_upon.png"});
+    const polyCatItem = gg.addItem({imageurl:"./icons/cat_NFT_within_apples.png"});
 
 
     const nerf = this;
@@ -37,14 +37,14 @@ export class ToolsShelfEditor extends Editor {
     // here we are assigning logic factories to each item now
 
     // these are so boilerplate they can be factories
-    
+
     // We could either do
     // item.onCheckedOn = ()=> nerf.changeTool(selectTool);
-    
+
     // or put in the addItem as ({tool: tool})
     // but would still need to have the overwrite option
-    
-    
+
+
     const selectTool = new SelectTool({store:store,domElement:st.domElement});
     this.addTool(selectTool);
 
