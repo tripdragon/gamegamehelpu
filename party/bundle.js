@@ -8956,7 +8956,7 @@ class ToolsShelfEditor extends Editor {
       imageurl: "./icons/bench_NFT_apples_upon.png"
     });
     const polyCatItem = gg.addItem({
-      imageurl: "./icons/bench_NFT_apples_upon.png"
+      imageurl: "./icons/cat_NFT_within_apples.png"
     });
     const nerf = this;
     const st = store$1.state.game;
