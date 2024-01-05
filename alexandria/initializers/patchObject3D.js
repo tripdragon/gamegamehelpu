@@ -29,6 +29,17 @@ export function patchObject3D_CM() {
     accelration : new Vector3(),
     force: new Vector3()
   }
+	
+	
+
+  Object3D.prototype.setAutoMatrixAll = function(parentVal = true, val = true){
+		this.matrixAutoUpdate = parentVal;
+		this.traverse((item) => {
+			item.matrixAutoUpdate = val;
+		});
+  }
+	
+	
   
   // // 
   // // // changing the world and local bounds idea

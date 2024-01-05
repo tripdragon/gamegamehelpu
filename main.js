@@ -87,9 +87,10 @@ const init = async () => {
     item.matrixAutoUpdate = false;
   });
   // EXCEPT widgets!!
-  store.state.game.widgetsGroup.traverse((item) => {
-    item.matrixAutoUpdate = true;
-  });
+  // store.state.game.widgetsGroup.traverse((item) => {
+  //   item.matrixAutoUpdate = true;
+  // });
+  store.state.game.widgetsGroup.setAutoMatrixAll(false, true);
 
   buildLilGui(store.state.game);
   
