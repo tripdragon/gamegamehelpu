@@ -10,16 +10,24 @@ import { ImportedModel } from 'alexandria/primitives/importedModel.js';
 // note you are calling a function that needs to start with async
 // it also auto centers
 
+
+let nagcount = false;
+
 export async function loadModelAsync({path, customName, addShadows = true, receiveShadow = true} ){
   var result = await new GLTFLoader().loadAsync(path);
+  
   // #TODO: must solve some auto name thing here
   // #Code: nnnanananame38744 #
-  console.warn("#TODO: must solve some auto name thing here");
+  
+  if (!nagcount) console.warn("#TODO: must solve some auto name thing here");
 
   // has weird bug see cat model
-  console.warn("#TODO: some weird missing object in array is missing, needs checking");
+  if (!nagcount) console.warn("#TODO: some weird missing object in array is missing, needs checking");
+  
   const modelSwap = new ImportedModel({loaderResult:result, addShadows:addShadows, customName:customName});
-  // debugger
+  
+  
+  nagcount = true;
   
 
   // #code: scene28475#

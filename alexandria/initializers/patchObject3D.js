@@ -30,10 +30,16 @@ export function patchObject3D_CM() {
 
   Object3D.prototype.fish = 'neat!!';
   Object3D.prototype.entities = {};
+  
+	// addresses onSelected, onUnseleced
+	Object3D.prototype.isSelected = false;
+	Object3D.prototype.select = function(){}
+	Object3D.prototype.deselect = function(){}
+	
 
   Object3D.prototype.simplePhysics = {
     velocity: new Vector3(),
-    accelration : new Vector3(),
+    acceleration : new Vector3(),
     force: new Vector3()
   }
 

@@ -22,6 +22,8 @@ import { randomInRange } from 'alexandria/utils/stuff';
 // import {Editor} from 'logics/editor';
 import {ToolsShelfEditor} from 'alexandria/tools/toolsShelfEditor';
 
+import { VolumeRect } from 'alexandria/primitives/volumeRect';
+
 import GUI from 'lil-gui';
 
 
@@ -93,6 +95,14 @@ const init = async () => {
   store.state.game.widgetsGroup.setAutoMatrixAll(false, true);
 
   buildLilGui(store.state.game);
+  
+  
+  let gg = new VolumeRect();
+  store.state.game.scene.add(gg);
+  gg.position.y = 1.4;
+  window.vol = gg;
+  console.log(vol);
+  
 
 };
 

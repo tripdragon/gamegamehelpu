@@ -2,32 +2,6 @@
 
 // var selectTool = new SelectTool(this.system);
 
-/*
-
-move logic moved to 
-MoveyThingTool
-
-
-debug within
-
-
-plat = box4;
-plat.boundingBox.print()
-
-point = {x:0,y:0}
-point.x = plat.boundingBox.min.x;
-point.y = plat.boundingBox.max.y;
-
-if(box){
-box.delete()
-box = null;
-}
-var box = new Plane("boxlike", point.x, point.y, 0, 10, 10, new Color().random());
-APPPP.add(box);
-
-pointInBoundingBoxScreenSpace(point, plat)
-
-*/
 
 import { GetPositionOfRaycasterFromFloor, GetMousePositionToScreen } from 'alexandria/mousetools/mouseScreenTools.js';
 
@@ -52,38 +26,42 @@ export class SelectTool extends Tool {
     super({store, domElement, system, name, displayName});
   }
   
-  
-  modes = {
-    mousing : "mousing",
-    // canDrag : "canDrag",
-    // canDraw : "canDraw"
-  }
-  
-  mode = this.modes.mousing;
+  // 
+  // modes = {
+  //   mousing : "mousing",
+  //   // canDrag : "canDrag",
+  //   // canDraw : "canDraw"
+  // }
+  // 
+  // mode = this.modes.mousing;
+  //
   
   intersects = [];
   
   skipRaycast = false;
   
   start(){
-    // this.start();
     super.start();
-      
-    // this.bindUpEvent();
-    // this.bindDownEvent();
-    // 
-    // // this.system.loopHookPoints.editorBeforeDraw = () => {
-    // //   this.update();
-    // // };
-
   }
   
   update(){
     this.mouseSelecting();
     this.pointerMoving();
   }
+
+  selected = null;
+  // selectedList = new CheapCache(); do this later
+  select(item){
+    this.selected = item;
+    item.select();
+  }
+  deselect(item){
+    if(item){
+      this.selected = null;
+      item.ondeselect();
+    }
+  }
   
-  tempArray = [];
   
   pointerDown(ev){
     
@@ -97,7 +75,7 @@ export class SelectTool extends Tool {
     // if(this.selectedObject !== null && this.selectedObject.moveyThingTool){
     //   // this.selectedObject.moveyThingTool.pointerDown(this.data);
     // }
-    console.log("select down");
+    // console.log("select down");
     
     // sdklvfmdfgmdfgh
     
@@ -112,9 +90,9 @@ export class SelectTool extends Tool {
     // this.pointer.set(ev.clientX, ev.clientY);
     this.raycaster.setFromCamera( this.mPointerDown, _o.camera );
 
-// quickDrawLine( this.raycaster.ray.origin, this.raycaster.ray.direction.clone().multiplyScalar(18).add(this.raycaster.ray.origin) )
-// quickDrawBall( this.raycaster.ray.direction.clone().multiplyScalar(8).add(this.raycaster.ray.origin), 0.1 )
-    
+    // quickDrawLine( this.raycaster.ray.origin, this.raycaster.ray.direction.clone().multiplyScalar(18).add(this.raycaster.ray.origin) )
+    // quickDrawBall( this.raycaster.ray.direction.clone().multiplyScalar(8).add(this.raycaster.ray.origin), 0.1 )
+        
     // const items = _a.state.game.selectableItems;
     // this.intersects.length = 0;
     // 
@@ -163,7 +141,7 @@ export class SelectTool extends Tool {
     
     // baaaasic hit testing
     
-    console.log(bb2);
+    // console.log(bb2);
     // for (var i = 0; i < _o.selectableItems.length; i++) {
     // 
     //   _o.selectableItems[i].updateMatrix();
@@ -212,14 +190,17 @@ export class SelectTool extends Tool {
         // quickDrawBall( vv, 0.1 )
 
         _o.transformWidget.attach( _o.selectableItems[i] );
-        // _o.translateWidget.attach( _o.selectableItems[i] );
-        // _o.rotateWidget.attach( _o.selectableItems[i] );
-        // _o.scaleWidget.attach( _o.selectableItems[i] );
+        
+        this.select( _o.selectableItems[i] );
+        
         wasSelected = true;
       }
       
     }
-    if (wasSelected === false && _o.transformWidget.visible) _o.transformWidget.detach ();
+    if (wasSelected === false && _o.transformWidget.visible){
+      _o.transformWidget.detach ();
+      this.select( this.selected );
+    }
       
     
     
@@ -230,25 +211,13 @@ export class SelectTool extends Tool {
     // if(this.selectedObject !== null && this.selectedObject.moveyThingTool){
     //   this.selectedObject.moveyThingTool.pointerUp(this.data);
     // }
-    console.log("select up");
+    // console.log("select up");
   }
 
-  pointerMoving(ev){
-
-  }
-  
-
-
-  // this should inspead of some large form stack of logics
-  // it should add on a drag type of tool
-  
-  pickedList = [];
+  pointerMoving(ev){}
   
   
-  mouseSelecting(space){
-    
-    
-  }
+  mouseSelecting(space){}
   
 
 
