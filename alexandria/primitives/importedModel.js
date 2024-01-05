@@ -1,5 +1,4 @@
 
-
 // More logic to handle when importing model instead of just adding stuff to
 // Object3d
 // Motivation, put bounding box onto Object3D and save imported gltf animations stuff

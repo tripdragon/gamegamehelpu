@@ -17,6 +17,7 @@ export async function loadModelAsync({path, customName, addShadows = true, recei
   console.warn("#TODO: must solve some auto name thing here");
 
   // has weird bug see cat model
+  console.warn("#TODO: some weird missing object in array is missing, needs checking");
   const modelSwap = new ImportedModel({loaderResult:result, addShadows:addShadows, customName:customName});
   // debugger
   
