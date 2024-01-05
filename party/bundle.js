@@ -5029,6 +5029,12 @@ function patchObject3D_CM() {
     accelration: new Vector3$1(),
     force: new Vector3$1()
   };
+  Object3D.prototype.setAutoMatrixAll = function (parentVal = true, val = true) {
+    this.matrixAutoUpdate = parentVal;
+    this.traverse(item => {
+      item.matrixAutoUpdate = val;
+    });
+  };
 
   // // 
   // // // changing the world and local bounds idea
@@ -8138,6 +8144,150 @@ function addPrimitiveAttributes(geometry, primitiveDef, parser) {
   });
 }
 
+// More logic to handle when importing model instead of just adding stuff to
+// Object3d
+// Motivation, put bounding box onto Object3D and save imported gltf animations stuff
+
+class ImportedModel extends Group {
+  isImportedModel = true;
+  animations = null;
+  userData = {};
+  constructor({
+    loaderResult,
+    customName,
+    addShadows
+  } = {}) {
+    super();
+
+    // swap out objects IF its the first time model is loaded
+    if (loaderResult) {
+      // these might need more copy routines, but for now carry on with game!!!
+      this.animations = loaderResult.animations;
+      this.userData = loaderResult.userData;
+      for (var i = 0; i < loaderResult.scene.children.length; i++) {
+        this.add(loaderResult.scene.children[i]);
+      }
+    }
+    if (customName) this.name = customName;
+    if (addShadows) this.buildShadows();
+  }
+
+  // models dont provide shadows by default
+  buildShadows() {
+    this.traverse(item => {
+      if (item.isMesh) {
+        item.castShadow = true;
+        item.receiveShadow = true;
+      }
+    });
+  }
+
+  // here lie attempts to move bounding box into top level logic
+
+  boundingBox = null;
+  boundingSphere = null;
+
+  // // 
+  // // 
+  // // 
+  // // #BUG we need precise to fix lota internal things
+  // // from setting the box settings to Infinity as defaults
+  // Object3D.prototype.computeBoundingBox = function(precise=true) {
+  // 	if ( this.boundingBox === null ) {
+  // 		this.boundingBox = new Box3();
+  // 	}
+  //   this.boundingBox.setFromObject(this, precise);
+  // }
+  // Object3D.prototype.computeBoundingSphere = function() {
+  //   if ( this.boundingBox === null ) {
+  //     this.computeBoundingBox();
+  //   }
+  //   if (this.boundingBox && this.boundingSphere === null) {
+  //     this.boundingSphere = new Sphere();
+  //   }
+  //   this.boundingBox.getBoundingSphere(this.boundingSphere);
+  // }
+  // 
+  // 
+  // 
+  // Object3D.prototype.raycast = function( raycaster, intersects ) {
+  // 
+  // 	const matrixWorld = this.matrixWorld;
+  // 
+  // 	// test with bounding sphere in world space
+  // 
+  // 	if ( this.boundingSphere === null ) this.computeBoundingSphere();
+  // 
+  // 	_sphere.copy( this.boundingSphere );
+  // 	_sphere.applyMatrix4( matrixWorld );
+  // 
+  // 	// check distance from ray origin to bounding sphere
+  // // debugger
+  // 	// _ray.copy( raycaster.ray ).recast( raycaster.near );
+  // 	_ray.copy( raycaster.ray ).recast( raycaster.near );
+  // 
+  // 	// if ( _sphere.containsPoint( _ray.origin ) === false ) {
+  //   // 
+  // 	// 	if ( _ray.intersectSphere( _sphere, _sphereHitAt ) === null ) return;
+  //   // 
+  // 	// 	if ( _ray.origin.distanceToSquared( _sphereHitAt ) > ( raycaster.far - raycaster.near ) ** 2 ) return;
+  //   // 
+  // 	// }
+  // // debugger
+  // 	// convert ray to local space of mesh
+  // 
+  // 	// _inverseMatrix.copy( matrixWorld ).invert();
+  // 	// _ray.copy( raycaster.ray ).applyMatrix4( _inverseMatrix );
+  // 
+  // 	// test with bounding box in local space
+  // 
+  //   // 
+  //   // start here for new routines
+  //   // 
+  // 
+  //   // if ( this.boundingSphere === null ) this.computeBoundingBox();
+  //   if ( this.boundingBox === null ) {
+  //     this.computeBoundingBox();
+  //   }
+  //   // if ( this.boundingBox === null ) return;
+  //   debugger
+  // 
+  // 	if ( _ray.intersectBox( this.boundingBox, _intersectionPointWorld ) === null ) return;
+  // 	// if ( _ray.intersectBox( this.boundingBox, this._intersectionPointWorld ) === false ) return;
+  // 	// if ( ! _ray.intersectBox( this.boundingBox, this._intersectionPointWorld ) ) return;
+  // 
+  // debugger
+  // 
+  //   // _intersectionPointWorld.copy( point );
+  //   // _intersectionPointWorld.applyMatrix4( object.matrixWorld );
+  // 
+  // 
+  //   _point.copy( _intersectionPointWorld );
+  //   _point.applyMatrix4( this.matrixWorld );
+  // 
+  //   const distance = raycaster.ray.origin.distanceTo( _point );
+  //   console.log("distance", distance);
+  // 
+  //   if ( distance < raycaster.near || distance > raycaster.far ) return null;
+  // 
+  // // debugger
+  // 
+  //   const intersection = {
+  //     distance: distance,
+  //     point: _intersectionPointWorld.clone(),
+  //     object: this
+  //   };
+  // 
+  //   intersects.push( intersection );
+  // 
+  //   intersects.sort( ascSort );
+  // 
+  //   return intersects;
+  // }
+  // 
+  // 
+}
+
 // note you are calling a function that needs to start with async
 // it also auto centers
 
@@ -8148,32 +8298,23 @@ async function loadModelAsync({
   receiveShadow = true
 }) {
   var result = await new GLTFLoader().loadAsync(path);
-  var item = result.scene;
-  result.scene.children[0].position.setScalar(0);
-  // item.scale.setScalar(0.1);
 
   // #TODO: must solve some auto name thing here
   // #Code: nnnanananame38744 #
   console.warn("#TODO: must solve some auto name thing here");
-  if (customName) item.name = customName;
-
-  // model needs shadows
-  if (addShadows) {
-    item.traverse(item => {
-      if (item.isMesh) {
-        item.castShadow = true;
-        item.receiveShadow = true;
-      }
-    });
-  }
+  const modelSwap = new ImportedModel({
+    loaderResult: result,
+    addShadows: addShadows,
+    customName: customName
+  });
 
   // #code: scene28475#
-  item.matrixAutoUpdate = false;
+  modelSwap.matrixAutoUpdate = false;
 
   // dont rely on this here as its typical that the model will need to be resized after
-  // item.computeLocalAndWorldBounds();
+  // modelSwap.computeLocalAndWorldBounds();
 
-  return item;
+  return modelSwap;
 }
 
 // https://gist.github.com/JesterXL/8a124a812811f9df600e6a1fdc0013af
@@ -11085,7 +11226,7 @@ var GUI$1 = GUI;
 
 class AltBox3Helper extends Box3Helper {
   constructor(box, color = 0xffff00) {
-    super(box, color = 0xffff00);
+    super(box, color);
   }
   updateMatrixWorld(force) {
     const box = this.box;
@@ -11123,9 +11264,10 @@ const init = async () => {
     item.matrixAutoUpdate = false;
   });
   // EXCEPT widgets!!
-  store$1.state.game.widgetsGroup.traverse(item => {
-    item.matrixAutoUpdate = true;
-  });
+  // store.state.game.widgetsGroup.traverse((item) => {
+  //   item.matrixAutoUpdate = true;
+  // });
+  store$1.state.game.widgetsGroup.setAutoMatrixAll(false, true);
   buildLilGui(store$1.state.game);
 };
 init();
@@ -11165,7 +11307,7 @@ async function loadereee3894() {
   // piece2.moreBuild_CM({targetGroup:store.state.game.helpersGroup});
 
   const piece3 = await loadModelAsync({
-    path: './models/poly-cat-w-hat.glb'
+    path: './models/poly-cat-w-hat-3.glb'
   });
   // piece2.scale.setScalar(0.1);
   store$1.state.game.scene.add(piece3);
