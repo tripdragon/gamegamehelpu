@@ -28,7 +28,7 @@ import GUI from 'lil-gui';
 
 class AltBox3Helper extends Box3Helper{
   constructor( box, color = 0xffff00 ) {
-    super(box, color = 0xffff00)
+    super(box, color)
   }
 
   updateMatrixWorld( force ) {
