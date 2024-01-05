@@ -55,8 +55,8 @@ export class ImportedModel extends Group {
   
   // here lie attempts to move bounding box into top level logic
   
-  boundingBox = null;
-  boundingSphere = null;
+  // boundingBox = null;
+  // boundingSphere = null;
   
   // // 
   // // 

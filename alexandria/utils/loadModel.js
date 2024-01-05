@@ -12,12 +12,13 @@ import { ImportedModel } from 'alexandria/primitives/importedModel.js';
 
 export async function loadModelAsync({path, customName, addShadows = true, receiveShadow = true} ){
   var result = await new GLTFLoader().loadAsync(path);
-
   // #TODO: must solve some auto name thing here
   // #Code: nnnanananame38744 #
   console.warn("#TODO: must solve some auto name thing here");
 
+  // has weird bug see cat model
   const modelSwap = new ImportedModel({loaderResult:result, addShadows:addShadows, customName:customName});
+  // debugger
   
 
   // #code: scene28475#
@@ -27,5 +28,6 @@ export async function loadModelAsync({path, customName, addShadows = true, recei
   // modelSwap.computeLocalAndWorldBounds();
   
   return modelSwap;
+  // return result.scene;
 
 }
