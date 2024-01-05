@@ -11165,7 +11165,7 @@ async function loadereee3894() {
   // piece2.moreBuild_CM({targetGroup:store.state.game.helpersGroup});
 
   const piece3 = await loadModelAsync({
-    path: './models/poly-cat.glb'
+    path: './models/poly-cat-w-hat.glb'
   });
   // piece2.scale.setScalar(0.1);
   store$1.state.game.scene.add(piece3);
