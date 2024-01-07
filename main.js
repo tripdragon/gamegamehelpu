@@ -168,13 +168,21 @@ function buildLilGui(gameConfig){
   // const _o = this.store.state.game;
   // const _o = store.state.game;
 
-  const gui = new GUI({width: 140 });
+  const gui = new GUI({width: 240 });
   // gui.add( document, 'fish' );
 
   const obj = {
   	// myBoolean: true,
   	// myString: 'lil-gui',
   	// myNumber: 1,
+    
+    top: 1,
+    bottom: 1,
+    left: 1,
+    right: 1,
+    front: 1,
+    back: 1,
+    
   	widgetTranslate: function() { gameConfig.transformWidget.mode = "translate" },
   	widgetRotate: function() { gameConfig.transformWidget.mode = "rotate" },
   	widgetScale: function() { gameConfig.transformWidget.mode = "scale" }
@@ -182,7 +190,14 @@ function buildLilGui(gameConfig){
 
   // gui.add( obj, 'myBoolean' ); 	// checkbox
   // gui.add( obj, 'myString' ); 	// text field
-  // gui.add( obj, 'myNumber' ); 	// number field
+  
+  gui.add( obj, 'top',0,4 ).onChange( x => { vol.setSide("top",x) } );
+  gui.add( obj, 'bottom',0,4 ).onChange( x => { vol.setSide("bottom",x) } );
+  gui.add( obj, 'left',0,4 ).onChange( x => { vol.setSide("left",x) } );
+  gui.add( obj, 'right',0,4 ).onChange( x => { vol.setSide("right",x) } );
+  gui.add( obj, 'front',0,4 ).onChange( x => { vol.setSide("front",x) } );
+  gui.add( obj, 'back',0,4 ).onChange( x => { vol.setSide("back",x) } );
+  
   gui.add( obj, 'widgetTranslate' ); 	// button
   gui.add( obj, 'widgetRotate' ); 	// button
   gui.add( obj, 'widgetScale' ); 	// button
