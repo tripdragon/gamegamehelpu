@@ -96,6 +96,8 @@ export default () => {
   st.buildTransformWidget("translate");
   st.buildTransformWidget("rotate");
   st.buildTransformWidget("scale");
+  
+  st.physicsGroup();
 
   // renderloop moved to later process
 };

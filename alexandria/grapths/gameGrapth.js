@@ -41,6 +41,7 @@ export class GameGrapth{
     this.selectableItems = new SelectableItems();
     this.widgetsGroup = new Group();
     this.renderPool = new Map();
+    this.physicsGroup = new Group();
   }
 
   registerRenderCallback(func) {
