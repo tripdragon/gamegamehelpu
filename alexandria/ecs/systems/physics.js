@@ -1,3 +1,6 @@
+// Interesting example here syncing some babylon stuff w/ rapier
+// https://playcode.io/1528902
+
 import { defineQuery } from 'bitecs';
 import { store } from 'alexandria/store';
 import { Vector3, Quaternion } from 'three';
