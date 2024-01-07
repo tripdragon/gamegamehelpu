@@ -10344,7 +10344,7 @@ function patchObject3D_CM() {
         // .setRotation(this.rotation);
 
         if (physics.linvel) {
-          rigidBodyDesc.setLinvel(physics.linvel);
+          rigidBodyDesc.setLinvel(...physics.linvel);
         }
         if (physics.angvel) {
           rigidBodyDesc.setAngvel(physics.angvel);
@@ -11461,9 +11461,9 @@ class ToolsShelfEditor extends Editor {
   }
 }
 
-// 
+//
 // import { VolumeRect } from 'alexandria/primitives/volumeRect';
-// 
+//
 // import GUI from 'lil-gui';
 
 class AltBox3Helper extends Box3Helper {

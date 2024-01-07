@@ -20,9 +20,9 @@ import { randomInRange } from 'alexandria/utils/stuff';
 
 // import {Editor} from 'logics/editor';
 import {ToolsShelfEditor} from 'alexandria/tools/toolsShelfEditor';
-// 
+//
 // import { VolumeRect } from 'alexandria/primitives/volumeRect';
-// 
+//
 // import GUI from 'lil-gui';
 
 
@@ -89,6 +89,7 @@ const init = async () => {
   //   item.matrixAutoUpdate = true;
   // });
   store.state.game.widgetsGroup.setAutoMatrixAll(false, true);
+
 
 
 };
