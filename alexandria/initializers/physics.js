@@ -7,9 +7,10 @@ export default async (store) => {
   store.setState({
     physics: {
       // fyi val 9 is hard on games in goofyness styles
-      world: new Physics.World({
+      core: new Physics.World({
         x: 0.0,
-        y: -9.81,
+        // y: -9.81,
+        y: -0.00001,
         z: 0.0
       })
     }

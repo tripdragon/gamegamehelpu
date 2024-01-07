@@ -6,8 +6,8 @@ import threeStart_CM from './threeStart_CM';
 export default async function(store) {
 
   const initializers = [
-    ECS,
     Physics,
+    ECS,
     Keyboard,
     threeStart_CM // not a class
   ];

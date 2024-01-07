@@ -14,7 +14,6 @@ import { Box3, Vector3, Box3Helper } from 'three';
 import { loadModelAsync } from 'alexandria/utils/loadModel';
 import { randomInRange } from 'alexandria/utils/stuff';
 
-
 // import { GetPositionOfRaycasterFromFloor, GetMousePositionToScreen } from 'alexandria/mousetools/mouseScreenTools.js';
 
 // import { Notlilgui } from './notlilgui/notlilgui.js';
@@ -35,24 +34,21 @@ class AltBox3Helper extends Box3Helper{
 
   updateMatrixWorld( force ) {
 
-		const box = this.box;
+    const box = this.box;
 
-		if ( box.isEmpty() ) return;
+    if ( box.isEmpty() ) return;
 
-		box.getCenter( this.position );
+    box.getCenter( this.position );
 
-		box.getSize( this.scale );
+    box.getSize( this.scale );
 
-		this.scale.multiplyScalar( 0.5 );
+    this.scale.multiplyScalar( 0.5 );
 
-		super.updateMatrixWorld( force );
+    super.updateMatrixWorld( force );
 
-	}
+  }
 
 }
-
-
-
 
 const init = async () => {
 
@@ -95,15 +91,12 @@ const init = async () => {
   store.state.game.widgetsGroup.setAutoMatrixAll(false, true);
 
   buildLilGui(store.state.game);
-  
-  
+
   let gg = new VolumeRect();
   store.state.game.scene.add(gg);
   gg.position.y = 1.4;
   window.vol = gg;
   console.log(vol);
-  
-
 };
 
 init();
@@ -172,41 +165,39 @@ function buildLilGui(gameConfig){
   // gui.add( document, 'fish' );
 
   const obj = {
+
   	// myBoolean: true,
   	// myString: 'lil-gui',
   	// myNumber: 1,
-    
+
     top: 1,
     bottom: 1,
     left: 1,
     right: 1,
     front: 1,
     back: 1,
-    
+
   	widgetTranslate: function() { gameConfig.transformWidget.mode = "translate" },
   	widgetRotate: function() { gameConfig.transformWidget.mode = "rotate" },
   	widgetScale: function() { gameConfig.transformWidget.mode = "scale" }
+
   }
 
   // gui.add( obj, 'myBoolean' ); 	// checkbox
   // gui.add( obj, 'myString' ); 	// text field
-  
+
   gui.add( obj, 'top',0,4 ).onChange( x => { vol.setSide("top",x) } );
   gui.add( obj, 'bottom',0,4 ).onChange( x => { vol.setSide("bottom",x) } );
   gui.add( obj, 'left',0,4 ).onChange( x => { vol.setSide("left",x) } );
   gui.add( obj, 'right',0,4 ).onChange( x => { vol.setSide("right",x) } );
   gui.add( obj, 'front',0,4 ).onChange( x => { vol.setSide("front",x) } );
   gui.add( obj, 'back',0,4 ).onChange( x => { vol.setSide("back",x) } );
-  
+
   gui.add( obj, 'widgetTranslate' ); 	// button
   gui.add( obj, 'widgetRotate' ); 	// button
   gui.add( obj, 'widgetScale' ); 	// button
-
 }
 
-
-//
-//
 // function attachLeftShelf() {
 //   let gg = new Notlilgui();
 //   gg.attach();
@@ -220,5 +211,4 @@ function buildLilGui(gameConfig){
 //   // for (var i = 0; i < 40; i++) {
 //   //   gg.addItem();
 //   // }
-//
 // }
