@@ -463,24 +463,6 @@ var pipe = (...fns) => input => {
 };
 var Types = TYPES_ENUM;
 
-function timeSystem(world) {
-  const {
-    time
-  } = world;
-  const now = performance.now();
-  const delta = now - time.then;
-  time.delta = delta;
-  time.elapsed += delta;
-  time.then = now;
-  return world;
-}
-
-function physicsSystem(world) {
-  // Step the simulation forward
-  store$1.state.physics.world.step();
-  return world;
-}
-
 const {
   f32
 } = Types;
@@ -511,11 +493,6 @@ var Components = /*#__PURE__*/Object.freeze({
 // Good example repo
 // https://codesandbox.io/p/devbox/bitecs-threejs-kb20g?file=%2Fsrc%2Fpipeline.ts%3A5%2C1
 
-
-// Game system loop!
-const pipeline = pipe(timeSystem, physicsSystem
-// movementSystem
-);
 function init$1() {
   const world = createWorld();
   world.time = {
@@ -535,9 +512,6 @@ function init$1() {
       world
     }
   });
-  setInterval(() => {
-    pipeline(world);
-  }, 16);
 }
 
 var ECS = (() => {
@@ -3336,6 +3310,12 @@ class GameGrapth {
     this.helpersGroup = props.helpersGroup;
     this.selectableItems = new SelectableItems();
     this.widgetsGroup = new Group();
+    this.renderPool = new Map();
+  }
+  registerRenderCallback(func) {
+    this.renderPool.set(func, func);
+    // Return unregister func
+    return () => this.renderPool.delete(func);
   }
 
   // @mode "translate", "rotate" and "scale"
@@ -4390,7 +4370,6 @@ var threeStart_CM = (() => {
   }
   window.addEventListener('resize', onWindowResize, false);
 
-  //
   // setup state and other
 
   // #TODO: fix some of these and GameGrapth to be arrays instead
@@ -4435,10 +4414,42 @@ async function Initializers (store) {
   }
 }
 
+function timeSystem(world) {
+  const {
+    time
+  } = world;
+  const now = performance.now();
+  const delta = now - time.then;
+  time.delta = delta;
+  time.elapsed += delta;
+  time.then = now;
+  return world;
+}
+
+function physicsSystem(world) {
+  // Step the simulation forward
+  store$1.state.physics.world.step();
+  return world;
+}
+
+function renderSystem(world) {
+  const st = store$1.state.game;
+  // Call each render callback in the renderPool before THREE renders
+  st.renderPool.forEach(func => func(world));
+  st.renderer.render(st.scene, st.camera);
+  return world;
+}
+
+// Game system loop!
+const pipeline = pipe(timeSystem, physicsSystem,
+// movementSystem,
+renderSystem);
+
 // eslint-disable-next-line no-unused-vars
 function renderLoop(delta) {
   // const st = store.getState().game; // this spams with objects
   const st = store$1.state.game;
+
   // OY
   // if(useComposer && composer === null){
   //   console.log("><><>");
@@ -4470,9 +4481,10 @@ function renderLoop(delta) {
   //   }
   // }
 
-  // filters needs work for setup
-  st.renderer.render(st.scene, st.camera);
   st.controls.update();
+
+  // Main render pipeline
+  pipeline(store$1.state.ecs.world);
 
   // would like this is be a subclass of array
   // for (var i = 0; i < store.animationPool.cache.length; i++) {
@@ -4481,6 +4493,7 @@ function renderLoop(delta) {
   //   pick.entities.run();
   // }
 
+  // TODO can move this into an animationSystem and fit into the above pipeline()
   for (var i = 0; i < st.animationPool.length; i++) {
     // store.animationPool.cache[i].update();
     let pick = st.animationPool[i];
@@ -4499,6 +4512,10 @@ function fish() {
 // so this is the simpliest route
 
 function patchObject3D_CM() {
+  Object3D.prototype.init = function () {
+    const eid = addEntity(store$1.state.ecs.world);
+    this.eid = eid;
+  };
   Object3D.prototype.fish = 'neat!!';
   Object3D.prototype.entities = {};
 

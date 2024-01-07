@@ -11,10 +11,12 @@ import {
   Matrix4
 } from 'three';
 
+import { addEntity } from 'bitecs';
+
 import { store } from 'alexandria/store';
 
 function ascSort(a, b) {
-	return a.distance - b.distance;
+  return a.distance - b.distance;
 }
 
 export function patchObject3D_CM() {
@@ -27,14 +29,19 @@ export function patchObject3D_CM() {
   const _sphere = /*@__PURE__*/ new Sphere();
   const _sphereHitAt = /*@__PURE__*/ new Vector3();
 
+  Object3D.prototype.init = function() {
+
+    const eid = addEntity(store.state.ecs.world);
+    this.eid = eid;
+  }
 
   Object3D.prototype.fish = 'neat!!';
   Object3D.prototype.entities = {};
 
-	// addresses onSelected, onUnseleced
-	Object3D.prototype.isSelected = false;
-	Object3D.prototype.select = function(){}
-	Object3D.prototype.deselect = function(){}
+  // addresses onSelected, onUnseleced
+  Object3D.prototype.isSelected = false;
+  Object3D.prototype.select = function(){}
+  Object3D.prototype.deselect = function(){}
 
   Object3D.prototype.setTags = function(tags) {
     console.log('this Object3D', this, tags);
@@ -47,16 +54,12 @@ export function patchObject3D_CM() {
     force: new Vector3()
   }
 
-
-
   Object3D.prototype.setAutoMatrixAll = function(parentVal = true, val = true){
-		this.matrixAutoUpdate = parentVal;
-		this.traverse((item) => {
-			item.matrixAutoUpdate = val;
-		});
+    this.matrixAutoUpdate = parentVal;
+    this.traverse((item) => {
+      item.matrixAutoUpdate = val;
+    });
   }
-
-
 
   // //
   // // // changing the world and local bounds idea
@@ -68,13 +71,13 @@ export function patchObject3D_CM() {
   // //
   // // #BUG we need precise to fix lota internal things
   // // from setting the box settings to Infinity as defaults
-	// Object3D.prototype.computeBoundingBox = function(precise=true) {
-	// 	if ( this.boundingBox === null ) {
-	// 		this.boundingBox = new Box3();
-	// 	}
+  // Object3D.prototype.computeBoundingBox = function(precise=true) {
+  // 	if ( this.boundingBox === null ) {
+  // 		this.boundingBox = new Box3();
+  // 	}
   //   this.boundingBox.setFromObject(this, precise);
-	// }
-	// Object3D.prototype.computeBoundingSphere = function() {
+  // }
+  // Object3D.prototype.computeBoundingSphere = function() {
   //   if ( this.boundingBox === null ) {
   //     this.computeBoundingBox();
   //   }
@@ -82,40 +85,40 @@ export function patchObject3D_CM() {
   //     this.boundingSphere = new Sphere();
   //   }
   //   this.boundingBox.getBoundingSphere(this.boundingSphere);
-	// }
+  // }
   //
   //
   //
   // Object3D.prototype.raycast = function( raycaster, intersects ) {
   //
-	// 	const matrixWorld = this.matrixWorld;
+  // 	const matrixWorld = this.matrixWorld;
   //
-	// 	// test with bounding sphere in world space
+  // 	// test with bounding sphere in world space
   //
-	// 	if ( this.boundingSphere === null ) this.computeBoundingSphere();
+  // 	if ( this.boundingSphere === null ) this.computeBoundingSphere();
   //
-	// 	_sphere.copy( this.boundingSphere );
-	// 	_sphere.applyMatrix4( matrixWorld );
+  // 	_sphere.copy( this.boundingSphere );
+  // 	_sphere.applyMatrix4( matrixWorld );
   //
-	// 	// check distance from ray origin to bounding sphere
+  // 	// check distance from ray origin to bounding sphere
   // // debugger
-	// 	// _ray.copy( raycaster.ray ).recast( raycaster.near );
-	// 	_ray.copy( raycaster.ray ).recast( raycaster.near );
+  // 	// _ray.copy( raycaster.ray ).recast( raycaster.near );
+  // 	_ray.copy( raycaster.ray ).recast( raycaster.near );
   //
-	// 	// if ( _sphere.containsPoint( _ray.origin ) === false ) {
+  // 	// if ( _sphere.containsPoint( _ray.origin ) === false ) {
   //   //
-	// 	// 	if ( _ray.intersectSphere( _sphere, _sphereHitAt ) === null ) return;
+  // 	// 	if ( _ray.intersectSphere( _sphere, _sphereHitAt ) === null ) return;
   //   //
-	// 	// 	if ( _ray.origin.distanceToSquared( _sphereHitAt ) > ( raycaster.far - raycaster.near ) ** 2 ) return;
+  // 	// 	if ( _ray.origin.distanceToSquared( _sphereHitAt ) > ( raycaster.far - raycaster.near ) ** 2 ) return;
   //   //
-	// 	// }
+  // 	// }
   // // debugger
-	// 	// convert ray to local space of mesh
+  // 	// convert ray to local space of mesh
   //
-	// 	// _inverseMatrix.copy( matrixWorld ).invert();
-	// 	// _ray.copy( raycaster.ray ).applyMatrix4( _inverseMatrix );
+  // 	// _inverseMatrix.copy( matrixWorld ).invert();
+  // 	// _ray.copy( raycaster.ray ).applyMatrix4( _inverseMatrix );
   //
-	// 	// test with bounding box in local space
+  // 	// test with bounding box in local space
   //
   //   //
   //   // start here for new routines
@@ -128,9 +131,9 @@ export function patchObject3D_CM() {
   //   // if ( this.boundingBox === null ) return;
   //   debugger
   //
-	// 	if ( _ray.intersectBox( this.boundingBox, _intersectionPointWorld ) === null ) return;
-	// 	// if ( _ray.intersectBox( this.boundingBox, this._intersectionPointWorld ) === false ) return;
-	// 	// if ( ! _ray.intersectBox( this.boundingBox, this._intersectionPointWorld ) ) return;
+  // 	if ( _ray.intersectBox( this.boundingBox, _intersectionPointWorld ) === null ) return;
+  // 	// if ( _ray.intersectBox( this.boundingBox, this._intersectionPointWorld ) === false ) return;
+  // 	// if ( ! _ray.intersectBox( this.boundingBox, this._intersectionPointWorld ) ) return;
   //
   // debugger
   //
@@ -159,10 +162,9 @@ export function patchObject3D_CM() {
   //   intersects.sort( ascSort );
   //
   //   return intersects;
-	// }
+  // }
   //
   //
-
 
   // object3's dont have a bounds, so we force one!!!
   // and optimise for cache
@@ -171,14 +173,14 @@ export function patchObject3D_CM() {
   Object3D.prototype.worldBounds = new Box3();
   Object3D.prototype.localBounds = new Box3();
   Object3D.prototype.computeLocalBounds = function(autoUpdate = true){
-      if(autoUpdate)this.updateMatrix();
-      this.localBounds.setFromObject(this);
+    if(autoUpdate)this.updateMatrix();
+    this.localBounds.setFromObject(this);
   }
   Object3D.prototype.computeWorldBounds = function(autoUpdate = true){
-      if(autoUpdate)this.updateMatrix();
-      // if(autoUpdate)this.updateWorldMatrix();
-      this.worldBounds.copy(this.localBounds);
-      this.worldBounds.applyMatrix4(this.matrixWorld);
+    if(autoUpdate)this.updateMatrix();
+    // if(autoUpdate)this.updateWorldMatrix();
+    this.worldBounds.copy(this.localBounds);
+    this.worldBounds.applyMatrix4(this.matrixWorld);
   }
   // inavertly we compute updateMatrix a lot now when cloning
   Object3D.prototype.computeLocalAndWorldBounds = function(){
@@ -186,12 +188,10 @@ export function patchObject3D_CM() {
     this.computeWorldBounds();
   }
 
-
   Object3D.prototype.moreBuild_CM = function({targetGroup}){
     this.buildBoxHelper(targetGroup);
     this.computeLocalAndWorldBounds();
   }
-
 
   // Since we cant parent the helper to an object and retain a
   // performant update, we setup another group object and add it there

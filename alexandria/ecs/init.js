@@ -4,13 +4,10 @@
 import {
   createWorld,
   addComponent,
-  addEntity,
-  pipe
+  addEntity
 } from 'bitecs';
 
-import timeSystem from './systems/time';
-import physicsSystem from './systems/physics';
-// Non-physics-based motion
+// movementSystem is for non-physics-based motion
 // NOTE movementSystem is commented out til
 // we decide we want to use it
 // import movementSystem from './systems/movement';
@@ -18,13 +15,6 @@ import physicsSystem from './systems/physics';
 import * as Components from './components';
 
 import { store } from 'alexandria/store';
-
-// Game system loop!
-const pipeline = pipe(
-  timeSystem,
-  physicsSystem,
-  // movementSystem
-);
 
 export default function init() {
 
@@ -40,8 +30,4 @@ export default function init() {
   });
 
   store.setState({ ecs: { world } });
-
-  setInterval(() => {
-    pipeline(world)
-  }, 16);
 }

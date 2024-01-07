@@ -19,9 +19,6 @@ import {GameGrapth} from 'alexandria/grapths/gameGrapth.js';
 // import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
 
-
-
-
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 
@@ -29,17 +26,16 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import {Park1} from 'levelMaps/park1';
 
 export default () => {
-  
-  
+
   const scene = new Scene();
   scene.background = new Color();
   // early optimisations, see readme #code: scene28475#
   scene.matrixAutoUpdate = false;
-  
+
   const helpersGroup = new Group();
   scene.add(helpersGroup);
   helpersGroup.matrixAutoUpdate = false;
-  
+
   const camera = new PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.05, 1000 );
   // camera.position.z = 5;
   camera.position.fromArray([0.9625265375798292, 4.0272857200013625, 4.984509277416068]);
@@ -64,10 +60,9 @@ export default () => {
     camera.updateProjectionMatrix();
     renderer.setSize( window.innerWidth, window.innerHeight );
   }
-  
+
   window.addEventListener( 'resize', onWindowResize, false );
-  
-  //
+
   // setup state and other
 
   // #TODO: fix some of these and GameGrapth to be arrays instead
@@ -76,16 +71,15 @@ export default () => {
     // this part belongs somewhere else
     // so its not so stashed away in this file
     game: new GameGrapth({
-        renderer: renderer,
-        domElement : renderer.domElement,
-        scene: scene,
-        camera: camera,
-        controls: controls,
-        helpersGroup: helpersGroup
-      })
+      renderer: renderer,
+      domElement: renderer.domElement,
+      scene: scene,
+      camera: camera,
+      controls: controls,
+      helpersGroup: helpersGroup
+    })
   });
-  
-  
+
   const st = store.state.game;
 
   // lights moved into levels
@@ -93,18 +87,15 @@ export default () => {
   const parkLevel = new Park1();
   scene.add(parkLevel);
   st.levels.add(parkLevel);
-  
+
   st.currentLevelMap = parkLevel;
 
   const axesHelper = new AxesHelper( 5 );
   // scene.add( axesHelper );
-  
+
   st.buildTransformWidget("translate");
   st.buildTransformWidget("rotate");
   st.buildTransformWidget("scale");
 
-
   // renderloop moved to later process
-  
-  
 };
