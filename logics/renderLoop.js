@@ -18,7 +18,7 @@ let composer = null, renderPass, saoPass;
 var useComposer = true;
 
 // Game system loop!
-const pipeline = pipe(
+const gamePipeline = pipe(
   timeSystem,
   physicsSystem,
   // movementSystem,
@@ -70,7 +70,7 @@ export function renderLoop(delta) {
   st.controls.update();
 
   // Main render pipeline
-  pipeline(store.state.ecs.world);
+  gamePipeline(store.state.ecs.core);
 
   // would like this is be a subclass of array
   // for (var i = 0; i < store.animationPool.cache.length; i++) {

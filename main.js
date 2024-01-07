@@ -14,7 +14,6 @@ import { Box3, Vector3, Box3Helper } from 'three';
 import { loadModelAsync } from 'alexandria/utils/loadModel';
 import { randomInRange } from 'alexandria/utils/stuff';
 
-
 // import { GetPositionOfRaycasterFromFloor, GetMousePositionToScreen } from 'alexandria/mousetools/mouseScreenTools.js';
 
 // import { Notlilgui } from './notlilgui/notlilgui.js';
@@ -35,24 +34,21 @@ class AltBox3Helper extends Box3Helper{
 
   updateMatrixWorld( force ) {
 
-		const box = this.box;
+    const box = this.box;
 
-		if ( box.isEmpty() ) return;
+    if ( box.isEmpty() ) return;
 
-		box.getCenter( this.position );
+    box.getCenter( this.position );
 
-		box.getSize( this.scale );
+    box.getSize( this.scale );
 
-		this.scale.multiplyScalar( 0.5 );
+    this.scale.multiplyScalar( 0.5 );
 
-		super.updateMatrixWorld( force );
+    super.updateMatrixWorld( force );
 
-	}
+  }
 
 }
-
-
-
 
 const init = async () => {
 
@@ -169,12 +165,12 @@ function buildLilGui(gameConfig){
   // gui.add( document, 'fish' );
 
   const obj = {
-  	// myBoolean: true,
-  	// myString: 'lil-gui',
-  	// myNumber: 1,
-  	widgetTranslate: function() { gameConfig.transformWidget.mode = "translate" },
-  	widgetRotate: function() { gameConfig.transformWidget.mode = "rotate" },
-  	widgetScale: function() { gameConfig.transformWidget.mode = "scale" }
+    // myBoolean: true,
+    // myString: 'lil-gui',
+    // myNumber: 1,
+    widgetTranslate: function() { gameConfig.transformWidget.mode = "translate" },
+    widgetRotate: function() { gameConfig.transformWidget.mode = "rotate" },
+    widgetScale: function() { gameConfig.transformWidget.mode = "scale" }
   }
 
   // gui.add( obj, 'myBoolean' ); 	// checkbox
@@ -183,12 +179,8 @@ function buildLilGui(gameConfig){
   gui.add( obj, 'widgetTranslate' ); 	// button
   gui.add( obj, 'widgetRotate' ); 	// button
   gui.add( obj, 'widgetScale' ); 	// button
-
 }
 
-
-//
-//
 // function attachLeftShelf() {
 //   let gg = new Notlilgui();
 //   gg.attach();
@@ -202,5 +194,4 @@ function buildLilGui(gameConfig){
 //   // for (var i = 0; i < 40; i++) {
 //   //   gg.addItem();
 //   // }
-//
 // }

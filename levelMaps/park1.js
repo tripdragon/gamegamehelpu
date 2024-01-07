@@ -70,17 +70,17 @@ export class Park1 extends LevelMap{
     // const hemiLight = new HemisphereLight( 0x0000ff, 0x00ff00, 0.6 );
     // this.add(hemiLight);
 
-
     {
       const geometry = new PlaneGeometry( 1,1 );
       const material = new MeshStandardMaterial( {color: 0x4fff0f} );
       // const material = new MeshStandardMaterial( {color: 0xffffff} );
       const floor = new Mesh( geometry, material );
-      floor.setTags({ physics: { type: 'fixed' } });
       floor.scale.setScalar(12);
       floor.rotation.set(-Math.PI/2,0,0);
       floor.receiveShadow = true;
-      this.add( floor );
+      this.add(floor);
+      // floor.init({ physics: { rigidBody: 'fixed' } });
+      floor.init({ physics: { rigidBody: 'dynamic' } });
       window.floor = floor;
 
       // const texture = new TextureLoader().load('./textures/myrthe-van-tol-grass-texture.jpeg' );

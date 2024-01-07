@@ -3,7 +3,6 @@
 
 import {
   createWorld,
-  addComponent,
   addEntity
 } from 'bitecs';
 
@@ -12,22 +11,15 @@ import {
 // we decide we want to use it
 // import movementSystem from './systems/movement';
 
-import * as Components from './components';
-
 import { store } from 'alexandria/store';
 
 export default function init() {
 
-  const world = createWorld();
-  world.time = { delta: 0, elapsed: 0, then: performance.now() };
+  const core = createWorld();
+  core.time = { delta: 0, elapsed: 0, then: performance.now() };
 
-  const eid = addEntity(world);
-  world.eid = eid;
+  const eid = addEntity(core);
+  core.eid = eid;
 
-  // Add all components exported from './components'
-  Object.values(Components).forEach((Component) => {
-    addComponent(world, Component, eid);
-  });
-
-  store.setState({ ecs: { world } });
+  store.setState({ ecs: { core } });
 }

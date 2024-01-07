@@ -10,9 +10,9 @@ import {
 
 export const movementQuery = defineQuery([TransformComponent, VelocityComponent]);
 
-export default function movementSystem(world) {
-  const { time: { delta } } = world
-  const ents = movementQuery(world)
+export default function movementSystem(core) {
+  const { time: { delta } } = core;
+  const ents = movementQuery(core);
   for (let i = 0; i < ents.length; i++) {
     const eid = ents[i];
     // const obj3d = world.objects.get(e);
@@ -26,5 +26,5 @@ export default function movementSystem(world) {
     TransformComponent.position.z[eid] += VelocityComponent.z[eid] * delta;
   }
 
-  return world;
+  return core;
 }

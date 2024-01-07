@@ -11,9 +11,12 @@ import {
   Matrix4
 } from 'three';
 
-import { addEntity } from 'bitecs';
+import Physics from '@dimforge/rapier3d-compat';
+
+import { addEntity, addComponent } from 'bitecs';
 
 import { store } from 'alexandria/store';
+import { Object3DComponent, DynamicPhysicsComponent } from 'alexandria/ecs/components';
 
 function ascSort(a, b) {
   return a.distance - b.distance;
@@ -29,10 +32,60 @@ export function patchObject3D_CM() {
   const _sphere = /*@__PURE__*/ new Sphere();
   const _sphereHitAt = /*@__PURE__*/ new Vector3();
 
-  Object3D.prototype.init = function() {
+  const rigidBodyTypes = ['dynamic', 'fixed', 'kinematicPositionBased', 'kinematicVelocityBased'];
+  const physicsKeys = ['rigidBody', 'collider', 'linvel', 'angvel'];
 
-    const eid = addEntity(store.state.ecs.world);
+  Object3D.prototype.init = function({ physics } = {}) {
+
+    const ecsCore = store.state.ecs.core;
+    const eid = addEntity(ecsCore, Object3DComponent);
     this.eid = eid;
+
+    if (typeof physics === 'object') {
+      const physCore = store.state.physics.core;
+
+      const invalidKeys = Object.keys(physics).filter((key) => !physicsKeys.includes(key));
+
+      if (invalidKeys.length) {
+        throw new Error(`Invalid keys on object3D physics: '${invalidKeys}'`)
+      }
+
+      if (physics.rigidBody) {
+        if (!rigidBodyTypes.includes(physics.rigidBody)) {
+          throw new Error(`Invalid rigidBody '${physics.rigidBody}'. Must be one of ${rigidBodyTypes}`);
+        }
+
+        if (physics.rigidBody === 'dynamic') {
+          addComponent(ecsCore, DynamicPhysicsComponent, eid);
+        }
+
+        DynamicPhysicsComponent.objectId[eid] = this.id;
+
+        const rigidBodyDesc = Physics.RigidBodyDesc[physics.rigidBody]()
+          .setTranslation(...this.position);
+          // .setRotation(this.rotation);
+
+        if (physics.linvel) {
+          rigidBodyDesc.setLinvel(physics.linvel);
+        }
+
+        if (physics.angvel) {
+          rigidBodyDesc.setAngvel(physics.angvel);
+        }
+
+        this.rigidBody = physCore.createRigidBody(rigidBodyDesc);
+
+        // TODO support more collider types
+        // See docs https://rapier.rs/docs/api/javascript/JavaScript3D
+        const bounding = new Box3().setFromObject(this);
+        // bounding.applyMatrix(this);
+        const colliderDesc = Physics.ColliderDesc.cuboid(
+          ...bounding.getSize(new Vector3())
+        );
+
+        this.collider = physCore.createCollider(colliderDesc, this.rigidBody);
+      }
+    }
   }
 
   Object3D.prototype.fish = 'neat!!';
@@ -42,11 +95,6 @@ export function patchObject3D_CM() {
   Object3D.prototype.isSelected = false;
   Object3D.prototype.select = function(){}
   Object3D.prototype.deselect = function(){}
-
-  Object3D.prototype.setTags = function(tags) {
-    console.log('this Object3D', this, tags);
-    this.tags = {...this.tags, ...tags};
-  };
 
   Object3D.prototype.simplePhysics = {
     velocity: new Vector3(),
@@ -72,9 +120,9 @@ export function patchObject3D_CM() {
   // // #BUG we need precise to fix lota internal things
   // // from setting the box settings to Infinity as defaults
   // Object3D.prototype.computeBoundingBox = function(precise=true) {
-  // 	if ( this.boundingBox === null ) {
-  // 		this.boundingBox = new Box3();
-  // 	}
+  //   if ( this.boundingBox === null ) {
+  //     this.boundingBox = new Box3();
+  //   }
   //   this.boundingBox.setFromObject(this, precise);
   // }
   // Object3D.prototype.computeBoundingSphere = function() {
