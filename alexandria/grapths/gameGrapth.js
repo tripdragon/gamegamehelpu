@@ -49,6 +49,10 @@ export class GameGrapth{
     // Return unregister func
     return () => this.renderPool.delete(func);
   }
+  
+  buildPhysicsGroup(){
+    this.scene.add(this.physicsGroup);
+  }
 
   // @mode "translate", "rotate" and "scale"
   buildTransformWidget(mode){
