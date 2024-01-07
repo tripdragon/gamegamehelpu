@@ -8,6 +8,9 @@ import { DynamicPhysicsComponent } from 'alexandria/ecs/components';
 
 export const physQuery = defineQuery([DynamicPhysicsComponent]);
 
+let rigidBodyPos;
+let colliderRotation;
+var bb = new Vector3();
 export default function physicsSystem(core) {
 
   const ents = physQuery(core);
@@ -19,20 +22,25 @@ export default function physicsSystem(core) {
       DynamicPhysicsComponent.objectId[eid]
     );
 
-    const rigidBodyPos = object3D.rigidBody.translation();
+    rigidBodyPos = object3D.rigidBody.translation();
+    // object3D.rigidBody.translation(bb);
+    
     // console.log('rigidBodyPos', rigidBodyPos);
 
     // TODO FIX SO IT NOT DISAPPEAR OR W/E
+    
+    // object3D.position.copy(bb);
     object3D.position.copy(rigidBodyPos);
+    
     // object3D.position.y = -2;
-    object3D.updateMatrix();
+    
     
     // This also makes the floor disappear
     // object3D.position.set(new Vector3(
     //   0, 0, 0
     // ));
 
-    const colliderRotation = object3D.collider.rotation();
+    colliderRotation = object3D.collider.rotation();
     // console.log('colliderRotation', colliderRotation);
 
     // TODO FIX SO IT NOT DISAPPEAR OR W/E
@@ -42,6 +50,8 @@ export default function physicsSystem(core) {
     //   colliderRotation.z,
     //   colliderRotation.w
     // ));
+
+    object3D.updateMatrix();
 
     // DynamicPhysicsComponent[eid]
   }
