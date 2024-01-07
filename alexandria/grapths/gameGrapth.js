@@ -63,7 +63,7 @@ export class GameGrapth{
     this.scene.add(this.widgetsGroup);
 
     var widget;
-    // debugger
+    
     widget = this.transformWidget = new TransformControls( this.camera, this.domElement );
     // widget = this[mode+"Widget"] = new TransformControls( this.camera, this.domElement );
 

@@ -3465,7 +3465,6 @@ class GameGrapth {
     if (this.transformWidget) return;
     this.scene.add(this.widgetsGroup);
     var widget;
-    // debugger
     widget = this.transformWidget = new TransformControls(this.camera, this.domElement);
     // widget = this[mode+"Widget"] = new TransformControls( this.camera, this.domElement );
 
@@ -4391,595 +4390,12 @@ class LevelMap extends Group {
   }
 }
 
-class Park1 extends LevelMap {
-  constructor() {
-    super();
-    this.init();
-  }
-  init() {
-    store$1.state.game;
-    // debugger
-
-    const ambientLight = new AmbientLight();
-    ambientLight.intensity = 2.01;
-    this.lights.add(ambientLight);
-    const sunLight = new DirectionalLight();
-    sunLight.castShadow = true;
-    // sunLight.position.set(2.5, 4, 0);
-    // sunLight.position.set(2.5, 4, 12);
-    // sunLight.position.set(1, 1, 0);
-    sunLight.position.copy({
-      x: 1.2,
-      y: 1,
-      z: 0.2
-    });
-    sunLight.intensity = 4.7;
-    // sunLight.color.setHex(0xffff80);
-    sunLight.color.setHex(0xfffff);
-    this.lights.add(sunLight);
-
-    //Set up shadow properties for the light
-    sunLight.shadow.mapSize.width = 512 * 2;
-    sunLight.shadow.mapSize.height = 512 * 2;
-    sunLight.shadow.camera.near = 0.5;
-    sunLight.shadow.camera.far = 50;
-
-    // see link for more https://stackoverflow.com/a/56015860
-    // and need it to be in 3d space instead of vector space
-    sunLight.position.multiplyScalar(5);
-
-    // need a larger size for shadows
-    var side = 8;
-    sunLight.shadow.camera.top = side;
-    sunLight.shadow.camera.bottom = -side;
-    sunLight.shadow.camera.left = side;
-    sunLight.shadow.camera.right = -side;
-
-    // var shadowHelper = new CameraHelper( sunLight.shadow.camera );
-    // this.add( shadowHelper );
-
-    this.sunLight = sunLight;
-
-    //
-    // const hemiLight = new HemisphereLight( 0x0000ff, 0x00ff00, 0.6 );
-    // this.add(hemiLight);
-
-    {
-      const geometry = new PlaneGeometry(1, 1);
-      const material = new MeshStandardMaterial({
-        color: 0x4fff0f
-      });
-      // const material = new MeshStandardMaterial( {color: 0xffffff} );
-      const floor = new Mesh(geometry, material);
-      floor.scale.setScalar(12);
-      floor.rotation.set(-Math.PI / 2, 0, 0);
-      floor.receiveShadow = true;
-      this.add(floor);
-      // floor.init({ physics: { rigidBody: 'fixed' } });
-      floor.init({
-        physics: {
-          rigidBody: 'fixed'
-        }
-      });
-      window.floor = floor;
-
-      // const texture = new TextureLoader().load('./textures/myrthe-van-tol-grass-texture.jpeg' );
-      const texture = new TextureLoader().loadAsync('./textures/myrthe-van-tol-grass-texture.jpeg');
-      texture.then(tex => {
-        //console.log(tex);
-        tex.repeat.setScalar(8);
-        tex.wrapS = tex.wrapT = RepeatWrapping;
-        tex.needsUpdate = true;
-        tex.colorSpace = SRGBColorSpace; // washed out otherwise
-        material.map = tex;
-        material.needsUpdate = true;
-      });
-    }
-    return;
-  }
-}
-
-var threeStart_CM = (() => {
-  const scene = new Scene();
-  scene.background = new Color();
-  // early optimisations, see readme #code: scene28475#
-  scene.matrixAutoUpdate = false;
-  const helpersGroup = new Group();
-  scene.add(helpersGroup);
-  helpersGroup.matrixAutoUpdate = false;
-  const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.05, 1000);
-  // camera.position.z = 5;
-  camera.position.fromArray([0.9625265375798292, 4.0272857200013625, 4.984509277416068]);
-  camera.lookAt(new Vector3$2());
-  const renderer = new WebGLRenderer({
-    antialias: true
-  });
-  // renderer.antialias = true; https://stackoverflow.com/a/34786482
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.shadowMap.enabled = true;
-  // renderer.outputEncoding = sRGBEncoding;
-  // renderer.outputColorSpace = SRGBColorSpace;
-
-  renderer.shadowMap.type = PCFSoftShadowMap; // default THREE.PCFShadowMap
-  // renderer.powerPreference = "high-performance";
-  document.body.appendChild(renderer.domElement);
-  const controls = new OrbitControls(camera, renderer.domElement);
-  function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-  }
-  window.addEventListener('resize', onWindowResize, false);
-
-  // setup state and other
-
-  // #TODO: fix some of these and GameGrapth to be arrays instead
-  // #code: gaaame238 #
-  store$1.setState({
-    // this part belongs somewhere else
-    // so its not so stashed away in this file
-    game: new GameGrapth({
-      renderer: renderer,
-      domElement: renderer.domElement,
-      scene: scene,
-      camera: camera,
-      controls: controls,
-      helpersGroup: helpersGroup
-    })
-  });
-  const st = store$1.state.game;
-
-  // lights moved into levels
-
-  const parkLevel = new Park1();
-  scene.add(parkLevel);
-  st.levels.add(parkLevel);
-  st.currentLevelMap = parkLevel;
-  new AxesHelper(5);
-  // scene.add( axesHelper );
-
-  st.buildTransformWidget("translate");
-  st.buildTransformWidget("rotate");
-  st.buildTransformWidget("scale");
-  st.buildPhysicsGroup();
-
-  // renderloop moved to later process
-});
-
-async function Initializers (store) {
-  const initializers = [Physics, ECS, Keyboard, threeStart_CM // not a class
-  ];
-
-  // Pass store to initializers
-  for (const init of initializers) {
-    await init(store);
-  }
-}
-
-function timeSystem(core) {
-  const {
-    time
-  } = core;
-  const now = performance.now();
-  const delta = now - time.then;
-  time.delta = delta;
-  time.elapsed += delta;
-  time.then = now;
-  return core;
-}
-
-const {
-  f32
-} = Types;
-const Vector3$1 = {
-  x: f32,
-  y: f32,
-  z: f32
-};
-const Quaternion = {
-  x: f32,
-  y: f32,
-  z: f32,
-  w: f32
-};
-defineComponent({
-  position: Vector3$1,
-  rotation: Quaternion,
-  scale: Vector3$1
-});
-defineComponent(Vector3$1);
-defineComponent();
-const DynamicPhysicsComponent = defineComponent({
-  objectId: [Types.ui32]
-});
-
-// Interesting example here syncing some babylon stuff w/ rapier
-// https://playcode.io/1528902
-
-const physQuery = defineQuery([DynamicPhysicsComponent]);
-let rigidBodyPos;
-new Vector3$2();
-function physicsSystem(core) {
-  const ents = physQuery(core);
-  for (let i = 0; i < ents.length; i++) {
-    const eid = ents[i];
-    const object3D = store$1.state.game.scene.getObjectById(DynamicPhysicsComponent.objectId[eid]);
-    rigidBodyPos = object3D.rigidBody.translation();
-    // object3D.rigidBody.translation(bb);
-
-    // console.log('rigidBodyPos', rigidBodyPos);
-
-    // TODO FIX SO IT NOT DISAPPEAR OR W/E
-
-    // object3D.position.copy(bb);
-    object3D.position.copy(rigidBodyPos);
-
-    // object3D.position.y = -2;
-
-    // This also makes the floor disappear
-    // object3D.position.set(new Vector3(
-    //   0, 0, 0
-    // ));
-
-    object3D.collider.rotation();
-    // console.log('colliderRotation', colliderRotation);
-
-    // TODO FIX SO IT NOT DISAPPEAR OR W/E
-    // object3D.quaternion.set(new Quaternion(
-    //   colliderRotation.x,
-    //   colliderRotation.y,
-    //   colliderRotation.z,
-    //   colliderRotation.w
-    // ));
-
-    object3D.updateMatrix();
-
-    // DynamicPhysicsComponent[eid]
-  }
-
-  // Step the simulation forward
-  store$1.state.physics.core.step();
-  return core;
-}
-
-function renderSystem(core) {
-  const st = store$1.state.game;
-  // Call each render callback in the renderPool before THREE renders
-  st.renderPool.forEach(func => func(core));
-  st.renderer.render(st.scene, st.camera);
-  return core;
-}
-
-// Game system loop!
-const gamePipeline = pipe(timeSystem, physicsSystem,
-// movementSystem,
-renderSystem);
-
-// eslint-disable-next-line no-unused-vars
-function renderLoop(delta) {
-  // const st = store.getState().game; // this spams with objects
-  const st = store$1.state.game;
-
-  // OY
-  // if(useComposer && composer === null){
-  //   console.log("><><>");
-  //   composer = new EffectComposer( st.renderer );
-  //   renderPass = new RenderPass( st.scene, st.camera );
-  //   composer.addPass( renderPass );
-  //   saoPass = new SAOPass( st.scene, st.camera );
-  //   saoPass.saoIntensity = 0.001;
-  //   saoPass.saoScale = 0.001;
-  //   composer.addPass( saoPass );
-  //   const outputPass = new OutputPass();
-  //   composer.addPass( outputPass );
-  // }
-
-  requestAnimationFrame(renderLoop);
-
-  // if(stats){
-  //   stats.begin();
-  //   st.renderer.render( st.scene, st.camera );
-  //   stats.end();
-  // }
-  // else {
-  //   if (useComposer && composer) {
-  //     composer.render();
-  //     // console.log("¿");
-  //   }
-  //   else {
-  //     st.renderer.render( st.scene, st.camera );
-  //   }
-  // }
-
-  st.controls.update();
-
-  // Main render pipeline
-  gamePipeline(store$1.state.ecs.core);
-
-  // would like this is be a subclass of array
-  // for (var i = 0; i < store.animationPool.cache.length; i++) {
-  //   // store.animationPool.cache[i].update();
-  //   let pick = store.animationPool.cache[i];
-  //   pick.entities.run();
-  // }
-
-  // TODO can move this into an animationSystem and fit into the above pipeline()
-  for (var i = 0; i < st.animationPool.length; i++) {
-    // store.animationPool.cache[i].update();
-    let pick = st.animationPool[i];
-    pick.entities.run();
-    // we are forcing everything off in main, so make sure to update here
-    // #code: scene28475#
-    pick.updateMatrix();
-  }
-}
-
-function fish() {
-  console.log('tacos 2222');
-}
-
-// we need a core patch of object3D to have interfaces
-// so this is the simpliest route
-
-function patchObject3D_CM() {
-  const rigidBodyTypes = ['dynamic', 'fixed', 'kinematicPositionBased', 'kinematicVelocityBased'];
-  const physicsKeys = ['rigidBody', 'collider', 'linvel', 'angvel'];
-  Object3D.prototype.init = function ({
-    physics
-  } = {}) {
-    const ecsCore = store$1.state.ecs.core;
-    const eid = addEntity(ecsCore);
-    this.eid = eid;
-    if (typeof physics === 'object') {
-      const physCore = store$1.state.physics.core;
-      const invalidKeys = Object.keys(physics).filter(key => !physicsKeys.includes(key));
-      if (invalidKeys.length) {
-        throw new Error(`Invalid keys on object3D physics: '${invalidKeys}'`);
-      }
-      if (physics.rigidBody) {
-        if (!rigidBodyTypes.includes(physics.rigidBody)) {
-          throw new Error(`Invalid rigidBody '${physics.rigidBody}'. Must be one of ${rigidBodyTypes}`);
-        }
-        if (physics.rigidBody === 'dynamic') {
-          addComponent(ecsCore, DynamicPhysicsComponent, eid);
-        }
-        DynamicPhysicsComponent.objectId[eid] = this.id;
-        const rigidBodyDesc = PI.RigidBodyDesc[physics.rigidBody]().setTranslation(...this.position);
-        // .setRotation(this.rotation);
-
-        if (physics.linvel) {
-          rigidBodyDesc.setLinvel(physics.linvel);
-        }
-        if (physics.angvel) {
-          rigidBodyDesc.setAngvel(physics.angvel);
-        }
-        this.rigidBody = physCore.createRigidBody(rigidBodyDesc);
-
-        // TODO support more collider types
-        // See docs https://rapier.rs/docs/api/javascript/JavaScript3D
-        const bounding = new Box3$1().setFromObject(this);
-        // bounding.applyMatrix(this);
-        const colliderDesc = PI.ColliderDesc.cuboid(...bounding.getSize(new Vector3$2()));
-        this.collider = physCore.createCollider(colliderDesc, this.rigidBody);
-      }
-    }
-  };
-  Object3D.prototype.fish = 'neat!!';
-  Object3D.prototype.entities = {};
-
-  // addresses onSelected, onUnseleced
-  Object3D.prototype.isSelected = false;
-  Object3D.prototype.select = function () {};
-  Object3D.prototype.deselect = function () {};
-  Object3D.prototype.simplePhysics = {
-    velocity: new Vector3$2(),
-    acceleration: new Vector3$2(),
-    force: new Vector3$2()
-  };
-  Object3D.prototype.setAutoMatrixAll = function (parentVal = true, val = true) {
-    this.matrixAutoUpdate = parentVal;
-    this.traverse(item => {
-      item.matrixAutoUpdate = val;
-    });
-  };
-
-  // //
-  // // // changing the world and local bounds idea
-  // // // trying for a direct three patch to maybe be included
-  // Object3D.prototype.boundingBox = null;
-  // Object3D.prototype.boundingSphere = null;
-  // //
-  // //
-  // //
-  // // #BUG we need precise to fix lota internal things
-  // // from setting the box settings to Infinity as defaults
-  // Object3D.prototype.computeBoundingBox = function(precise=true) {
-  //   if ( this.boundingBox === null ) {
-  //     this.boundingBox = new Box3();
-  //   }
-  //   this.boundingBox.setFromObject(this, precise);
-  // }
-  // Object3D.prototype.computeBoundingSphere = function() {
-  //   if ( this.boundingBox === null ) {
-  //     this.computeBoundingBox();
-  //   }
-  //   if (this.boundingBox && this.boundingSphere === null) {
-  //     this.boundingSphere = new Sphere();
-  //   }
-  //   this.boundingBox.getBoundingSphere(this.boundingSphere);
-  // }
-  //
-  //
-  //
-  // Object3D.prototype.raycast = function( raycaster, intersects ) {
-  //
-  // 	const matrixWorld = this.matrixWorld;
-  //
-  // 	// test with bounding sphere in world space
-  //
-  // 	if ( this.boundingSphere === null ) this.computeBoundingSphere();
-  //
-  // 	_sphere.copy( this.boundingSphere );
-  // 	_sphere.applyMatrix4( matrixWorld );
-  //
-  // 	// check distance from ray origin to bounding sphere
-  // // debugger
-  // 	// _ray.copy( raycaster.ray ).recast( raycaster.near );
-  // 	_ray.copy( raycaster.ray ).recast( raycaster.near );
-  //
-  // 	// if ( _sphere.containsPoint( _ray.origin ) === false ) {
-  //   //
-  // 	// 	if ( _ray.intersectSphere( _sphere, _sphereHitAt ) === null ) return;
-  //   //
-  // 	// 	if ( _ray.origin.distanceToSquared( _sphereHitAt ) > ( raycaster.far - raycaster.near ) ** 2 ) return;
-  //   //
-  // 	// }
-  // // debugger
-  // 	// convert ray to local space of mesh
-  //
-  // 	// _inverseMatrix.copy( matrixWorld ).invert();
-  // 	// _ray.copy( raycaster.ray ).applyMatrix4( _inverseMatrix );
-  //
-  // 	// test with bounding box in local space
-  //
-  //   //
-  //   // start here for new routines
-  //   //
-  //
-  //   // if ( this.boundingSphere === null ) this.computeBoundingBox();
-  //   if ( this.boundingBox === null ) {
-  //     this.computeBoundingBox();
-  //   }
-  //   // if ( this.boundingBox === null ) return;
-  //   debugger
-  //
-  // 	if ( _ray.intersectBox( this.boundingBox, _intersectionPointWorld ) === null ) return;
-  // 	// if ( _ray.intersectBox( this.boundingBox, this._intersectionPointWorld ) === false ) return;
-  // 	// if ( ! _ray.intersectBox( this.boundingBox, this._intersectionPointWorld ) ) return;
-  //
-  // debugger
-  //
-  //   // _intersectionPointWorld.copy( point );
-  //   // _intersectionPointWorld.applyMatrix4( object.matrixWorld );
-  //
-  //
-  //   _point.copy( _intersectionPointWorld );
-  //   _point.applyMatrix4( this.matrixWorld );
-  //
-  //   const distance = raycaster.ray.origin.distanceTo( _point );
-  //   console.log("distance", distance);
-  //
-  //   if ( distance < raycaster.near || distance > raycaster.far ) return null;
-  //
-  // // debugger
-  //
-  //   const intersection = {
-  //     distance: distance,
-  //     point: _intersectionPointWorld.clone(),
-  //     object: this
-  //   };
-  //
-  //   intersects.push( intersection );
-  //
-  //   intersects.sort( ascSort );
-  //
-  //   return intersects;
-  // }
-  //
-  //
-
-  // object3's dont have a bounds, so we force one!!!
-  // and optimise for cache
-  // after such, if you move the object youll need to run computeWorldBounds again
-  // which might mean every frame. you have to deside if you need that for like raycasts
-  Object3D.prototype.worldBounds = new Box3$1();
-  Object3D.prototype.localBounds = new Box3$1();
-  Object3D.prototype.computeLocalBounds = function (autoUpdate = true) {
-    if (autoUpdate) this.updateMatrix();
-    this.localBounds.setFromObject(this);
-  };
-  Object3D.prototype.computeWorldBounds = function (autoUpdate = true) {
-    if (autoUpdate) this.updateMatrix();
-    // if(autoUpdate)this.updateWorldMatrix();
-    this.worldBounds.copy(this.localBounds);
-    this.worldBounds.applyMatrix4(this.matrixWorld);
-  };
-  // inavertly we compute updateMatrix a lot now when cloning
-  Object3D.prototype.computeLocalAndWorldBounds = function () {
-    this.computeLocalBounds();
-    this.computeWorldBounds();
-  };
-  Object3D.prototype.moreBuild_CM = function ({
-    targetGroup
-  }) {
-    this.buildBoxHelper(targetGroup);
-    this.computeLocalAndWorldBounds();
-  };
-
-  // Since we cant parent the helper to an object and retain a
-  // performant update, we setup another group object and add it there
-  // so we need a basic pointer to hide it when needed
-  // #TODO replace for parented object instead :
-  Object3D.prototype.boxHelperPointer = null;
-
-  // @ targetGroup : store.state.game.helpersGroup
-  // would Reeeeealy like to not add this to an external group
-  Object3D.prototype.buildBoxHelper = function (targetGroup) {
-    this.updateMatrix();
-    const box = new Box3$1();
-    box.setFromObject(this);
-    const helper = new Box3Helper(box, 0x0000ff);
-    this.boxHelperPointer = helper;
-    helper.ownerObject = this;
-    targetGroup.add(helper);
-  };
-
-  // call updateMatrix before hand
-  Object3D.prototype.refreshBoxHelper = function () {
-    this.boxHelperPointer?.box.setFromObject(this);
-  };
-
-  // this is a HARD CODED thing for debugging only
-  Object3D.prototype.quickDrawBox = function () {
-    this.updateMatrix();
-    this.computeBoundingBox();
-    var helper = new Box3Helper(this.boundingBox, 0x0000ff);
-    store$1.state.game.scene.add(helper);
-  };
-
-  // Object3D.prototype.refreshBoxHelper = function(){
-  //   this.boxHelperPointer?.box.setFromObject(this);
-  // }
-
-  // call this.updateMatrix(); before this
-  // Object3D.prototype.clone = function(recursive){
-  //   const yy = new this.constructor().copy( this, recursive );
-  //   if (this.boxHelperPointer) {
-  //     yy.buildBoxHelper(this.boxHelperPointer.parent);
-  //     yy.computeLocalBounds();
-  //     yy.computeWorldBounds();
-  //   }
-  //   yy.updateMatrix();
-  //   return yy;
-  // }
-
-  // Object3D.prototype.computeBox3Bounds = function(){
-  //
-  //   this.updateMatrix();
-  //   const box = new Box3();
-  //   box.setFromObject(piece2)
-  //
-  //   // const helper = new Box3Helper( box, 0xffff00 );
-  //   const helper = new Box3Helper( box, 0x0000ff );
-  //   piece2.boxHelperPointer = helper;
-  //   store.state.game.helpersGroup.add(helper);
-  //
-  // }
-
-  // these wont set
-  // Object3D.prototype.matrixAutoUpdate = false;
-  // Object3D.prototype.matrixWorldAutoUpdate = false;
+function randomInRange(start, end) {
+  var range = end - start;
+  var result = Math.random() * range;
+  result += start;
+  // return Math.round(result);
+  return result;
 }
 
 /**
@@ -8072,899 +7488,6 @@ async function loadModelAsync({
   // return result.scene;
 }
 
-// https://gist.github.com/JesterXL/8a124a812811f9df600e6a1fdc0013af
-function randomInRange(start, end) {
-  var range = end - start;
-  var result = Math.random() * range;
-  result += start;
-  // return Math.round(result);
-  return result;
-}
-
-// Pulled and edited from infini project
-
-
-// this manages the database of tools thus far
-// update is in EditorModeActions
-
-class ToolsController {
-  visualObject = null; // what will appear under the mouse
-
-  currentTool = null; // type Class as state machine
-
-  tools = {
-    // select = null;
-    // platform = null;
-    // wobject = null;
-    // player = null
-  };
-  toolsList = new CheapPool();
-  addTool(tool) {
-    if (tool.isTool) {
-      this.tools[tool.name] = tool;
-      this.toolsList.add(tool);
-    } else {
-      console.log("tool is not a tool!!!? lucky it");
-    }
-  }
-  changeTool(tool) {
-    var index = this.toolsList.indexOf(tool);
-    if (index === -1) {
-      console.log("tool missing ", tool.name);
-      return;
-    }
-    if (this.currentTool !== null) {
-      this.currentTool.replace();
-    }
-    this.currentTool = tool;
-    tool.start();
-  }
-  stopTool(tool) {
-    var index = this.toolsList.indexOf(tool);
-    if (index === -1) {
-      console.log("tool missing ", tool.name);
-      return;
-    }
-    if (this.currentTool !== null) {
-      this.currentTool.stop();
-    }
-  }
-}
-
-// Ideally you subclass this to add in the logics for which tools and such
-
-class Editor {
-  toolsShelf = null;
-
-  // dont know where this goes yet
-  modes = {
-    select: "select",
-    draw: "draw"
-  };
-  toolsController = new ToolsController();
-  constructor(props) {
-    // if(props){
-    //   this.toolsController = props.toolsController || 
-    // }
-  }
-  addTool(tool) {
-    this.toolsController.addTool(tool);
-  }
-  changeTool(tool) {
-    this.toolsController.changeTool(tool);
-  }
-  stopTool(tool) {
-    this.toolsController.stopTool(tool);
-  }
-  launch_CM() {}
-  hide() {}
-  remove() {}
-}
-
-// might be based on lilgui
-// might not
-// task is to get selector and transform tools
-// this or somethingelse might deal with thumbnails shelf
-
-// none of these import systems work now with scss also doing something
-// import './notlilguistyle.css';
-// import './notlilguistyle.scss'; /* import the styles as a string */
-// import styles from './notlilguistyle.css'; /* import the styles as a CSSStyleSheet */
-
-// import styles from './notlilguistyle.scss'; /* import the styles as a CSSStyleSheet */
-
-// import styles from './notlilguistyle.css' assert { type: 'css' }; /* import the styles as a CSSStyleSheet */
-
-class MiniCache extends Array {
-  add(item) {
-    this.push(item);
-  }
-}
-class Notlilgui {
-  panel;
-  cache = new MiniCache();
-  checkboxes = new MiniCache();
-  constructor() {}
-  attach() {
-    // console.log(styles);
-
-    // YUCK.....
-    // its fugllllly but it works vs trying to make node imports work
-    const inlinestyles = `
-
-    #notlilgui {
-      position: absolute;
-      overflow: auto;
-      height: auto;
-      top: 0px;
-      left: 0px;
-      z-index: 2;
-      background: #000000ba;
-      width: 120px;
-      /* min-height: 600px; */
-      padding: 20px 0;
-      border-right : 1px #3c3c3c solid;
-      /* flex box */
-      display: flex;
-      flex-direction: column;
-      flex-wrap: nowrap;
-      justify-content: flex-start;
-      align-content: stretch;
-      align-items: center;
-    }
-
-    #notlilgui .item{
-
-      background: white;
-      width: 40px;
-      height: 40px;
-      margin-bottom: 12px;
-      /* ___padding: 20px 0 0 0px; */
-      border : 1px white solid;
-      border-radius: 12px;
-      appearance: none;
-      background-position: center center;
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-color: transparent;
-      overflow: hidden;
-
-      /* order: 0; */
-      /* flex: 0 1 auto; */
-      /* align-self: auto; */
-
-    }
-
-    #notlilgui .item:checked {
-      appearance: checkbox;
-      border-radius: 12px;
-    }
-    `;
-    document.head.insertAdjacentHTML("beforeend", `<style>${inlinestyles}</style>`);
-    var panel = document.createElement('div');
-    this.panel = panel;
-    panel.id = 'notlilgui';
-    document.body.appendChild(panel);
-  }
-  checkBoxChanged(item) {
-    for (var i = 0; i < this.checkboxes.length; i++) {
-      if (item !== this.checkboxes[i]) {
-        this.checkboxes[i].checked = false;
-      }
-    }
-  }
-
-  // @ type checkbox etc
-  // function ToolCheckBoxFactory(parent, cache, tool, imageURL){
-  // returns element
-  addItem({
-    type = '',
-    imageurl = ''
-  } = {}) {
-    // an if goes here but for now its just building a checkbox
-
-    const box = this.buildCheckbox({
-      imageurl
-    });
-    this.panel.appendChild(box);
-    this.cache.add(box);
-    this.checkboxes.add(box);
-    return box;
-  }
-
-  // returns element
-  buildCheckbox({
-    imageurl
-  } = {}) {
-    // this.tool = tool;
-
-    // needs more robotting
-    const box = document.createElement('input');
-    box.classList.add('item');
-    box.classList.add('checkbox');
-    box.type = 'checkbox';
-    // item.style.backgroundImage = 'url(./Cast/Alien2.png)';
-    console.log(imageurl);
-    box.style.backgroundImage = `url(${imageurl})`;
-    // box.style.backgroundColor = '#000000';
-
-    var _this = this;
-    box.onclick = function (ev) {
-      _this.checkBoxChanged(ev.target);
-      console.log(ev.target.checked);
-      if (ev.target.checked) {
-        // console.log('checked yes');
-        // EditorMagic.changeTool(_this.tool);
-        // make this an event
-        const event = new CustomEvent("checkedOn", {
-          detail: box
-        });
-        this.dispatchEvent(event);
-      } else if (!ev.target.checked) {
-        // console.log('checked no');
-        // EditorMagic.stopTool(_this.tool);
-        // make this an event
-        const event = new CustomEvent("checkedOff", {
-          detail: box
-        });
-        this.dispatchEvent(event);
-      }
-    };
-    return box;
-
-    // this.click = function(){
-    //   box.click();
-    // }
-  }
-}
-
-var rect;
-const localPointer = new Vector2();
-new Vector2();
-const raycaster = new Raycaster();
-
-// GetMousePositionToScreen(touchStartPos.x, touchStartPos.y, _o.renderer.domElement,  pointer2D);
-
-// use   GetMousePositionToScreen(ev.clientX, ev.clientY, domElement,  vector2In);
-function GetMousePositionToScreen(xx, yy, domElement, vector2In) {
-  rect = domElement.getBoundingClientRect();
-  vector2In.x = (xx - rect.left) / (rect.right - rect.left) * 2 - 1;
-  vector2In.y = -((yy - rect.top) / (rect.bottom - rect.top)) * 2 + 1;
-}
-
-/*
-
-blegh 6 arguments
-this mutates the vector3in to give a position to use
-raycasterCube.position.copy(vector3in);
-
-:D use
-
-var floorPlane = new Plane(new Vector3(0,1,0), 0);
-GetPositionOfRaycasterFromFloor({renderer:_o.renderer, ev:ev, camera: _o.camera, floorPlane: floorPlane, vector3in: targetVecOfPlane});
-_o.raycasterCube.position.copy(targetVecOfPlane);
-
-:x
-
-*/
-
-function GetPositionOfRaycasterFromFloor({
-  domElement,
-  ev,
-  camera,
-  floorPlane,
-  vector3in
-}) {
-  GetMousePositionToScreen(ev.clientX, ev.clientY, domElement, localPointer);
-  raycaster.setFromCamera(localPointer, camera);
-  raycaster.ray.intersectPlane(floorPlane, vector3in);
-}
-
-// It would be nice to be able to use a tool without a ToolsController
-// well we have Stop()
-
-/*
-
-should be as simplke as .start() .stop()
-
-*/
-
-// 
-// 
-// 
-class Tool {
-  displayName = "";
-  system = null;
-  domElement = null;
-  isTool = true;
-  // editorModeActions = null;
-
-  selectedObject = null;
-  isMouseDown = false;
-  usePreventCollide = false;
-  tapTimer = 0;
-  tapLimit = 0.2;
-  useGrid = false;
-  grid = null;
-  data = {};
-  modes = {
-    mousing: "mousing"
-    // canDrag : "canDrag",
-    // canDraw : "canDraw"
-  };
-  mode = this.modes.mousing;
-
-  // these are caches to allow proper scope and proper
-  // removeEvent signature
-  pointerUpEvent = null;
-  pointerDownEvent = null;
-  pointerMoveEvent = null;
-  hasStarted = false;
-
-  // pointerUp(){}
-  // pointerDown(){}
-  // pointerMove(){}
-
-  pointerDown(ev) {
-    this.isMouseDown = true;
-    // if(this.selectedObject !== null && this.selectedObject.moveyThingTool){
-    //   // this.selectedObject.moveyThingTool.pointerDown(this.data);
-    // }
-    console.log("base down");
-  }
-  pointerUp(ev) {
-    this.isMouseDown = false;
-    // if(this.selectedObject !== null && this.selectedObject.moveyThingTool){
-    //   this.selectedObject.moveyThingTool.pointerUp(this.data);
-    // }
-    console.log("base up");
-  }
-  pointerMoving(ev) {}
-
-  // start(){}
-  // update(){}
-
-  start() {
-    this.bindUpEvent();
-    this.bindDownEvent();
-
-    // this.system.loopHookPoints.editorBeforeDraw = () => {
-    //   this.update();
-    // };
-  }
-  update() {
-    this.mouseSelecting();
-    this.pointerMoving();
-  }
-
-  // @ system is store in this app
-  constructor({
-    store,
-    domElement,
-    system,
-    name = "tool",
-    displayName = ""
-  } = {}) {
-    this.name = name;
-    this.displayName = displayName;
-    this.store = store;
-    this.system = system;
-    if (!domElement) {
-      console.warn("domElement is Suuuuuper required");
-    } else {
-      this.domElement = domElement;
-    }
-  }
-
-  // use these to bind as needed, they are not assigned automaticly
-
-  bindUpEvent() {
-    if (this.pointerUpEvent === null) {
-      this.pointerUpEvent = this.pointerUp.bind(this);
-    }
-    // common place for mouse events, otherwise fork this function
-    this.domElement.addEventListener('pointerup', this.pointerUpEvent);
-  }
-  bindDownEvent() {
-    if (this.pointerDownEvent === null) {
-      this.pointerDownEvent = this.pointerDown.bind(this);
-    }
-    // common place for mouse events, otherwise fork this function
-    this.domElement.addEventListener('pointerdown', this.pointerDownEvent);
-  }
-  bindMoveEvent() {
-    if (this.pointerMoveEvent === null) {
-      this.pointerMoveEvent = this.pointerDown.bind(this);
-    }
-    // common place for mouse events, otherwise fork this function
-    this.domElement.addEventListener('pointermove', this.pointerMoveEvent);
-  }
-  replace() {
-    this.stop();
-  }
-  stop() {
-    this.domElement.removeEventListener('pointerup', this.pointerUpEvent);
-    this.domElement.removeEventListener('pointerdown', this.pointerDownEvent);
-    this.domElement.removeEventListener('pointermove', this.pointerMoveEvent);
-    this.hasStarted = false;
-  }
-}
-
-// var selectTool = new SelectTool(this.system);
-
-// window.quickDrawLine = quickDrawLine;
-
-class SelectTool extends Tool {
-  raycaster = new Raycaster();
-  mPointerDown = new Vector2();
-  pointer = new Vector2();
-  constructor({
-    store,
-    domElement,
-    system,
-    name = "SelectTool",
-    displayName = "Select Tool"
-  } = {}) {
-    super({
-      store,
-      domElement,
-      system,
-      name,
-      displayName
-    });
-  }
-
-  // 
-  // modes = {
-  //   mousing : "mousing",
-  //   // canDrag : "canDrag",
-  //   // canDraw : "canDraw"
-  // }
-  // 
-  // mode = this.modes.mousing;
-  //
-
-  intersects = [];
-  skipRaycast = false;
-  start() {
-    super.start();
-  }
-  update() {
-    this.mouseSelecting();
-    this.pointerMoving();
-  }
-  selected = null;
-  // selectedList = new CheapCache(); do this later
-  select(item) {
-    this.selected = item;
-    item.select();
-  }
-  deselect(item) {
-    if (item) {
-      this.selected = null;
-      item.ondeselect();
-    }
-  }
-  pointerDown(ev) {
-    let _o = this.store.state.game;
-    if (_o.pointerDownOnTransformWidget) {
-      return;
-    }
-    this.isMouseDown = true;
-    // if(this.selectedObject !== null && this.selectedObject.moveyThingTool){
-    //   // this.selectedObject.moveyThingTool.pointerDown(this.data);
-    // }
-    // console.log("select down");
-
-    // sdklvfmdfgmdfgh
-
-    // need to have saved box onto model
-    // see nifftyshoes and the react game
-    // otherwise you can do a live box3 and then intersect box3 instead
-    // somewhere theres exaustion
-
-    GetMousePositionToScreen(ev.clientX, ev.clientY, _o.domElement, this.mPointerDown);
-    // this.mPointerDown.set(ev.clientX, ev.clientY);
-
-    // this.pointer.set(ev.clientX, ev.clientY);
-    this.raycaster.setFromCamera(this.mPointerDown, _o.camera);
-
-    // quickDrawLine( this.raycaster.ray.origin, this.raycaster.ray.direction.clone().multiplyScalar(18).add(this.raycaster.ray.origin) )
-    // quickDrawBall( this.raycaster.ray.direction.clone().multiplyScalar(8).add(this.raycaster.ray.origin), 0.1 )
-
-    // const items = _a.state.game.selectableItems;
-    // this.intersects.length = 0;
-    // 
-    // for (var i = 0; i < items.length; i++) {  
-    //   this.raycaster.ray.intersectBox(items[i].worldBounds);
-    // }
-    // 
-
-    // var intersects = this.raycaster.intersectObjects( _o.selectableItems, false );
-    // // for (var i = 0; i < intersects.length; i++) {
-    // //   // debugger
-    // //   intersects[i].object.position.y += 0.1;
-    // //   intersects[i].object.updateMatrix();
-    // // }
-    // if (intersects.length > 0) {
-    //   // debugger
-    //     intersects[0].object.position.y += 0.1;
-    //     intersects[0].object.updateMatrix();  
-    // }
-    // 
-
-    new Box3();
-    const bb2 = new Box3();
-
-    // showing boxes
-    // for (var i = 0; i < _o.selectableItems.length; i++) {
-    //   _o.selectableItems[i].updateMatrix();
-    //   _o.selectableItems[i].updateMatrixWorld();
-    //   // _o.selectableItems[i].computeBoundingBox();
-    // 
-    //   bb2.setFromObject(_o.selectableItems[i], true)//.applyMatrix4(_o.selectableItems[i].matrixWorld)
-    // 
-    //   // console.log(bb2);
-    // 
-    //   // var helper = new Box3Helper( _o.selectableItems[i].boundingBox, 0x00ffff );
-    //   // _a.state.game.scene.add(helper)
-    // 
-    //   var helper = new Box3Helper( bb2.clone(), 0x0000ff );
-    //   _a.state.game.scene.add(helper)
-    // 
-    // }
-    // 
-    // 
-    // return
-    // debugger
-
-    // baaaasic hit testing
-
-    // console.log(bb2);
-    // for (var i = 0; i < _o.selectableItems.length; i++) {
-    // 
-    //   _o.selectableItems[i].updateMatrix();
-    //   _o.selectableItems[i].updateMatrixWorld();
-    //   if (_o.selectableItems[i].boundingBox === null) {
-    //     // _o.selectableItems[i].computeBoundingBox();
-    //   }
-    //   // bb.copy(_o.selectableItems[i].boundingBox).applyMatrix4(_o.selectableItems[i].matrixWorld)
-    //   // bb2.setFromObject(_o.selectableItems[i])
-    //   // bb2.setFromObject(_o.selectableItems[i], true).applyMatrix4(_o.selectableItems[i].matrixWorld)
-    // 
-    //   // NOTE!!! requuires percise true
-    //   // BUT applyMatrix4 messes it up
-    //   bb2.setFromObject(_o.selectableItems[i], true)//.applyMatrix4(_o.selectableItems[i].matrixWorld)
-    // 
-    //   // bb.copy(_o.selectableItems[i].boundingBox).applyMatrix4(_o.selectableItems[i].matrixWorld)
-    // 
-    //   // debugger
-    //   if(this.raycaster.ray.intersectsBox(bb2) ){
-    //     console.log("in");
-    //     // debugger
-    //     _o.selectableItems[i].position.y += 0.1;
-    //     _o.selectableItems[i].updateMatrix();
-    //   }
-    // }
-
-    // if(this.skipRaycast) return;
-
-    ////////////
-    let wasSelected = false;
-    for (var i = 0; i < _o.selectableItems.length; i++) {
-      _o.selectableItems[i].updateMatrix();
-      _o.selectableItems[i].updateMatrixWorld();
-      // _o.selectableItems[i].computeBoundingBox();
-      bb2.setFromObject(_o.selectableItems[i], true);
-      var vv = new Vector3();
-      // if(this.raycaster.ray.intersectsBox(bb2) ){
-      //   this.raycaster.ray.intersectBox(bb2, vv)
-      //   quickDrawBall( vv, 0.1 )
-      // }
-      if (this.raycaster.ray.intersectBox(bb2, vv) !== null) {
-        // quickDrawBall( vv, 0.1 )
-
-        _o.transformWidget.attach(_o.selectableItems[i]);
-        this.select(_o.selectableItems[i]);
-        wasSelected = true;
-      }
-    }
-    if (wasSelected === false && _o.transformWidget.visible) {
-      _o.transformWidget.detach();
-      this.select(this.selected);
-    }
-  }
-  pointerUp(ev) {
-    this.isMouseDown = false;
-    // if(this.selectedObject !== null && this.selectedObject.moveyThingTool){
-    //   this.selectedObject.moveyThingTool.pointerUp(this.data);
-    // }
-    // console.log("select up");
-  }
-  pointerMoving(ev) {}
-  mouseSelecting(space) {}
-}
-
-// makes the pointer do nothing null void
-
-class NothingTool extends Tool {
-  constructor({
-    domElement,
-    system,
-    name = "NothingTool",
-    displayName = "Nothing Tool"
-  } = {}) {
-    super({
-      domElement,
-      system,
-      name,
-      displayName
-    });
-  }
-  pointerDown() {}
-  pointerUp() {}
-  pointerMoving() {}
-}
-
-class StampTool extends Tool {
-  targetObject;
-  targetObjectName = '';
-  targetScene = null;
-  targetVecOfPlane = new Vector3$2();
-  floorPlane = new Plane(new Vector3$2(0, 1, 0), 0);
-  store = null;
-  mPointerDown = new Vector2();
-  mPointerWork = new Vector2();
-
-  // needs targetScene + targetObject
-  // needs all things so also store
-  // But targetScene and targetObject should be adjustable after setup
-
-  constructor({
-    store,
-    targetObjectName,
-    targetObject,
-    targetScene,
-    domElement,
-    system,
-    name = "StampTool",
-    displayName = "Stamp Tool"
-  } = {}) {
-    super({
-      domElement,
-      system,
-      name,
-      displayName
-    });
-
-    // if(!targetObject) console.warn("must have targetObject", name);
-    if (!store) console.warn("must have store", name);
-    if (!targetScene) console.warn("must have targetScene", name);
-    if (!targetObjectName) console.warn("must have targetObjectName", name);
-    this.targetObject = targetObject;
-    this.targetScene = targetScene;
-    this.targetObjectName = targetObjectName;
-    this.store = store;
-  }
-  start() {
-    super.start();
-    let _o = this.store.state.game;
-
-    // const foundItem1 = store.state.game.importedModels.findModelByName("trees_mwoie_1");    
-    // let piece2 = foundItem1.clone();
-
-    if (!this.targetObject) {
-      // debugger
-      this.targetObject = _o.importedModels.findModelByName(this.targetObjectName);
-    }
-    if (!this.targetObject) {
-      console.log("this.targetObject is still missing here ya");
-      return;
-    }
-  }
-  pointerDown(ev) {
-    this.store.state.game;
-    // 
-    // let piece2 = this.targetObject.clone();
-    // 
-    // this.targetScene.add(piece2);
-    // 
-    // piece2.position.x = Math.random() * 4;
-    // piece2.position.z = Math.random() * 4;
-    // 
-    // _o.planningBoard.add(piece2);
-    // 
-    // GetPositionOfRaycasterFromFloor({domElement: this.domElement, ev:ev, camera: _o.camera, floorPlane:this.floorPlane, vector3in: this.targetVecOfPlane});
-    // // _o.onConsole.log("isdownBbb", "isdownBbb");
-    // 
-    // piece2.position.copy(this.targetVecOfPlane);
-    // 
-    // // _o.controls.enabled = false;
-    // 
-
-    // GetMousePositionToScreen(ev.clientX, ev.clientY, _o.domElement,  this.mPointerDown);
-    // this.mPointerDown.set(ev.clientX, ev.clientY);
-
-    this.placeObject(ev);
-  }
-  pointerUp(ev) {
-    super.pointerUp(ev);
-    this.store.state.game;
-    // _o.controls.enabled = true;
-
-    // this.placeObject(ev);
-
-    // // tooooo small, need distance
-    // this.mPointerWork.set(ev.clientX, ev.clientY);
-    // const dis = this.mPointerWork.distanceTo(this.mPointerDown);
-    // // console.log("dis", dis);
-    // if(dis <= 0.2){
-    //     this.placeObject(ev);
-    //     _o.controls.enabled = false;
-    // }
-    // // if(this.mPointerDown.x === ev.clientX && this.mPointerDown.y === ev.clientY){
-    // //   debugger
-    // // }
-  }
-  placeObject(ev) {
-    let _o = this.store.state.game;
-    this.targetObject.updateMatrix();
-    let piece2 = this.targetObject.clone();
-    this.targetScene.add(piece2);
-    store.state.game.selectableItems.add(piece2);
-    piece2.position.x = Math.random() * 4;
-    piece2.position.z = Math.random() * 4;
-    _o.planningBoard.add(piece2);
-    GetPositionOfRaycasterFromFloor({
-      domElement: this.domElement,
-      ev: ev,
-      camera: _o.camera,
-      floorPlane: this.floorPlane,
-      vector3in: this.targetVecOfPlane
-    });
-    piece2.position.copy(this.targetVecOfPlane);
-    piece2.updateMatrix();
-
-    // _o.controls.enabled = false;
-
-    // piece2.buildBoxHelper(store.state.game.helpersGroup);
-    // piece2.computeLocalAndWorldBounds();
-    // piece2.moreBuild_CM({targetGroup:store.state.game.helpersGroup});
-  }
-}
-
-class ToolsShelfEditor extends Editor {
-  constructor(props) {
-    super(props);
-    this.launch_CM();
-  }
-  launch_CM() {
-    let gg = new Notlilgui();
-    gg.attach();
-    // these urls are based on the servers path
-    // the .add here is going into the dom shelf, no events yet
-    const nothingItem = gg.addItem({
-      imageurl: "./icons/void_NFT_mices_within.png"
-    });
-    const selectItem = gg.addItem({
-      imageurl: "./icons/cursor_a_NFT_cash_mices.png"
-    });
-    const treeItem = gg.addItem({
-      imageurl: "./icons/tree_NFT_NFT_NFT_upon.png"
-    });
-    const benchItem = gg.addItem({
-      imageurl: "./icons/bench_NFT_apples_upon.png"
-    });
-    const polyCatItem = gg.addItem({
-      imageurl: "./icons/cat_NFT_within_apples.png"
-    });
-    const nerf = this;
-    const st = store$1.state.game;
-
-    // here we are assigning logic factories to each item now
-
-    // these are so boilerplate they can be factories
-
-    // We could either do
-    // item.onCheckedOn = ()=> nerf.changeTool(selectTool);
-
-    // or put in the addItem as ({tool: tool})
-    // but would still need to have the overwrite option
-
-    const selectTool = new SelectTool({
-      store: store$1,
-      domElement: st.domElement
-    });
-    this.addTool(selectTool);
-    selectItem.addEventListener("checkedOn", ev => {
-      console.log("ev", ev.detail);
-      console.log("nerf", nerf);
-      nerf.changeTool(selectTool);
-    }, false);
-    selectItem.addEventListener("checkedOff", ev => {
-      console.log("ev", ev.detail);
-      console.log("nerf", nerf);
-      nerf.stopTool(selectTool);
-    }, false);
-    const nothingTool = new NothingTool({
-      domElement: st.domElement
-    });
-    this.addTool(nothingTool);
-    nothingItem.addEventListener("checkedOn", ev => {
-      // console.log("ev", ev.detail);
-      // console.log("nerf", nerf);
-      nerf.changeTool(nothingTool);
-    }, false);
-    nothingItem.addEventListener("checkedOff", ev => {
-      // console.log("ev", ev.detail);
-      // console.log("nerf", nerf);
-      nerf.stopTool(nothingTool);
-    }, false);
-
-    // let piece2 = foundItem1.clone();
-    // debugger
-    const treeTool = new StampTool({
-      store: store$1,
-      // the object is not yet loaded, so ref by name
-      // targetObject:foundItem1,
-      targetObjectName: "trees_mwoie_1",
-      targetScene: st.currentLevelMap,
-      domElement: st.domElement
-    });
-    this.addTool(treeTool);
-    treeItem.addEventListener("checkedOn", ev => {
-      console.log("tree on");
-      nerf.changeTool(treeTool);
-    }, false);
-    treeItem.addEventListener("checkedOff", ev => {
-      console.log("tree off");
-      nerf.stopTool(treeTool);
-    }, false);
-
-    // bench stamp bench1
-    // let piece2 = foundItem1.clone();
-    // debugger
-    const parkBenchTool = new StampTool({
-      store: store$1,
-      // the object is not yet loaded, so ref by name
-      // targetObject:foundItem1,
-      targetObjectName: "bench1",
-      targetScene: st.currentLevelMap,
-      domElement: st.domElement
-    });
-    this.addTool(parkBenchTool);
-    benchItem.addEventListener("checkedOn", ev => {
-      console.log("parkBench on");
-      nerf.changeTool(parkBenchTool);
-    }, false);
-    benchItem.addEventListener("checkedOff", ev => {
-      console.log("parkBench off");
-      nerf.stopTool(parkBenchTool);
-    }, false);
-
-    // bench stamp bench1
-    // let piece2 = foundItem1.clone();
-    // debugger
-    const polyCatTool = new StampTool({
-      store: store$1,
-      // the object is not yet loaded, so ref by name
-      // targetObject:foundItem1,
-      targetObjectName: "poly-cat",
-      targetScene: st.currentLevelMap,
-      domElement: st.domElement
-    });
-    this.addTool(polyCatTool);
-    polyCatItem.addEventListener("checkedOn", ev => {
-      console.log("polyCat on");
-      nerf.changeTool(polyCatTool);
-    }, false);
-    polyCatItem.addEventListener("checkedOff", ev => {
-      console.log("polyCat off");
-      nerf.stopTool(polyCatTool);
-    }, false);
-  }
-}
-
 class VolumeRect extends Object3D {
   bounds = new Box3$1();
   boxMesh;
@@ -11226,105 +9749,102 @@ class GUI {
 }
 var GUI$1 = GUI;
 
-class AltBox3Helper extends Box3Helper {
-  constructor(box, color = 0xffff00) {
-    super(box, color);
+class Park1 extends LevelMap {
+  constructor() {
+    super();
+    this.init();
   }
-  updateMatrixWorld(force) {
-    const box = this.box;
-    if (box.isEmpty()) return;
-    box.getCenter(this.position);
-    box.getSize(this.scale);
-    this.scale.multiplyScalar(0.5);
-    super.updateMatrixWorld(force);
+  async init() {
+    // const init = async () => {
+
+    store$1.state.game;
+    // debugger
+
+    const ambientLight = new AmbientLight();
+    ambientLight.intensity = 2.01;
+    this.lights.add(ambientLight);
+    const sunLight = new DirectionalLight();
+    sunLight.castShadow = true;
+    // sunLight.position.set(2.5, 4, 0);
+    // sunLight.position.set(2.5, 4, 12);
+    // sunLight.position.set(1, 1, 0);
+    sunLight.position.copy({
+      x: 1.2,
+      y: 1,
+      z: 0.2
+    });
+    sunLight.intensity = 4.7;
+    // sunLight.color.setHex(0xffff80);
+    sunLight.color.setHex(0xfffff);
+    this.lights.add(sunLight);
+
+    //Set up shadow properties for the light
+    sunLight.shadow.mapSize.width = 512 * 2;
+    sunLight.shadow.mapSize.height = 512 * 2;
+    sunLight.shadow.camera.near = 0.5;
+    sunLight.shadow.camera.far = 50;
+
+    // see link for more https://stackoverflow.com/a/56015860
+    // and need it to be in 3d space instead of vector space
+    sunLight.position.multiplyScalar(5);
+
+    // need a larger size for shadows
+    var side = 8;
+    sunLight.shadow.camera.top = side;
+    sunLight.shadow.camera.bottom = -side;
+    sunLight.shadow.camera.left = side;
+    sunLight.shadow.camera.right = -side;
+
+    // var shadowHelper = new CameraHelper( sunLight.shadow.camera );
+    // this.add( shadowHelper );
+
+    this.sunLight = sunLight;
+
+    //
+    // const hemiLight = new HemisphereLight( 0x0000ff, 0x00ff00, 0.6 );
+    // this.add(hemiLight);
+
+    {
+      const geometry = new PlaneGeometry(1, 1);
+      const material = new MeshStandardMaterial({
+        color: 0x4fff0f
+      });
+      // const material = new MeshStandardMaterial( {color: 0xffffff} );
+      const floor = new Mesh(geometry, material);
+      floor.scale.setScalar(12);
+      floor.rotation.set(-Math.PI / 2, 0, 0);
+      floor.receiveShadow = true;
+      this.add(floor);
+      // floor.init({ physics: { rigidBody: 'fixed' } });
+      floor.init({
+        physics: {
+          rigidBody: 'fixed'
+        }
+      });
+      window.floor = floor;
+
+      // const texture = new TextureLoader().load('./textures/myrthe-van-tol-grass-texture.jpeg' );
+      const texture = new TextureLoader().loadAsync('./textures/myrthe-van-tol-grass-texture.jpeg');
+      texture.then(tex => {
+        //console.log(tex);
+        tex.repeat.setScalar(8);
+        tex.wrapS = tex.wrapT = RepeatWrapping;
+        tex.needsUpdate = true;
+        tex.colorSpace = SRGBColorSpace; // washed out otherwise
+        material.map = tex;
+        material.needsUpdate = true;
+      });
+    }
+    loadereee3894();
+    buildLilGui(store$1.state.game);
+    let gg = new VolumeRect();
+    store$1.state.game.scene.add(gg);
+    gg.position.y = 1.4;
+    // gg.init({ physics: { rigidBody: 'dynamic' } });
+    window.vol = gg;
+    console.log(vol);
+    return;
   }
-}
-const init = async () => {
-  patchObject3D_CM();
-  await Initializers(store$1);
-
-  // Kickoff render loop!
-  renderLoop();
-  console.log('store', store$1);
-  fish();
-  loadereee3894();
-
-  // attachLeftShelf();
-
-  store$1.setState({
-    toolsShelfEditor: new ToolsShelfEditor()
-  });
-  window.Vector3 = Vector3$2;
-  window.Box3 = Box3$1;
-  window.Box3Helper = Box3Helper;
-  window.AltBox3Helper = AltBox3Helper;
-  // console.log("vectorA", vectorA);
-
-  // forcing optimisations
-  // #code: scene28475#
-  store$1.state.game.scene.traverse(item => {
-    item.matrixAutoUpdate = false;
-  });
-  // EXCEPT widgets!!
-  // store.state.game.widgetsGroup.traverse((item) => {
-  //   item.matrixAutoUpdate = true;
-  // });
-  store$1.state.game.widgetsGroup.setAutoMatrixAll(false, true);
-  buildLilGui(store$1.state.game);
-  let gg = new VolumeRect();
-  store$1.state.game.scene.add(gg);
-  gg.position.y = 1.4;
-  // gg.init({ physics: { rigidBody: 'dynamic' } });
-  window.vol = gg;
-  console.log(vol);
-};
-init();
-async function loadereee3894() {
-  var piece1 = await loadModelAsync({
-    path: './models/trees_mwoie_1.glb'
-  });
-  piece1.scale.setScalar(0.1);
-  piece1.position.x = randomInRange(-4, 4);
-  piece1.position.z = randomInRange(-4, 4);
-  piece1.updateMatrix();
-  // #Code: nnnanananame38744 #
-  // we need some name auto system here
-  // temp name for now
-  piece1.name = 'trees_mwoie_1';
-  store$1.state.game.scene.add(piece1);
-  store$1.state.game.importedModels.add(piece1);
-  store$1.state.game.selectableItems.add(piece1);
-
-  // debugger
-  // need to update box after a transform like scale
-  // piece1.boxHelperPointer?.box.setFromObject(piece1);
-  // piece1.refreshBoxHelper();
-  // piece1.moreBuild_CM({targetGroup:store.state.game.helpersGroup});
-
-  var piece2 = await loadModelAsync({
-    path: './models/bench1.glb'
-  });
-  // piece2.scale.setScalar(0.1);
-  store$1.state.game.scene.add(piece2);
-  store$1.state.game.importedModels.add(piece2);
-  piece2.scale.setScalar(0.2);
-  piece2.updateMatrix();
-  piece2.name = 'bench1';
-  store$1.state.game.selectableItems.add(piece2);
-  // piece2.refreshBoxHelper();
-  // piece2.moreBuild_CM({targetGroup:store.state.game.helpersGroup});
-
-  const piece3 = await loadModelAsync({
-    path: './models/poly-cat-w-hat.glb'
-  });
-  // piece2.scale.setScalar(0.1);
-  store$1.state.game.scene.add(piece3);
-  store$1.state.game.importedModels.add(piece3);
-  piece3.scale.setScalar(0.02);
-  piece3.updateMatrix();
-  piece3.name = 'poly-cat';
-  store$1.state.game.selectableItems.add(piece3);
-  // piece3.moreBuild_CM({targetGroup:store.state.game.helpersGroup});
 }
 function buildLilGui(gameConfig) {
   // const _o = this.store.state.game;
@@ -11505,4 +10025,1492 @@ function buildLilGui(gameConfig) {
 //   //   gg.addItem();
 //   // }
 // }
+
+async function loadereee3894() {
+  var piece1 = await loadModelAsync({
+    path: './models/trees_mwoie_1.glb'
+  });
+  piece1.scale.setScalar(0.1);
+  piece1.position.x = randomInRange(-4, 4);
+  piece1.position.z = randomInRange(-4, 4);
+  piece1.updateMatrix();
+  // #Code: nnnanananame38744 #
+  // we need some name auto system here
+  // temp name for now
+  piece1.name = 'trees_mwoie_1';
+  store$1.state.game.scene.add(piece1);
+  store$1.state.game.importedModels.add(piece1);
+  store$1.state.game.selectableItems.add(piece1);
+
+  // debugger
+  // need to update box after a transform like scale
+  // piece1.boxHelperPointer?.box.setFromObject(piece1);
+  // piece1.refreshBoxHelper();
+  // piece1.moreBuild_CM({targetGroup:store.state.game.helpersGroup});
+
+  var piece2 = await loadModelAsync({
+    path: './models/bench1.glb'
+  });
+  // piece2.scale.setScalar(0.1);
+  store$1.state.game.scene.add(piece2);
+  store$1.state.game.importedModels.add(piece2);
+  piece2.scale.setScalar(0.2);
+  piece2.updateMatrix();
+  piece2.name = 'bench1';
+  store$1.state.game.selectableItems.add(piece2);
+  // piece2.refreshBoxHelper();
+  // piece2.moreBuild_CM({targetGroup:store.state.game.helpersGroup});
+
+  const piece3 = await loadModelAsync({
+    path: './models/poly-cat-w-hat.glb'
+  });
+  // piece2.scale.setScalar(0.1);
+  store$1.state.game.scene.add(piece3);
+  store$1.state.game.importedModels.add(piece3);
+  piece3.scale.setScalar(0.02);
+  piece3.updateMatrix();
+  piece3.name = 'poly-cat';
+  store$1.state.game.selectableItems.add(piece3);
+  // piece3.moreBuild_CM({targetGroup:store.state.game.helpersGroup});
+}
+
+var threeStart_CM = (() => {
+  const scene = new Scene();
+  scene.background = new Color();
+  // early optimisations, see readme #code: scene28475#
+  scene.matrixAutoUpdate = false;
+  const helpersGroup = new Group();
+  scene.add(helpersGroup);
+  helpersGroup.matrixAutoUpdate = false;
+  const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.05, 1000);
+  // camera.position.z = 5;
+  camera.position.fromArray([0.9625265375798292, 4.0272857200013625, 4.984509277416068]);
+  camera.lookAt(new Vector3$2());
+  const renderer = new WebGLRenderer({
+    antialias: true
+  });
+  // renderer.antialias = true; https://stackoverflow.com/a/34786482
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.shadowMap.enabled = true;
+  // renderer.outputEncoding = sRGBEncoding;
+  // renderer.outputColorSpace = SRGBColorSpace;
+
+  renderer.shadowMap.type = PCFSoftShadowMap; // default THREE.PCFShadowMap
+  // renderer.powerPreference = "high-performance";
+  document.body.appendChild(renderer.domElement);
+  const controls = new OrbitControls(camera, renderer.domElement);
+  function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  }
+  window.addEventListener('resize', onWindowResize, false);
+
+  // setup state and other
+
+  // #TODO: fix some of these and GameGrapth to be arrays instead
+  // #code: gaaame238 #
+  store$1.setState({
+    // this part belongs somewhere else
+    // so its not so stashed away in this file
+    game: new GameGrapth({
+      renderer: renderer,
+      domElement: renderer.domElement,
+      scene: scene,
+      camera: camera,
+      controls: controls,
+      helpersGroup: helpersGroup
+    })
+  });
+  const st = store$1.state.game;
+
+  // lights moved into levels
+
+  const parkLevel = new Park1();
+  scene.add(parkLevel);
+  st.levels.add(parkLevel);
+  st.currentLevelMap = parkLevel;
+  new AxesHelper(5);
+  // scene.add( axesHelper );
+
+  st.buildTransformWidget("translate");
+  st.buildTransformWidget("rotate");
+  st.buildTransformWidget("scale");
+  st.buildPhysicsGroup();
+
+  // renderloop moved to later process
+});
+
+async function Initializers (store) {
+  const initializers = [Physics, ECS, Keyboard, threeStart_CM // not a class
+  ];
+
+  // Pass store to initializers
+  for (const init of initializers) {
+    await init(store);
+  }
+}
+
+function timeSystem(core) {
+  const {
+    time
+  } = core;
+  const now = performance.now();
+  const delta = now - time.then;
+  time.delta = delta;
+  time.elapsed += delta;
+  time.then = now;
+  return core;
+}
+
+const {
+  f32
+} = Types;
+const Vector3$1 = {
+  x: f32,
+  y: f32,
+  z: f32
+};
+const Quaternion = {
+  x: f32,
+  y: f32,
+  z: f32,
+  w: f32
+};
+defineComponent({
+  position: Vector3$1,
+  rotation: Quaternion,
+  scale: Vector3$1
+});
+defineComponent(Vector3$1);
+defineComponent();
+const DynamicPhysicsComponent = defineComponent({
+  objectId: [Types.ui32]
+});
+
+// Interesting example here syncing some babylon stuff w/ rapier
+// https://playcode.io/1528902
+
+const physQuery = defineQuery([DynamicPhysicsComponent]);
+let rigidBodyPos;
+new Vector3$2();
+function physicsSystem(core) {
+  const ents = physQuery(core);
+  for (let i = 0; i < ents.length; i++) {
+    const eid = ents[i];
+    const object3D = store$1.state.game.scene.getObjectById(DynamicPhysicsComponent.objectId[eid]);
+    rigidBodyPos = object3D.rigidBody.translation();
+    // object3D.rigidBody.translation(bb);
+
+    // console.log('rigidBodyPos', rigidBodyPos);
+
+    // TODO FIX SO IT NOT DISAPPEAR OR W/E
+
+    // object3D.position.copy(bb);
+    object3D.position.copy(rigidBodyPos);
+
+    // object3D.position.y = -2;
+
+    // This also makes the floor disappear
+    // object3D.position.set(new Vector3(
+    //   0, 0, 0
+    // ));
+
+    object3D.collider.rotation();
+    // console.log('colliderRotation', colliderRotation);
+
+    // TODO FIX SO IT NOT DISAPPEAR OR W/E
+    // object3D.quaternion.set(new Quaternion(
+    //   colliderRotation.x,
+    //   colliderRotation.y,
+    //   colliderRotation.z,
+    //   colliderRotation.w
+    // ));
+
+    object3D.updateMatrix();
+
+    // DynamicPhysicsComponent[eid]
+  }
+
+  // Step the simulation forward
+  store$1.state.physics.core.step();
+  return core;
+}
+
+function renderSystem(core) {
+  const st = store$1.state.game;
+  // Call each render callback in the renderPool before THREE renders
+  st.renderPool.forEach(func => func(core));
+  st.renderer.render(st.scene, st.camera);
+  return core;
+}
+
+// Game system loop!
+const gamePipeline = pipe(timeSystem, physicsSystem,
+// movementSystem,
+renderSystem);
+
+// eslint-disable-next-line no-unused-vars
+function renderLoop(delta) {
+  // const st = store.getState().game; // this spams with objects
+  const st = store$1.state.game;
+
+  // OY
+  // if(useComposer && composer === null){
+  //   console.log("><><>");
+  //   composer = new EffectComposer( st.renderer );
+  //   renderPass = new RenderPass( st.scene, st.camera );
+  //   composer.addPass( renderPass );
+  //   saoPass = new SAOPass( st.scene, st.camera );
+  //   saoPass.saoIntensity = 0.001;
+  //   saoPass.saoScale = 0.001;
+  //   composer.addPass( saoPass );
+  //   const outputPass = new OutputPass();
+  //   composer.addPass( outputPass );
+  // }
+
+  requestAnimationFrame(renderLoop);
+
+  // if(stats){
+  //   stats.begin();
+  //   st.renderer.render( st.scene, st.camera );
+  //   stats.end();
+  // }
+  // else {
+  //   if (useComposer && composer) {
+  //     composer.render();
+  //     // console.log("¿");
+  //   }
+  //   else {
+  //     st.renderer.render( st.scene, st.camera );
+  //   }
+  // }
+
+  st.controls.update();
+
+  // Main render pipeline
+  gamePipeline(store$1.state.ecs.core);
+
+  // would like this is be a subclass of array
+  // for (var i = 0; i < store.animationPool.cache.length; i++) {
+  //   // store.animationPool.cache[i].update();
+  //   let pick = store.animationPool.cache[i];
+  //   pick.entities.run();
+  // }
+
+  // TODO can move this into an animationSystem and fit into the above pipeline()
+  for (var i = 0; i < st.animationPool.length; i++) {
+    // store.animationPool.cache[i].update();
+    let pick = st.animationPool[i];
+    pick.entities.run();
+    // we are forcing everything off in main, so make sure to update here
+    // #code: scene28475#
+    pick.updateMatrix();
+  }
+}
+
+function fish() {
+  console.log('tacos 2222');
+}
+
+// we need a core patch of object3D to have interfaces
+// so this is the simpliest route
+
+function patchObject3D_CM() {
+  const rigidBodyTypes = ['dynamic', 'fixed', 'kinematicPositionBased', 'kinematicVelocityBased'];
+  const physicsKeys = ['rigidBody', 'collider', 'linvel', 'angvel'];
+  Object3D.prototype.init = function ({
+    physics
+  } = {}) {
+    const ecsCore = store$1.state.ecs.core;
+    const eid = addEntity(ecsCore);
+    this.eid = eid;
+    if (typeof physics === 'object') {
+      const physCore = store$1.state.physics.core;
+      const invalidKeys = Object.keys(physics).filter(key => !physicsKeys.includes(key));
+      if (invalidKeys.length) {
+        throw new Error(`Invalid keys on object3D physics: '${invalidKeys}'`);
+      }
+      if (physics.rigidBody) {
+        if (!rigidBodyTypes.includes(physics.rigidBody)) {
+          throw new Error(`Invalid rigidBody '${physics.rigidBody}'. Must be one of ${rigidBodyTypes}`);
+        }
+        if (physics.rigidBody === 'dynamic') {
+          addComponent(ecsCore, DynamicPhysicsComponent, eid);
+        }
+        DynamicPhysicsComponent.objectId[eid] = this.id;
+        const rigidBodyDesc = PI.RigidBodyDesc[physics.rigidBody]().setTranslation(...this.position);
+        // .setRotation(this.rotation);
+
+        if (physics.linvel) {
+          rigidBodyDesc.setLinvel(physics.linvel);
+        }
+        if (physics.angvel) {
+          rigidBodyDesc.setAngvel(physics.angvel);
+        }
+        this.rigidBody = physCore.createRigidBody(rigidBodyDesc);
+
+        // TODO support more collider types
+        // See docs https://rapier.rs/docs/api/javascript/JavaScript3D
+        const bounding = new Box3$1().setFromObject(this);
+        // bounding.applyMatrix(this);
+        const colliderDesc = PI.ColliderDesc.cuboid(...bounding.getSize(new Vector3$2()));
+        this.collider = physCore.createCollider(colliderDesc, this.rigidBody);
+      }
+    }
+  };
+  Object3D.prototype.fish = 'neat!!';
+  Object3D.prototype.entities = {};
+
+  // addresses onSelected, onUnseleced
+  Object3D.prototype.isSelected = false;
+  Object3D.prototype.select = function () {};
+  Object3D.prototype.deselect = function () {};
+  Object3D.prototype.simplePhysics = {
+    velocity: new Vector3$2(),
+    acceleration: new Vector3$2(),
+    force: new Vector3$2()
+  };
+  Object3D.prototype.setAutoMatrixAll = function (parentVal = true, val = true) {
+    this.matrixAutoUpdate = parentVal;
+    this.traverse(item => {
+      item.matrixAutoUpdate = val;
+    });
+  };
+
+  // //
+  // // // changing the world and local bounds idea
+  // // // trying for a direct three patch to maybe be included
+  // Object3D.prototype.boundingBox = null;
+  // Object3D.prototype.boundingSphere = null;
+  // //
+  // //
+  // //
+  // // #BUG we need precise to fix lota internal things
+  // // from setting the box settings to Infinity as defaults
+  // Object3D.prototype.computeBoundingBox = function(precise=true) {
+  //   if ( this.boundingBox === null ) {
+  //     this.boundingBox = new Box3();
+  //   }
+  //   this.boundingBox.setFromObject(this, precise);
+  // }
+  // Object3D.prototype.computeBoundingSphere = function() {
+  //   if ( this.boundingBox === null ) {
+  //     this.computeBoundingBox();
+  //   }
+  //   if (this.boundingBox && this.boundingSphere === null) {
+  //     this.boundingSphere = new Sphere();
+  //   }
+  //   this.boundingBox.getBoundingSphere(this.boundingSphere);
+  // }
+  //
+  //
+  //
+  // Object3D.prototype.raycast = function( raycaster, intersects ) {
+  //
+  // 	const matrixWorld = this.matrixWorld;
+  //
+  // 	// test with bounding sphere in world space
+  //
+  // 	if ( this.boundingSphere === null ) this.computeBoundingSphere();
+  //
+  // 	_sphere.copy( this.boundingSphere );
+  // 	_sphere.applyMatrix4( matrixWorld );
+  //
+  // 	// check distance from ray origin to bounding sphere
+  // // debugger
+  // 	// _ray.copy( raycaster.ray ).recast( raycaster.near );
+  // 	_ray.copy( raycaster.ray ).recast( raycaster.near );
+  //
+  // 	// if ( _sphere.containsPoint( _ray.origin ) === false ) {
+  //   //
+  // 	// 	if ( _ray.intersectSphere( _sphere, _sphereHitAt ) === null ) return;
+  //   //
+  // 	// 	if ( _ray.origin.distanceToSquared( _sphereHitAt ) > ( raycaster.far - raycaster.near ) ** 2 ) return;
+  //   //
+  // 	// }
+  // // debugger
+  // 	// convert ray to local space of mesh
+  //
+  // 	// _inverseMatrix.copy( matrixWorld ).invert();
+  // 	// _ray.copy( raycaster.ray ).applyMatrix4( _inverseMatrix );
+  //
+  // 	// test with bounding box in local space
+  //
+  //   //
+  //   // start here for new routines
+  //   //
+  //
+  //   // if ( this.boundingSphere === null ) this.computeBoundingBox();
+  //   if ( this.boundingBox === null ) {
+  //     this.computeBoundingBox();
+  //   }
+  //   // if ( this.boundingBox === null ) return;
+  //   debugger
+  //
+  // 	if ( _ray.intersectBox( this.boundingBox, _intersectionPointWorld ) === null ) return;
+  // 	// if ( _ray.intersectBox( this.boundingBox, this._intersectionPointWorld ) === false ) return;
+  // 	// if ( ! _ray.intersectBox( this.boundingBox, this._intersectionPointWorld ) ) return;
+  //
+  // debugger
+  //
+  //   // _intersectionPointWorld.copy( point );
+  //   // _intersectionPointWorld.applyMatrix4( object.matrixWorld );
+  //
+  //
+  //   _point.copy( _intersectionPointWorld );
+  //   _point.applyMatrix4( this.matrixWorld );
+  //
+  //   const distance = raycaster.ray.origin.distanceTo( _point );
+  //   console.log("distance", distance);
+  //
+  //   if ( distance < raycaster.near || distance > raycaster.far ) return null;
+  //
+  // // debugger
+  //
+  //   const intersection = {
+  //     distance: distance,
+  //     point: _intersectionPointWorld.clone(),
+  //     object: this
+  //   };
+  //
+  //   intersects.push( intersection );
+  //
+  //   intersects.sort( ascSort );
+  //
+  //   return intersects;
+  // }
+  //
+  //
+
+  // object3's dont have a bounds, so we force one!!!
+  // and optimise for cache
+  // after such, if you move the object youll need to run computeWorldBounds again
+  // which might mean every frame. you have to deside if you need that for like raycasts
+  Object3D.prototype.worldBounds = new Box3$1();
+  Object3D.prototype.localBounds = new Box3$1();
+  Object3D.prototype.computeLocalBounds = function (autoUpdate = true) {
+    if (autoUpdate) this.updateMatrix();
+    this.localBounds.setFromObject(this);
+  };
+  Object3D.prototype.computeWorldBounds = function (autoUpdate = true) {
+    if (autoUpdate) this.updateMatrix();
+    // if(autoUpdate)this.updateWorldMatrix();
+    this.worldBounds.copy(this.localBounds);
+    this.worldBounds.applyMatrix4(this.matrixWorld);
+  };
+  // inavertly we compute updateMatrix a lot now when cloning
+  Object3D.prototype.computeLocalAndWorldBounds = function () {
+    this.computeLocalBounds();
+    this.computeWorldBounds();
+  };
+  Object3D.prototype.moreBuild_CM = function ({
+    targetGroup
+  }) {
+    this.buildBoxHelper(targetGroup);
+    this.computeLocalAndWorldBounds();
+  };
+
+  // Since we cant parent the helper to an object and retain a
+  // performant update, we setup another group object and add it there
+  // so we need a basic pointer to hide it when needed
+  // #TODO replace for parented object instead :
+  Object3D.prototype.boxHelperPointer = null;
+
+  // @ targetGroup : store.state.game.helpersGroup
+  // would Reeeeealy like to not add this to an external group
+  Object3D.prototype.buildBoxHelper = function (targetGroup) {
+    this.updateMatrix();
+    const box = new Box3$1();
+    box.setFromObject(this);
+    const helper = new Box3Helper(box, 0x0000ff);
+    this.boxHelperPointer = helper;
+    helper.ownerObject = this;
+    targetGroup.add(helper);
+  };
+
+  // call updateMatrix before hand
+  Object3D.prototype.refreshBoxHelper = function () {
+    this.boxHelperPointer?.box.setFromObject(this);
+  };
+
+  // this is a HARD CODED thing for debugging only
+  Object3D.prototype.quickDrawBox = function () {
+    this.updateMatrix();
+    this.computeBoundingBox();
+    var helper = new Box3Helper(this.boundingBox, 0x0000ff);
+    store$1.state.game.scene.add(helper);
+  };
+
+  // Object3D.prototype.refreshBoxHelper = function(){
+  //   this.boxHelperPointer?.box.setFromObject(this);
+  // }
+
+  // call this.updateMatrix(); before this
+  // Object3D.prototype.clone = function(recursive){
+  //   const yy = new this.constructor().copy( this, recursive );
+  //   if (this.boxHelperPointer) {
+  //     yy.buildBoxHelper(this.boxHelperPointer.parent);
+  //     yy.computeLocalBounds();
+  //     yy.computeWorldBounds();
+  //   }
+  //   yy.updateMatrix();
+  //   return yy;
+  // }
+
+  // Object3D.prototype.computeBox3Bounds = function(){
+  //
+  //   this.updateMatrix();
+  //   const box = new Box3();
+  //   box.setFromObject(piece2)
+  //
+  //   // const helper = new Box3Helper( box, 0xffff00 );
+  //   const helper = new Box3Helper( box, 0x0000ff );
+  //   piece2.boxHelperPointer = helper;
+  //   store.state.game.helpersGroup.add(helper);
+  //
+  // }
+
+  // these wont set
+  // Object3D.prototype.matrixAutoUpdate = false;
+  // Object3D.prototype.matrixWorldAutoUpdate = false;
+}
+
+// Pulled and edited from infini project
+
+
+// this manages the database of tools thus far
+// update is in EditorModeActions
+
+class ToolsController {
+  visualObject = null; // what will appear under the mouse
+
+  currentTool = null; // type Class as state machine
+
+  tools = {
+    // select = null;
+    // platform = null;
+    // wobject = null;
+    // player = null
+  };
+  toolsList = new CheapPool();
+  addTool(tool) {
+    if (tool.isTool) {
+      this.tools[tool.name] = tool;
+      this.toolsList.add(tool);
+    } else {
+      console.log("tool is not a tool!!!? lucky it");
+    }
+  }
+  changeTool(tool) {
+    var index = this.toolsList.indexOf(tool);
+    if (index === -1) {
+      console.log("tool missing ", tool.name);
+      return;
+    }
+    if (this.currentTool !== null) {
+      this.currentTool.replace();
+    }
+    this.currentTool = tool;
+    tool.start();
+  }
+  stopTool(tool) {
+    var index = this.toolsList.indexOf(tool);
+    if (index === -1) {
+      console.log("tool missing ", tool.name);
+      return;
+    }
+    if (this.currentTool !== null) {
+      this.currentTool.stop();
+    }
+  }
+}
+
+// Ideally you subclass this to add in the logics for which tools and such
+
+class Editor {
+  toolsShelf = null;
+
+  // dont know where this goes yet
+  modes = {
+    select: "select",
+    draw: "draw"
+  };
+  toolsController = new ToolsController();
+  constructor(props) {
+    // if(props){
+    //   this.toolsController = props.toolsController || 
+    // }
+  }
+  addTool(tool) {
+    this.toolsController.addTool(tool);
+  }
+  changeTool(tool) {
+    this.toolsController.changeTool(tool);
+  }
+  stopTool(tool) {
+    this.toolsController.stopTool(tool);
+  }
+  launch_CM() {}
+  hide() {}
+  remove() {}
+}
+
+// might be based on lilgui
+// might not
+// task is to get selector and transform tools
+// this or somethingelse might deal with thumbnails shelf
+
+// none of these import systems work now with scss also doing something
+// import './notlilguistyle.css';
+// import './notlilguistyle.scss'; /* import the styles as a string */
+// import styles from './notlilguistyle.css'; /* import the styles as a CSSStyleSheet */
+
+// import styles from './notlilguistyle.scss'; /* import the styles as a CSSStyleSheet */
+
+// import styles from './notlilguistyle.css' assert { type: 'css' }; /* import the styles as a CSSStyleSheet */
+
+class MiniCache extends Array {
+  add(item) {
+    this.push(item);
+  }
+}
+class Notlilgui {
+  panel;
+  cache = new MiniCache();
+  checkboxes = new MiniCache();
+  constructor() {}
+  attach() {
+    // console.log(styles);
+
+    // YUCK.....
+    // its fugllllly but it works vs trying to make node imports work
+    const inlinestyles = `
+
+    #notlilgui {
+      position: absolute;
+      overflow: auto;
+      height: auto;
+      top: 0px;
+      left: 0px;
+      z-index: 2;
+      background: #000000ba;
+      width: 120px;
+      /* min-height: 600px; */
+      padding: 20px 0;
+      border-right : 1px #3c3c3c solid;
+      /* flex box */
+      display: flex;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      align-content: stretch;
+      align-items: center;
+    }
+
+    #notlilgui .item{
+
+      background: white;
+      width: 40px;
+      height: 40px;
+      margin-bottom: 12px;
+      /* ___padding: 20px 0 0 0px; */
+      border : 1px white solid;
+      border-radius: 12px;
+      appearance: none;
+      background-position: center center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-color: transparent;
+      overflow: hidden;
+
+      /* order: 0; */
+      /* flex: 0 1 auto; */
+      /* align-self: auto; */
+
+    }
+
+    #notlilgui .item:checked {
+      appearance: checkbox;
+      border-radius: 12px;
+    }
+    `;
+    document.head.insertAdjacentHTML("beforeend", `<style>${inlinestyles}</style>`);
+    var panel = document.createElement('div');
+    this.panel = panel;
+    panel.id = 'notlilgui';
+    document.body.appendChild(panel);
+  }
+  checkBoxChanged(item) {
+    for (var i = 0; i < this.checkboxes.length; i++) {
+      if (item !== this.checkboxes[i]) {
+        this.checkboxes[i].checked = false;
+      }
+    }
+  }
+
+  // @ type checkbox etc
+  // function ToolCheckBoxFactory(parent, cache, tool, imageURL){
+  // returns element
+  addItem({
+    type = '',
+    imageurl = ''
+  } = {}) {
+    // an if goes here but for now its just building a checkbox
+
+    const box = this.buildCheckbox({
+      imageurl
+    });
+    this.panel.appendChild(box);
+    this.cache.add(box);
+    this.checkboxes.add(box);
+    return box;
+  }
+
+  // returns element
+  buildCheckbox({
+    imageurl
+  } = {}) {
+    // this.tool = tool;
+
+    // needs more robotting
+    const box = document.createElement('input');
+    box.classList.add('item');
+    box.classList.add('checkbox');
+    box.type = 'checkbox';
+    // item.style.backgroundImage = 'url(./Cast/Alien2.png)';
+    console.log(imageurl);
+    box.style.backgroundImage = `url(${imageurl})`;
+    // box.style.backgroundColor = '#000000';
+
+    var _this = this;
+    box.onclick = function (ev) {
+      _this.checkBoxChanged(ev.target);
+      console.log(ev.target.checked);
+      if (ev.target.checked) {
+        // console.log('checked yes');
+        // EditorMagic.changeTool(_this.tool);
+        // make this an event
+        const event = new CustomEvent("checkedOn", {
+          detail: box
+        });
+        this.dispatchEvent(event);
+      } else if (!ev.target.checked) {
+        // console.log('checked no');
+        // EditorMagic.stopTool(_this.tool);
+        // make this an event
+        const event = new CustomEvent("checkedOff", {
+          detail: box
+        });
+        this.dispatchEvent(event);
+      }
+    };
+    return box;
+
+    // this.click = function(){
+    //   box.click();
+    // }
+  }
+}
+
+var rect;
+const localPointer = new Vector2();
+new Vector2();
+const raycaster = new Raycaster();
+
+// GetMousePositionToScreen(touchStartPos.x, touchStartPos.y, _o.renderer.domElement,  pointer2D);
+
+// use   GetMousePositionToScreen(ev.clientX, ev.clientY, domElement,  vector2In);
+function GetMousePositionToScreen(xx, yy, domElement, vector2In) {
+  rect = domElement.getBoundingClientRect();
+  vector2In.x = (xx - rect.left) / (rect.right - rect.left) * 2 - 1;
+  vector2In.y = -((yy - rect.top) / (rect.bottom - rect.top)) * 2 + 1;
+}
+
+/*
+
+blegh 6 arguments
+this mutates the vector3in to give a position to use
+raycasterCube.position.copy(vector3in);
+
+:D use
+
+var floorPlane = new Plane(new Vector3(0,1,0), 0);
+GetPositionOfRaycasterFromFloor({renderer:_o.renderer, ev:ev, camera: _o.camera, floorPlane: floorPlane, vector3in: targetVecOfPlane});
+_o.raycasterCube.position.copy(targetVecOfPlane);
+
+:x
+
+*/
+
+function GetPositionOfRaycasterFromFloor({
+  domElement,
+  ev,
+  camera,
+  floorPlane,
+  vector3in
+}) {
+  GetMousePositionToScreen(ev.clientX, ev.clientY, domElement, localPointer);
+  raycaster.setFromCamera(localPointer, camera);
+  raycaster.ray.intersectPlane(floorPlane, vector3in);
+}
+
+// It would be nice to be able to use a tool without a ToolsController
+// well we have Stop()
+
+/*
+
+should be as simplke as .start() .stop()
+
+*/
+
+// 
+// 
+// 
+class Tool {
+  displayName = "";
+  system = null;
+  domElement = null;
+  isTool = true;
+  // editorModeActions = null;
+
+  selectedObject = null;
+  isMouseDown = false;
+  usePreventCollide = false;
+  tapTimer = 0;
+  tapLimit = 0.2;
+  useGrid = false;
+  grid = null;
+  data = {};
+  modes = {
+    mousing: "mousing"
+    // canDrag : "canDrag",
+    // canDraw : "canDraw"
+  };
+  mode = this.modes.mousing;
+
+  // these are caches to allow proper scope and proper
+  // removeEvent signature
+  pointerUpEvent = null;
+  pointerDownEvent = null;
+  pointerMoveEvent = null;
+  hasStarted = false;
+
+  // pointerUp(){}
+  // pointerDown(){}
+  // pointerMove(){}
+
+  pointerDown(ev) {
+    this.isMouseDown = true;
+    // if(this.selectedObject !== null && this.selectedObject.moveyThingTool){
+    //   // this.selectedObject.moveyThingTool.pointerDown(this.data);
+    // }
+    console.log("base down");
+  }
+  pointerUp(ev) {
+    this.isMouseDown = false;
+    // if(this.selectedObject !== null && this.selectedObject.moveyThingTool){
+    //   this.selectedObject.moveyThingTool.pointerUp(this.data);
+    // }
+    console.log("base up");
+  }
+  pointerMoving(ev) {}
+
+  // start(){}
+  // update(){}
+
+  start() {
+    this.bindUpEvent();
+    this.bindDownEvent();
+
+    // this.system.loopHookPoints.editorBeforeDraw = () => {
+    //   this.update();
+    // };
+  }
+  update() {
+    this.mouseSelecting();
+    this.pointerMoving();
+  }
+
+  // @ system is store in this app
+  constructor({
+    store,
+    domElement,
+    system,
+    name = "tool",
+    displayName = ""
+  } = {}) {
+    this.name = name;
+    this.displayName = displayName;
+    this.store = store;
+    this.system = system;
+    if (!domElement) {
+      console.warn("domElement is Suuuuuper required");
+    } else {
+      this.domElement = domElement;
+    }
+  }
+
+  // use these to bind as needed, they are not assigned automaticly
+
+  bindUpEvent() {
+    if (this.pointerUpEvent === null) {
+      this.pointerUpEvent = this.pointerUp.bind(this);
+    }
+    // common place for mouse events, otherwise fork this function
+    this.domElement.addEventListener('pointerup', this.pointerUpEvent);
+  }
+  bindDownEvent() {
+    if (this.pointerDownEvent === null) {
+      this.pointerDownEvent = this.pointerDown.bind(this);
+    }
+    // common place for mouse events, otherwise fork this function
+    this.domElement.addEventListener('pointerdown', this.pointerDownEvent);
+  }
+  bindMoveEvent() {
+    if (this.pointerMoveEvent === null) {
+      this.pointerMoveEvent = this.pointerDown.bind(this);
+    }
+    // common place for mouse events, otherwise fork this function
+    this.domElement.addEventListener('pointermove', this.pointerMoveEvent);
+  }
+  replace() {
+    this.stop();
+  }
+  stop() {
+    this.domElement.removeEventListener('pointerup', this.pointerUpEvent);
+    this.domElement.removeEventListener('pointerdown', this.pointerDownEvent);
+    this.domElement.removeEventListener('pointermove', this.pointerMoveEvent);
+    this.hasStarted = false;
+  }
+}
+
+// var selectTool = new SelectTool(this.system);
+
+// window.quickDrawLine = quickDrawLine;
+
+class SelectTool extends Tool {
+  raycaster = new Raycaster();
+  mPointerDown = new Vector2();
+  pointer = new Vector2();
+  constructor({
+    store,
+    domElement,
+    system,
+    name = "SelectTool",
+    displayName = "Select Tool"
+  } = {}) {
+    super({
+      store,
+      domElement,
+      system,
+      name,
+      displayName
+    });
+  }
+
+  // 
+  // modes = {
+  //   mousing : "mousing",
+  //   // canDrag : "canDrag",
+  //   // canDraw : "canDraw"
+  // }
+  // 
+  // mode = this.modes.mousing;
+  //
+
+  intersects = [];
+  skipRaycast = false;
+  start() {
+    super.start();
+  }
+  update() {
+    this.mouseSelecting();
+    this.pointerMoving();
+  }
+  selected = null;
+  // selectedList = new CheapCache(); do this later
+  select(item) {
+    this.selected = item;
+    item.select();
+  }
+  deselect(item) {
+    if (item) {
+      this.selected = null;
+      item.ondeselect();
+    }
+  }
+  pointerDown(ev) {
+    let _o = this.store.state.game;
+    if (_o.pointerDownOnTransformWidget) {
+      return;
+    }
+    this.isMouseDown = true;
+    // if(this.selectedObject !== null && this.selectedObject.moveyThingTool){
+    //   // this.selectedObject.moveyThingTool.pointerDown(this.data);
+    // }
+    // console.log("select down");
+
+    // sdklvfmdfgmdfgh
+
+    // need to have saved box onto model
+    // see nifftyshoes and the react game
+    // otherwise you can do a live box3 and then intersect box3 instead
+    // somewhere theres exaustion
+
+    GetMousePositionToScreen(ev.clientX, ev.clientY, _o.domElement, this.mPointerDown);
+    // this.mPointerDown.set(ev.clientX, ev.clientY);
+
+    // this.pointer.set(ev.clientX, ev.clientY);
+    this.raycaster.setFromCamera(this.mPointerDown, _o.camera);
+
+    // quickDrawLine( this.raycaster.ray.origin, this.raycaster.ray.direction.clone().multiplyScalar(18).add(this.raycaster.ray.origin) )
+    // quickDrawBall( this.raycaster.ray.direction.clone().multiplyScalar(8).add(this.raycaster.ray.origin), 0.1 )
+
+    // const items = _a.state.game.selectableItems;
+    // this.intersects.length = 0;
+    // 
+    // for (var i = 0; i < items.length; i++) {  
+    //   this.raycaster.ray.intersectBox(items[i].worldBounds);
+    // }
+    // 
+
+    // var intersects = this.raycaster.intersectObjects( _o.selectableItems, false );
+    // // for (var i = 0; i < intersects.length; i++) {
+    // //   // debugger
+    // //   intersects[i].object.position.y += 0.1;
+    // //   intersects[i].object.updateMatrix();
+    // // }
+    // if (intersects.length > 0) {
+    //   // debugger
+    //     intersects[0].object.position.y += 0.1;
+    //     intersects[0].object.updateMatrix();  
+    // }
+    // 
+
+    new Box3();
+    const bb2 = new Box3();
+
+    // showing boxes
+    // for (var i = 0; i < _o.selectableItems.length; i++) {
+    //   _o.selectableItems[i].updateMatrix();
+    //   _o.selectableItems[i].updateMatrixWorld();
+    //   // _o.selectableItems[i].computeBoundingBox();
+    // 
+    //   bb2.setFromObject(_o.selectableItems[i], true)//.applyMatrix4(_o.selectableItems[i].matrixWorld)
+    // 
+    //   // console.log(bb2);
+    // 
+    //   // var helper = new Box3Helper( _o.selectableItems[i].boundingBox, 0x00ffff );
+    //   // _a.state.game.scene.add(helper)
+    // 
+    //   var helper = new Box3Helper( bb2.clone(), 0x0000ff );
+    //   _a.state.game.scene.add(helper)
+    // 
+    // }
+    // 
+    // 
+    // return
+    // debugger
+
+    // baaaasic hit testing
+
+    // console.log(bb2);
+    // for (var i = 0; i < _o.selectableItems.length; i++) {
+    // 
+    //   _o.selectableItems[i].updateMatrix();
+    //   _o.selectableItems[i].updateMatrixWorld();
+    //   if (_o.selectableItems[i].boundingBox === null) {
+    //     // _o.selectableItems[i].computeBoundingBox();
+    //   }
+    //   // bb.copy(_o.selectableItems[i].boundingBox).applyMatrix4(_o.selectableItems[i].matrixWorld)
+    //   // bb2.setFromObject(_o.selectableItems[i])
+    //   // bb2.setFromObject(_o.selectableItems[i], true).applyMatrix4(_o.selectableItems[i].matrixWorld)
+    // 
+    //   // NOTE!!! requuires percise true
+    //   // BUT applyMatrix4 messes it up
+    //   bb2.setFromObject(_o.selectableItems[i], true)//.applyMatrix4(_o.selectableItems[i].matrixWorld)
+    // 
+    //   // bb.copy(_o.selectableItems[i].boundingBox).applyMatrix4(_o.selectableItems[i].matrixWorld)
+    // 
+    //   // debugger
+    //   if(this.raycaster.ray.intersectsBox(bb2) ){
+    //     console.log("in");
+    //     // debugger
+    //     _o.selectableItems[i].position.y += 0.1;
+    //     _o.selectableItems[i].updateMatrix();
+    //   }
+    // }
+
+    // if(this.skipRaycast) return;
+
+    ////////////
+    let wasSelected = false;
+    for (var i = 0; i < _o.selectableItems.length; i++) {
+      _o.selectableItems[i].updateMatrix();
+      _o.selectableItems[i].updateMatrixWorld();
+      // _o.selectableItems[i].computeBoundingBox();
+      bb2.setFromObject(_o.selectableItems[i], true);
+      var vv = new Vector3();
+      // if(this.raycaster.ray.intersectsBox(bb2) ){
+      //   this.raycaster.ray.intersectBox(bb2, vv)
+      //   quickDrawBall( vv, 0.1 )
+      // }
+      if (this.raycaster.ray.intersectBox(bb2, vv) !== null) {
+        // quickDrawBall( vv, 0.1 )
+
+        _o.transformWidget.attach(_o.selectableItems[i]);
+        this.select(_o.selectableItems[i]);
+        wasSelected = true;
+      }
+    }
+    if (wasSelected === false && _o.transformWidget.visible) {
+      _o.transformWidget.detach();
+      this.select(this.selected);
+    }
+  }
+  pointerUp(ev) {
+    this.isMouseDown = false;
+    // if(this.selectedObject !== null && this.selectedObject.moveyThingTool){
+    //   this.selectedObject.moveyThingTool.pointerUp(this.data);
+    // }
+    // console.log("select up");
+  }
+  pointerMoving(ev) {}
+  mouseSelecting(space) {}
+}
+
+// makes the pointer do nothing null void
+
+class NothingTool extends Tool {
+  constructor({
+    domElement,
+    system,
+    name = "NothingTool",
+    displayName = "Nothing Tool"
+  } = {}) {
+    super({
+      domElement,
+      system,
+      name,
+      displayName
+    });
+  }
+  pointerDown() {}
+  pointerUp() {}
+  pointerMoving() {}
+}
+
+class StampTool extends Tool {
+  targetObject;
+  targetObjectName = '';
+  targetScene = null;
+  targetVecOfPlane = new Vector3$2();
+  floorPlane = new Plane(new Vector3$2(0, 1, 0), 0);
+  store = null;
+  mPointerDown = new Vector2();
+  mPointerWork = new Vector2();
+
+  // needs targetScene + targetObject
+  // needs all things so also store
+  // But targetScene and targetObject should be adjustable after setup
+
+  constructor({
+    store,
+    targetObjectName,
+    targetObject,
+    targetScene,
+    domElement,
+    system,
+    name = "StampTool",
+    displayName = "Stamp Tool"
+  } = {}) {
+    super({
+      domElement,
+      system,
+      name,
+      displayName
+    });
+
+    // if(!targetObject) console.warn("must have targetObject", name);
+    if (!store) console.warn("must have store", name);
+    if (!targetScene) console.warn("must have targetScene", name);
+    if (!targetObjectName) console.warn("must have targetObjectName", name);
+    this.targetObject = targetObject;
+    this.targetScene = targetScene;
+    this.targetObjectName = targetObjectName;
+    this.store = store;
+  }
+  start() {
+    super.start();
+    let _o = this.store.state.game;
+
+    // const foundItem1 = store.state.game.importedModels.findModelByName("trees_mwoie_1");    
+    // let piece2 = foundItem1.clone();
+
+    if (!this.targetObject) {
+      // debugger
+      this.targetObject = _o.importedModels.findModelByName(this.targetObjectName);
+    }
+    if (!this.targetObject) {
+      console.log("this.targetObject is still missing here ya");
+      return;
+    }
+  }
+  pointerDown(ev) {
+    this.store.state.game;
+    // 
+    // let piece2 = this.targetObject.clone();
+    // 
+    // this.targetScene.add(piece2);
+    // 
+    // piece2.position.x = Math.random() * 4;
+    // piece2.position.z = Math.random() * 4;
+    // 
+    // _o.planningBoard.add(piece2);
+    // 
+    // GetPositionOfRaycasterFromFloor({domElement: this.domElement, ev:ev, camera: _o.camera, floorPlane:this.floorPlane, vector3in: this.targetVecOfPlane});
+    // // _o.onConsole.log("isdownBbb", "isdownBbb");
+    // 
+    // piece2.position.copy(this.targetVecOfPlane);
+    // 
+    // // _o.controls.enabled = false;
+    // 
+
+    // GetMousePositionToScreen(ev.clientX, ev.clientY, _o.domElement,  this.mPointerDown);
+    // this.mPointerDown.set(ev.clientX, ev.clientY);
+
+    this.placeObject(ev);
+  }
+  pointerUp(ev) {
+    super.pointerUp(ev);
+    this.store.state.game;
+    // _o.controls.enabled = true;
+
+    // this.placeObject(ev);
+
+    // // tooooo small, need distance
+    // this.mPointerWork.set(ev.clientX, ev.clientY);
+    // const dis = this.mPointerWork.distanceTo(this.mPointerDown);
+    // // console.log("dis", dis);
+    // if(dis <= 0.2){
+    //     this.placeObject(ev);
+    //     _o.controls.enabled = false;
+    // }
+    // // if(this.mPointerDown.x === ev.clientX && this.mPointerDown.y === ev.clientY){
+    // //   debugger
+    // // }
+  }
+  placeObject(ev) {
+    let _o = this.store.state.game;
+    this.targetObject.updateMatrix();
+    let piece2 = this.targetObject.clone();
+    this.targetScene.add(piece2);
+    store.state.game.selectableItems.add(piece2);
+    piece2.position.x = Math.random() * 4;
+    piece2.position.z = Math.random() * 4;
+    _o.planningBoard.add(piece2);
+    GetPositionOfRaycasterFromFloor({
+      domElement: this.domElement,
+      ev: ev,
+      camera: _o.camera,
+      floorPlane: this.floorPlane,
+      vector3in: this.targetVecOfPlane
+    });
+    piece2.position.copy(this.targetVecOfPlane);
+    piece2.updateMatrix();
+
+    // _o.controls.enabled = false;
+
+    // piece2.buildBoxHelper(store.state.game.helpersGroup);
+    // piece2.computeLocalAndWorldBounds();
+    // piece2.moreBuild_CM({targetGroup:store.state.game.helpersGroup});
+  }
+}
+
+class ToolsShelfEditor extends Editor {
+  constructor(props) {
+    super(props);
+    this.launch_CM();
+  }
+  launch_CM() {
+    let gg = new Notlilgui();
+    gg.attach();
+    // these urls are based on the servers path
+    // the .add here is going into the dom shelf, no events yet
+    const nothingItem = gg.addItem({
+      imageurl: "./icons/void_NFT_mices_within.png"
+    });
+    const selectItem = gg.addItem({
+      imageurl: "./icons/cursor_a_NFT_cash_mices.png"
+    });
+    const treeItem = gg.addItem({
+      imageurl: "./icons/tree_NFT_NFT_NFT_upon.png"
+    });
+    const benchItem = gg.addItem({
+      imageurl: "./icons/bench_NFT_apples_upon.png"
+    });
+    const polyCatItem = gg.addItem({
+      imageurl: "./icons/cat_NFT_within_apples.png"
+    });
+    const nerf = this;
+    const st = store$1.state.game;
+
+    // here we are assigning logic factories to each item now
+
+    // these are so boilerplate they can be factories
+
+    // We could either do
+    // item.onCheckedOn = ()=> nerf.changeTool(selectTool);
+
+    // or put in the addItem as ({tool: tool})
+    // but would still need to have the overwrite option
+
+    const selectTool = new SelectTool({
+      store: store$1,
+      domElement: st.domElement
+    });
+    this.addTool(selectTool);
+    selectItem.addEventListener("checkedOn", ev => {
+      console.log("ev", ev.detail);
+      console.log("nerf", nerf);
+      nerf.changeTool(selectTool);
+    }, false);
+    selectItem.addEventListener("checkedOff", ev => {
+      console.log("ev", ev.detail);
+      console.log("nerf", nerf);
+      nerf.stopTool(selectTool);
+    }, false);
+    const nothingTool = new NothingTool({
+      domElement: st.domElement
+    });
+    this.addTool(nothingTool);
+    nothingItem.addEventListener("checkedOn", ev => {
+      // console.log("ev", ev.detail);
+      // console.log("nerf", nerf);
+      nerf.changeTool(nothingTool);
+    }, false);
+    nothingItem.addEventListener("checkedOff", ev => {
+      // console.log("ev", ev.detail);
+      // console.log("nerf", nerf);
+      nerf.stopTool(nothingTool);
+    }, false);
+
+    // let piece2 = foundItem1.clone();
+    // debugger
+    const treeTool = new StampTool({
+      store: store$1,
+      // the object is not yet loaded, so ref by name
+      // targetObject:foundItem1,
+      targetObjectName: "trees_mwoie_1",
+      targetScene: st.currentLevelMap,
+      domElement: st.domElement
+    });
+    this.addTool(treeTool);
+    treeItem.addEventListener("checkedOn", ev => {
+      console.log("tree on");
+      nerf.changeTool(treeTool);
+    }, false);
+    treeItem.addEventListener("checkedOff", ev => {
+      console.log("tree off");
+      nerf.stopTool(treeTool);
+    }, false);
+
+    // bench stamp bench1
+    // let piece2 = foundItem1.clone();
+    // debugger
+    const parkBenchTool = new StampTool({
+      store: store$1,
+      // the object is not yet loaded, so ref by name
+      // targetObject:foundItem1,
+      targetObjectName: "bench1",
+      targetScene: st.currentLevelMap,
+      domElement: st.domElement
+    });
+    this.addTool(parkBenchTool);
+    benchItem.addEventListener("checkedOn", ev => {
+      console.log("parkBench on");
+      nerf.changeTool(parkBenchTool);
+    }, false);
+    benchItem.addEventListener("checkedOff", ev => {
+      console.log("parkBench off");
+      nerf.stopTool(parkBenchTool);
+    }, false);
+
+    // bench stamp bench1
+    // let piece2 = foundItem1.clone();
+    // debugger
+    const polyCatTool = new StampTool({
+      store: store$1,
+      // the object is not yet loaded, so ref by name
+      // targetObject:foundItem1,
+      targetObjectName: "poly-cat",
+      targetScene: st.currentLevelMap,
+      domElement: st.domElement
+    });
+    this.addTool(polyCatTool);
+    polyCatItem.addEventListener("checkedOn", ev => {
+      console.log("polyCat on");
+      nerf.changeTool(polyCatTool);
+    }, false);
+    polyCatItem.addEventListener("checkedOff", ev => {
+      console.log("polyCat off");
+      nerf.stopTool(polyCatTool);
+    }, false);
+  }
+}
+
+// 
+// import { VolumeRect } from 'alexandria/primitives/volumeRect';
+// 
+// import GUI from 'lil-gui';
+
+class AltBox3Helper extends Box3Helper {
+  constructor(box, color = 0xffff00) {
+    super(box, color);
+  }
+  updateMatrixWorld(force) {
+    const box = this.box;
+    if (box.isEmpty()) return;
+    box.getCenter(this.position);
+    box.getSize(this.scale);
+    this.scale.multiplyScalar(0.5);
+    super.updateMatrixWorld(force);
+  }
+}
+const init = async () => {
+  patchObject3D_CM();
+  await Initializers(store$1);
+
+  // Kickoff render loop!
+  renderLoop();
+  console.log('store', store$1);
+  fish();
+
+  // loadereee3894();
+
+  // attachLeftShelf();
+
+  store$1.setState({
+    toolsShelfEditor: new ToolsShelfEditor()
+  });
+  window.Vector3 = Vector3$2;
+  window.Box3 = Box3$1;
+  window.Box3Helper = Box3Helper;
+  window.AltBox3Helper = AltBox3Helper;
+  // console.log("vectorA", vectorA);
+
+  // forcing optimisations
+  // #code: scene28475#
+  store$1.state.game.scene.traverse(item => {
+    item.matrixAutoUpdate = false;
+  });
+  // EXCEPT widgets!!
+  // store.state.game.widgetsGroup.traverse((item) => {
+  //   item.matrixAutoUpdate = true;
+  // });
+  store$1.state.game.widgetsGroup.setAutoMatrixAll(false, true);
+};
+init();
 //# sourceMappingURL=bundle.js.map
