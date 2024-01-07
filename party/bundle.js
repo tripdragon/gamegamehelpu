@@ -70,6 +70,169 @@ internals.notifyListeners = changedSelectors => {
 };
 
 // src/Constants.js
+var TYPES_ENUM = {
+  i8: "i8",
+  ui8: "ui8",
+  ui8c: "ui8c",
+  i16: "i16",
+  ui16: "ui16",
+  i32: "i32",
+  ui32: "ui32",
+  f32: "f32",
+  f64: "f64",
+  eid: "eid"
+};
+var TYPES_NAMES = {
+  i8: "Int8",
+  ui8: "Uint8",
+  ui8c: "Uint8Clamped",
+  i16: "Int16",
+  ui16: "Uint16",
+  i32: "Int32",
+  ui32: "Uint32",
+  eid: "Uint32",
+  f32: "Float32",
+  f64: "Float64"
+};
+var TYPES = {
+  i8: Int8Array,
+  ui8: Uint8Array,
+  ui8c: Uint8ClampedArray,
+  i16: Int16Array,
+  ui16: Uint16Array,
+  i32: Int32Array,
+  ui32: Uint32Array,
+  f32: Float32Array,
+  f64: Float64Array,
+  eid: Uint32Array
+};
+var UNSIGNED_MAX = {
+  uint8: 2 ** 8,
+  uint16: 2 ** 16,
+  uint32: 2 ** 32
+};
+
+// src/Storage.js
+var roundToMultiple = mul => x => Math.ceil(x / mul) * mul;
+var roundToMultiple4 = roundToMultiple(4);
+var $storeRef = Symbol("storeRef");
+var $storeSize = Symbol("storeSize");
+var $storeMaps = Symbol("storeMaps");
+var $storeFlattened = Symbol("storeFlattened");
+var $storeBase = Symbol("storeBase");
+var $storeType = Symbol("storeType");
+var $storeArrayElementCounts = Symbol("storeArrayElementCounts");
+var $storeSubarrays = Symbol("storeSubarrays");
+var $subarrayCursors = Symbol("subarrayCursors");
+var $subarray = Symbol("subarray");
+var $parentArray = Symbol("parentArray");
+var $tagStore = Symbol("tagStore");
+var $indexType = Symbol("indexType");
+var $indexBytes = Symbol("indexBytes");
+var $isEidType = Symbol("isEidType");
+var stores = {};
+var resetStoreFor = (store, eid) => {
+  if (store[$storeFlattened]) {
+    store[$storeFlattened].forEach(ta => {
+      if (ArrayBuffer.isView(ta)) ta[eid] = 0;else ta[eid].fill(0);
+    });
+  }
+};
+var createTypeStore = (type, length) => {
+  const totalBytes = length * TYPES[type].BYTES_PER_ELEMENT;
+  const buffer = new ArrayBuffer(totalBytes);
+  const store = new TYPES[type](buffer);
+  store[$isEidType] = type === TYPES_ENUM.eid;
+  return store;
+};
+var createArrayStore = (metadata, type, length) => {
+  const storeSize = metadata[$storeSize];
+  const store = Array(storeSize).fill(0);
+  store[$storeType] = type;
+  store[$isEidType] = type === TYPES_ENUM.eid;
+  const cursors = metadata[$subarrayCursors];
+  const indexType = length <= UNSIGNED_MAX.uint8 ? TYPES_ENUM.ui8 : length <= UNSIGNED_MAX.uint16 ? TYPES_ENUM.ui16 : TYPES_ENUM.ui32;
+  if (!length) throw new Error("bitECS - Must define component array length");
+  if (!TYPES[type]) throw new Error(`bitECS - Invalid component array property type ${type}`);
+  if (!metadata[$storeSubarrays][type]) {
+    const arrayElementCount = metadata[$storeArrayElementCounts][type];
+    const array = new TYPES[type](roundToMultiple4(arrayElementCount * storeSize));
+    array[$indexType] = TYPES_NAMES[indexType];
+    array[$indexBytes] = TYPES[indexType].BYTES_PER_ELEMENT;
+    metadata[$storeSubarrays][type] = array;
+  }
+  const start = cursors[type];
+  const end = start + storeSize * length;
+  cursors[type] = end;
+  store[$parentArray] = metadata[$storeSubarrays][type].subarray(start, end);
+  for (let eid = 0; eid < storeSize; eid++) {
+    const start2 = length * eid;
+    const end2 = start2 + length;
+    store[eid] = store[$parentArray].subarray(start2, end2);
+    store[eid][$indexType] = TYPES_NAMES[indexType];
+    store[eid][$indexBytes] = TYPES[indexType].BYTES_PER_ELEMENT;
+    store[eid][$subarray] = true;
+  }
+  return store;
+};
+var isArrayType = x => Array.isArray(x) && typeof x[0] === "string" && typeof x[1] === "number";
+var createStore = (schema, size) => {
+  const $store = Symbol("store");
+  if (!schema || !Object.keys(schema).length) {
+    stores[$store] = {
+      [$storeSize]: size,
+      [$tagStore]: true,
+      [$storeBase]: () => stores[$store]
+    };
+    return stores[$store];
+  }
+  schema = JSON.parse(JSON.stringify(schema));
+  const arrayElementCounts = {};
+  const collectArrayElementCounts = s => {
+    const keys = Object.keys(s);
+    for (const k of keys) {
+      if (isArrayType(s[k])) {
+        if (!arrayElementCounts[s[k][0]]) arrayElementCounts[s[k][0]] = 0;
+        arrayElementCounts[s[k][0]] += s[k][1];
+      } else if (s[k] instanceof Object) {
+        collectArrayElementCounts(s[k]);
+      }
+    }
+  };
+  collectArrayElementCounts(schema);
+  const metadata = {
+    [$storeSize]: size,
+    [$storeMaps]: {},
+    [$storeSubarrays]: {},
+    [$storeRef]: $store,
+    [$subarrayCursors]: Object.keys(TYPES).reduce((a, type) => ({
+      ...a,
+      [type]: 0
+    }), {}),
+    [$storeFlattened]: [],
+    [$storeArrayElementCounts]: arrayElementCounts
+  };
+  if (schema instanceof Object && Object.keys(schema).length) {
+    const recursiveTransform = (a, k) => {
+      if (typeof a[k] === "string") {
+        a[k] = createTypeStore(a[k], size);
+        a[k][$storeBase] = () => stores[$store];
+        metadata[$storeFlattened].push(a[k]);
+      } else if (isArrayType(a[k])) {
+        const [type, length] = a[k];
+        a[k] = createArrayStore(metadata, type, length);
+        a[k][$storeBase] = () => stores[$store];
+        metadata[$storeFlattened].push(a[k]);
+      } else if (a[k] instanceof Object) {
+        a[k] = Object.keys(a[k]).reduce(recursiveTransform, a[k]);
+      }
+      return a;
+    };
+    stores[$store] = Object.assign(Object.keys(schema).reduce(recursiveTransform, schema), metadata);
+    stores[$store][$storeBase] = () => stores[$store];
+    return stores[$store];
+  }
+};
 
 // src/Util.js
 var SparseSet = () => {
@@ -116,14 +279,31 @@ var $entityComponents = Symbol("entityComponents");
 var $entitySparseSet = Symbol("entitySparseSet");
 var $entityArray = Symbol("entityArray");
 var defaultSize = 1e5;
+var globalEntityCursor = 0;
 var globalSize = defaultSize;
 var getGlobalSize = () => globalSize;
+var removed = [];
+var defaultRemovedReuseThreshold = 0.01;
+var removedReuseThreshold = defaultRemovedReuseThreshold;
+var eidToWorld = /* @__PURE__ */new Map();
+var addEntity = world => {
+  const eid = world[$manualEntityRecycling] ? removed.length ? removed.shift() : globalEntityCursor++ : removed.length > Math.round(globalSize * removedReuseThreshold) ? removed.shift() : globalEntityCursor++;
+  if (eid > world[$size]) throw new Error("bitECS - max entities reached");
+  world[$entitySparseSet].add(eid);
+  eidToWorld.set(eid, world);
+  world[$notQueries].forEach(q => {
+    const match = queryCheckEntity(world, q, eid);
+    if (match) queryAddEntity(q, eid);
+  });
+  world[$entityComponents].set(eid, /* @__PURE__ */new Set());
+  return eid;
+};
 var removeEntity = (world, eid) => {
   if (!world[$entitySparseSet].has(eid)) return;
   world[$queries].forEach(q => {
     queryRemoveEntity(world, q, eid);
   });
-  if (world[$manualEntityRecycling]) ;
+  if (world[$manualEntityRecycling]) ;else removed.push(eid);
   world[$entitySparseSet].remove(eid);
   world[$entityComponents].delete(eid);
   world[$localEntities].delete(world[$localEntityLookup].get(eid));
@@ -134,6 +314,31 @@ var $queries = Symbol("queries");
 var $notQueries = Symbol("notQueries");
 var $queryMap = Symbol("queryMap");
 var $dirtyQueries = Symbol("$dirtyQueries");
+var queryCheckEntity = (world, q, eid) => {
+  const {
+    masks,
+    notMasks,
+    generations
+  } = q;
+  for (let i = 0; i < generations.length; i++) {
+    const generationId = generations[i];
+    const qMask = masks[generationId];
+    const qNotMask = notMasks[generationId];
+    const eMask = world[$entityMasks][generationId][eid];
+    if (qNotMask && (eMask & qNotMask) !== 0) {
+      return false;
+    }
+    if (qMask && (eMask & qMask) !== qMask) {
+      return false;
+    }
+  }
+  return true;
+};
+var queryAddEntity = (q, eid) => {
+  q.toRemove.remove(eid);
+  q.entered.add(eid);
+  q.add(eid);
+};
 var queryRemoveEntity = (world, q, eid) => {
   if (!q.has(eid) || q.toRemove.has(eid)) return;
   q.toRemove.add(eid);
@@ -143,6 +348,76 @@ var queryRemoveEntity = (world, q, eid) => {
 
 // src/Component.js
 var $componentMap = Symbol("componentMap");
+var defineComponent = (schema, size) => {
+  const component = createStore(schema, size || getGlobalSize());
+  if (schema && Object.keys(schema).length) ;
+  return component;
+};
+var incrementBitflag = world => {
+  world[$bitflag] *= 2;
+  if (world[$bitflag] >= 2 ** 31) {
+    world[$bitflag] = 1;
+    world[$entityMasks].push(new Uint32Array(world[$size]));
+  }
+};
+var registerComponent = (world, component) => {
+  if (!component) throw new Error(`bitECS - Cannot register null or undefined component`);
+  const queries = /* @__PURE__ */new Set();
+  const notQueries = /* @__PURE__ */new Set();
+  const changedQueries = /* @__PURE__ */new Set();
+  world[$queries].forEach(q => {
+    if (q.allComponents.includes(component)) {
+      queries.add(q);
+    }
+  });
+  world[$componentMap].set(component, {
+    generationId: world[$entityMasks].length - 1,
+    bitflag: world[$bitflag],
+    store: component,
+    queries,
+    notQueries,
+    changedQueries
+  });
+  incrementBitflag(world);
+};
+var hasComponent = (world, component, eid) => {
+  const registeredComponent = world[$componentMap].get(component);
+  if (!registeredComponent) return false;
+  const {
+    generationId,
+    bitflag
+  } = registeredComponent;
+  const mask = world[$entityMasks][generationId][eid];
+  return (mask & bitflag) === bitflag;
+};
+var addComponent = (world, component, eid, reset = false) => {
+  if (eid === void 0) throw new Error("bitECS - entity is undefined.");
+  if (!world[$entitySparseSet].has(eid)) throw new Error("bitECS - entity does not exist in the world.");
+  if (!world[$componentMap].has(component)) registerComponent(world, component);
+  if (hasComponent(world, component, eid)) return;
+  const c = world[$componentMap].get(component);
+  const {
+    generationId,
+    bitflag,
+    queries,
+    notQueries
+  } = c;
+  world[$entityMasks][generationId][eid] |= bitflag;
+  queries.forEach(q => {
+    q.toRemove.remove(eid);
+    const match = queryCheckEntity(world, q, eid);
+    if (match) {
+      q.exited.remove(eid);
+      queryAddEntity(q, eid);
+    }
+    if (!match) {
+      q.entered.remove(eid);
+      queryRemoveEntity(world, q, eid);
+    }
+  });
+  world[$entityComponents].get(eid).add(component);
+  if (reset) resetStoreFor(component, eid);
+};
 
 // src/World.js
 var $size = Symbol("size");
@@ -177,12 +452,96 @@ var resetWorld = (world, size = getGlobalSize()) => {
   return world;
 };
 
-var ECS = (store => {
-  store.setState({
+// src/index.js
+var pipe = (...fns) => input => {
+  let tmp = input;
+  for (let i = 0; i < fns.length; i++) {
+    const fn = fns[i];
+    tmp = fn(tmp);
+  }
+  return tmp;
+};
+var Types = TYPES_ENUM;
+
+function timeSystem(world) {
+  const {
+    time
+  } = world;
+  const now = performance.now();
+  const delta = now - time.then;
+  time.delta = delta;
+  time.elapsed += delta;
+  time.then = now;
+  return world;
+}
+
+function physicsSystem(world) {
+  // Step the simulation forward
+  store$1.state.physics.world.step();
+  return world;
+}
+
+const {
+  f32
+} = Types;
+const Vector3$2 = {
+  x: f32,
+  y: f32,
+  z: f32
+};
+const Quaternion$1 = {
+  x: f32,
+  y: f32,
+  z: f32,
+  w: f32
+};
+const TransformComponent = defineComponent({
+  position: Vector3$2,
+  rotation: Quaternion$1,
+  scale: Vector3$2
+});
+const VelocityComponent = defineComponent(Vector3$2);
+
+var Components = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  TransformComponent: TransformComponent,
+  VelocityComponent: VelocityComponent
+});
+
+// Good example repo
+// https://codesandbox.io/p/devbox/bitecs-threejs-kb20g?file=%2Fsrc%2Fpipeline.ts%3A5%2C1
+
+
+// Game system loop!
+const pipeline = pipe(timeSystem, physicsSystem
+// movementSystem
+);
+function init$1() {
+  const world = createWorld();
+  world.time = {
+    delta: 0,
+    elapsed: 0,
+    then: performance.now()
+  };
+  const eid = addEntity(world);
+  world.eid = eid;
+
+  // Add all components exported from './components'
+  Object.values(Components).forEach(Component => {
+    addComponent(world, Component, eid);
+  });
+  store$1.setState({
     ecs: {
-      world: createWorld()
+      world
     }
   });
+  setInterval(() => {
+    pipeline(world);
+  }, 16);
+}
+
+var ECS = (() => {
+  init$1();
 });
 
 // swap out for state system
@@ -3960,8 +4319,8 @@ class Park1 extends LevelMap {
 
     this.sunLight = sunLight;
 
-    // 
-    // const hemiLight = new HemisphereLight( 0x0000ff, 0x00ff00, 0.6 ); 
+    //
+    // const hemiLight = new HemisphereLight( 0x0000ff, 0x00ff00, 0.6 );
     // this.add(hemiLight);
 
     {
@@ -3971,13 +4330,18 @@ class Park1 extends LevelMap {
       });
       // const material = new MeshStandardMaterial( {color: 0xffffff} );
       const floor = new Mesh(geometry, material);
+      floor.setTags({
+        physics: {
+          type: 'fixed'
+        }
+      });
       floor.scale.setScalar(12);
       floor.rotation.set(-Math.PI / 2, 0, 0);
       floor.receiveShadow = true;
       this.add(floor);
       window.floor = floor;
 
-      // const texture = new TextureLoader().load('./textures/myrthe-van-tol-grass-texture.jpeg' ); 
+      // const texture = new TextureLoader().load('./textures/myrthe-van-tol-grass-texture.jpeg' );
       const texture = new TextureLoader().loadAsync('./textures/myrthe-van-tol-grass-texture.jpeg');
       texture.then(tex => {
         //console.log(tex);
@@ -4062,7 +4426,7 @@ var threeStart_CM = (() => {
 });
 
 async function Initializers (store) {
-  const initializers = [ECS, Physics, Keyboard, threeStart_CM // not a class
+  const initializers = [Physics, ECS, Keyboard, threeStart_CM // not a class
   ];
 
   // Pass store to initializers
@@ -4137,9 +4501,21 @@ function fish() {
 function patchObject3D_CM() {
   Object3D.prototype.fish = 'neat!!';
   Object3D.prototype.entities = {};
+
+  // addresses onSelected, onUnseleced
+  Object3D.prototype.isSelected = false;
+  Object3D.prototype.select = function () {};
+  Object3D.prototype.deselect = function () {};
+  Object3D.prototype.setTags = function (tags) {
+    console.log('this Object3D', this, tags);
+    this.tags = {
+      ...this.tags,
+      ...tags
+    };
+  };
   Object3D.prototype.simplePhysics = {
     velocity: new Vector3$1(),
-    accelration: new Vector3$1(),
+    acceleration: new Vector3$1(),
     force: new Vector3$1()
   };
   Object3D.prototype.setAutoMatrixAll = function (parentVal = true, val = true) {
@@ -7404,6 +7780,7 @@ class ImportedModel extends Group {
 // note you are calling a function that needs to start with async
 // it also auto centers
 
+let nagcount = false;
 async function loadModelAsync({
   path,
   customName,
@@ -7411,18 +7788,20 @@ async function loadModelAsync({
   receiveShadow = true
 }) {
   var result = await new GLTFLoader().loadAsync(path);
+
   // #TODO: must solve some auto name thing here
   // #Code: nnnanananame38744 #
-  console.warn("#TODO: must solve some auto name thing here");
+
+  if (!nagcount) console.warn("#TODO: must solve some auto name thing here");
 
   // has weird bug see cat model
-  console.warn("#TODO: some weird missing object in array is missing, needs checking");
+  if (!nagcount) console.warn("#TODO: some weird missing object in array is missing, needs checking");
   const modelSwap = new ImportedModel({
     loaderResult: result,
     addShadows: addShadows,
     customName: customName
   });
-  // debugger
+  nagcount = true;
 
   // #code: scene28475#
   modelSwap.matrixAutoUpdate = false;
@@ -7875,30 +8254,38 @@ class SelectTool extends Tool {
       displayName
     });
   }
-  modes = {
-    mousing: "mousing"
-    // canDrag : "canDrag",
-    // canDraw : "canDraw"
-  };
-  mode = this.modes.mousing;
+
+  // 
+  // modes = {
+  //   mousing : "mousing",
+  //   // canDrag : "canDrag",
+  //   // canDraw : "canDraw"
+  // }
+  // 
+  // mode = this.modes.mousing;
+  //
+
   intersects = [];
   skipRaycast = false;
   start() {
-    // this.start();
     super.start();
-
-    // this.bindUpEvent();
-    // this.bindDownEvent();
-    // 
-    // // this.system.loopHookPoints.editorBeforeDraw = () => {
-    // //   this.update();
-    // // };
   }
   update() {
     this.mouseSelecting();
     this.pointerMoving();
   }
-  tempArray = [];
+  selected = null;
+  // selectedList = new CheapCache(); do this later
+  select(item) {
+    this.selected = item;
+    item.select();
+  }
+  deselect(item) {
+    if (item) {
+      this.selected = null;
+      item.ondeselect();
+    }
+  }
   pointerDown(ev) {
     let _o = this.store.state.game;
     if (_o.pointerDownOnTransformWidget) {
@@ -7908,7 +8295,7 @@ class SelectTool extends Tool {
     // if(this.selectedObject !== null && this.selectedObject.moveyThingTool){
     //   // this.selectedObject.moveyThingTool.pointerDown(this.data);
     // }
-    console.log("select down");
+    // console.log("select down");
 
     // sdklvfmdfgmdfgh
 
@@ -7974,7 +8361,7 @@ class SelectTool extends Tool {
 
     // baaaasic hit testing
 
-    console.log(bb2);
+    // console.log(bb2);
     // for (var i = 0; i < _o.selectableItems.length; i++) {
     // 
     //   _o.selectableItems[i].updateMatrix();
@@ -8019,27 +8406,23 @@ class SelectTool extends Tool {
         // quickDrawBall( vv, 0.1 )
 
         _o.transformWidget.attach(_o.selectableItems[i]);
-        // _o.translateWidget.attach( _o.selectableItems[i] );
-        // _o.rotateWidget.attach( _o.selectableItems[i] );
-        // _o.scaleWidget.attach( _o.selectableItems[i] );
+        this.select(_o.selectableItems[i]);
         wasSelected = true;
       }
     }
-    if (wasSelected === false && _o.transformWidget.visible) _o.transformWidget.detach();
+    if (wasSelected === false && _o.transformWidget.visible) {
+      _o.transformWidget.detach();
+      this.select(this.selected);
+    }
   }
   pointerUp(ev) {
     this.isMouseDown = false;
     // if(this.selectedObject !== null && this.selectedObject.moveyThingTool){
     //   this.selectedObject.moveyThingTool.pointerUp(this.data);
     // }
-    console.log("select up");
+    // console.log("select up");
   }
   pointerMoving(ev) {}
-
-  // this should inspead of some large form stack of logics
-  // it should add on a drag type of tool
-
-  pickedList = [];
   mouseSelecting(space) {}
 }
 
@@ -8321,6 +8704,138 @@ class ToolsShelfEditor extends Editor {
       nerf.stopTool(polyCatTool);
     }, false);
   }
+}
+
+class VolumeRect extends Object3D {
+  bounds = new Box3$1();
+  boxMesh;
+  boxMeshWire;
+
+  // See note file for derive
+  // 0~3 right side
+  // 4~7 left side
+  // 0,7
+  sharedVertices = [[[0, 1, 2], [33, 34, 35], [51, 52, 53]], [[3, 4, 5], [27, 28, 29], [60, 61, 62]], [[6, 7, 8], [39, 40, 41], [57, 58, 59]], [[9, 10, 11], [45, 46, 47], [66, 67, 68]], [[12, 13, 14], [24, 25, 26], [63, 64, 65]], [[15, 16, 17], [30, 31, 32], [48, 49, 50]], [[18, 19, 20], [42, 43, 44], [69, 70, 71]], [[21, 22, 23], [36, 37, 38], [54, 55, 56]]];
+  constructor(size) {
+    super();
+    // const indices = new Uint16Array( [ 0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7 ] );
+    // const indices = new Uint16Array( [0, 11, 17, 1, 9, 20, 2, 13, 19, 3, 15, 22, 4, 8, 21, 5, 10, 16, 6, 14, 23, 7, 12, 18, 4, 8, 21, 1, 9, 20, 5, 10, 16, 0, 11, 17, 7, 12, 18, 2, 13, 19, 6, 14, 23, 3, 15, 22, 5, 10, 16, 0, 11, 17, 7, 12, 18, 2, 13, 19, 1, 9, 20, 4, 8, 21, 3, 15, 22, 6, 14, 23] );
+
+    // need the reverse winding order or coulter clockwise to get the faces pointing outwards
+    // the initial vertice positions look to be
+    // 0 -------- 1
+    // |
+    // |
+    // 2
+    // with vol.addVectice(2,0,0,1) moving bottom to z
+    // pattern is i i+2 i+1, then i+1 of previous, i+2 i+3
+    // const indices = new Uint16Array( [
+    //   // 0, 2, 1, 1, 2, 3, 
+    //   // 4,6,5, 5,6,7
+    //   7,9,8
+    // ] );
+    // const indices = new Uint16Array( [0, 2, 1, 1, 2, 3, 3, 5, 4, 4, 5, 6, 6, 8, 7, 7, 8, 9, 9, 11, 10, 10, 11, 12, 12, 14, 13, 13, 14, 15, 15, 17, 16, 16, 17, 18, 18, 20, 19, 19, 20, 21, 21, 23, 22, 22, 23, 24, 24, 26, 25, 25, 26, 27, 27, 29, 28, 28, 29, 30, 30, 32, 31, 31, 32, 33, 33, 35, 34, 34, 35, 36] );
+
+    // const indices = new Uint16Array( [0, 11, 17, 1, 9, 20, 2, 13, 19, 3, 15, 22, 4, 8, 21, 5, 10, 16, 6, 14, 23, 7, 12, 18, 4, 8, 21, 1, 9, 20, 5, 10, 16, 0, 11, 17, 7, 12, 18, 2, 13, 19, 6, 14, 23, 3, 15, 22, 5, 10, 16, 0, 11, 17] );
+    // index = 8
+    // for (var i = 0; i < 4; i++) {
+    //   vol.addVectice(index,0,0,-1)
+    // }
+
+    // vol.addVectice(8,0,1,-1)
+    // vol.addVectice(9,0,1,-1)
+    // vol.addVectice(10,0,1,-1)
+    // vol.addVectice(11,0,1,-1)
+
+    size = 2;
+    const geometry = new BoxGeometry(size, size, size);
+    // geometry.setIndex( new BufferAttribute( indices, 1 ) );
+
+    {
+      const material = new MeshBasicMaterial({
+        color: 0x0000ff,
+        transparent: true,
+        opacity: 0.5
+      });
+      this.boxMesh = new Mesh(geometry, material);
+      this.add(this.boxMesh);
+    }
+    {
+      // driving the boxMesh geometry should drive this
+      // const geometry = new BoxGeometry( size, size, size ); 
+      const material = new MeshBasicMaterial({
+        color: 0xffff00,
+        wireframe: true
+      });
+      this.boxMeshWire = new Mesh(geometry, material);
+      this.add(this.boxMeshWire);
+    }
+  }
+  getOffset(index) {
+    return index * 3;
+  }
+  // setVectice(index, x,y,z){
+  //   const pp = this.boxMesh.geometry.attributes.position.array;
+  //   pp[index*3] = x;
+  //   pp[index*3+1] = y;
+  //   pp[index*3+2] = z;
+  //   this.boxMesh.geometry.attributes.position.needsUpdate = true;
+  // }
+  // addVectice(index, x,y,z){
+  //   const pp = this.boxMesh.geometry.attributes.position.array;
+  //   pp[index*3] += x;
+  //   pp[index*3+1] += y;
+  //   pp[index*3+2] += z;
+  //   this.boxMesh.geometry.attributes.position.needsUpdate = true;
+  // }
+
+  setVectice(index, x, y, z) {
+    const pp = this.boxMesh.geometry.attributes.position.array;
+    const vert = this.sharedVertices[index];
+    pp[vert[0][0]] = x;
+    pp[vert[0][1]] = y;
+    pp[vert[0][2]] = z;
+    pp[vert[1][0]] = x;
+    pp[vert[1][1]] = y;
+    pp[vert[1][2]] = z;
+    pp[vert[2][0]] = x;
+    pp[vert[2][1]] = y;
+    pp[vert[2][2]] = z;
+    this.boxMesh.geometry.attributes.position.needsUpdate = true;
+  }
+  // in teh vinacular of add offset value to vertice
+  addVectice(index, x, y, z) {
+    const pp = this.boxMesh.geometry.attributes.position.array;
+    const vert = this.sharedVertices[index];
+    // console.log(vert);
+    pp[vert[0][0]] += x;
+    pp[vert[0][1]] += y;
+    pp[vert[0][2]] += z;
+    pp[vert[1][0]] += x;
+    pp[vert[1][1]] += y;
+    pp[vert[1][2]] += z;
+    pp[vert[2][0]] += x;
+    pp[vert[2][1]] += y;
+    pp[vert[2][2]] += z;
+    this.boxMesh.geometry.attributes.position.needsUpdate = true;
+  }
+
+  //   vol.boxMesh.geometry.attributes.position.array
+  //   itemSize * numVertices
+  // 
+  //   positionAttribute.needsUpdate = true;
+  //   line.geometry.computeBoundingBox();
+  // line.geometry.computeBoundingSphere();
+  // 
+  // get min {
+  //   return this.bounds.min;
+  // }
+  // set min(x,y,z){
+  //   this.bounds.mix.set(x,y,z);
+  // }
+
+  select() {}
+  deselect() {}
 }
 
 /**
@@ -10386,6 +10901,11 @@ const init = async () => {
   // });
   store$1.state.game.widgetsGroup.setAutoMatrixAll(false, true);
   buildLilGui(store$1.state.game);
+  let gg = new VolumeRect();
+  store$1.state.game.scene.add(gg);
+  gg.position.y = 1.4;
+  window.vol = gg;
+  console.log(vol);
 };
 init();
 async function loadereee3894() {

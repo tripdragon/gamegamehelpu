@@ -1,10 +1,6 @@
-import * as BitECS from 'bitecs';
+import initECS from '../ecs/init';
 
-export default (store) => {
+export default () => {
 
-  store.setState({
-    ecs: {
-      world: BitECS.createWorld()
-    }
-  });
+  initECS();
 };

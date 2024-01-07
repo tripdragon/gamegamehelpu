@@ -23,12 +23,12 @@ export class Park1 extends LevelMap{
     super();
     this.init();
   }
-  
+
   init(){
-    
+
     const st = store.state.game;
     // debugger
-  
+
     const ambientLight = new AmbientLight();
     ambientLight.intensity = 2.01;
     this.lights.add(ambientLight);
@@ -49,41 +49,42 @@ export class Park1 extends LevelMap{
     sunLight.shadow.mapSize.height = 512 * 2;
     sunLight.shadow.camera.near = 0.5;
     sunLight.shadow.camera.far = 50;
-    
+
     // see link for more https://stackoverflow.com/a/56015860
     // and need it to be in 3d space instead of vector space
     sunLight.position.multiplyScalar(5);
-    
+
     // need a larger size for shadows
     var side = 8;
     sunLight.shadow.camera.top = side;
     sunLight.shadow.camera.bottom = -side;
     sunLight.shadow.camera.left = side;
     sunLight.shadow.camera.right = -side;
-    
+
     // var shadowHelper = new CameraHelper( sunLight.shadow.camera );
     // this.add( shadowHelper );
-    
+
     this.sunLight = sunLight;
-    
-    // 
-    // const hemiLight = new HemisphereLight( 0x0000ff, 0x00ff00, 0.6 ); 
+
+    //
+    // const hemiLight = new HemisphereLight( 0x0000ff, 0x00ff00, 0.6 );
     // this.add(hemiLight);
 
-    
+
     {
       const geometry = new PlaneGeometry( 1,1 );
       const material = new MeshStandardMaterial( {color: 0x4fff0f} );
       // const material = new MeshStandardMaterial( {color: 0xffffff} );
       const floor = new Mesh( geometry, material );
+      floor.setTags({ physics: { type: 'fixed' } });
       floor.scale.setScalar(12);
       floor.rotation.set(-Math.PI/2,0,0);
       floor.receiveShadow = true;
       this.add( floor );
       window.floor = floor;
-      
-      // const texture = new TextureLoader().load('./textures/myrthe-van-tol-grass-texture.jpeg' ); 
-      const texture = new TextureLoader().loadAsync('./textures/myrthe-van-tol-grass-texture.jpeg' ); 
+
+      // const texture = new TextureLoader().load('./textures/myrthe-van-tol-grass-texture.jpeg' );
+      const texture = new TextureLoader().loadAsync('./textures/myrthe-van-tol-grass-texture.jpeg' );
       texture.then((tex) => {
         //console.log(tex);
         tex.repeat.setScalar(8);
@@ -101,60 +102,60 @@ return
 
     const cube = new Cube({size: 0.2,debug: true, color:0xffffff});
     cube.position.y = 1;
-    
+
     // cube.update = function(){
     //   // debugger
     //   this.position.x += 0.01;
     //   console.log(this.name);
     // }
-      
+
 
     this.add( cube );
     cube.name = 'sldkfndsf';
-    
+
     st.animationPool.add(cube);
     cube.entities = new Entities(cube);
-    
+
     cube.entities.add(new Spin(cube));
-    
+
     // cube.entities.add(new Move());
     // now just some arbitary builder
     // cube.entities.add( Meep( "moop", function(){ this.position.z += 0.01 } ) );
-    
+
     cube.entities.add(new KeyWalk(cube, 0.01, 0.01));
-    
-    
+
+
     for (var i = 0; i < 22; i++) {
-      
-      
+
+
       const cube = new Cube({size: 0.2,debug: true, color:Math.random()* 0xffffff});
-        
+
 
       this.add( cube );
       cube.name = 'sldkfndsf' + i;
-      
+
       st.animationPool.add(cube);
       cube.entities = new Entities(cube);
-      
+
       cube.entities.add(new Spin(cube));
-      
+
       cube.position.set(randomInRange(4, -4), 1, randomInRange(4, -4))
       cube.rotation.y = Math.random() * Math.PI * 2;
-      
+
       // cube.entities.add(new Move());
       // now just some arbitary builder
       // cube.entities.add( Meep( "moop", function(){ this.position.z += 0.01 } ) );
-      
+
       cube.entities.add(new KeyWalk(cube, 0.01, 0.01));
-      
-      
+
+
     }
-    
-    
-    
-    
+
+
+
+
   }
-  
-  
-  
+
+
+
 }
