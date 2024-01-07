@@ -4598,18 +4598,24 @@ const DynamicPhysicsComponent = defineComponent({
 // https://playcode.io/1528902
 
 const physQuery = defineQuery([DynamicPhysicsComponent]);
+let rigidBodyPos;
+new Vector3$2();
 function physicsSystem(core) {
   const ents = physQuery(core);
   for (let i = 0; i < ents.length; i++) {
     const eid = ents[i];
     const object3D = store$1.state.game.scene.getObjectById(DynamicPhysicsComponent.objectId[eid]);
-    const rigidBodyPos = object3D.rigidBody.translation();
+    rigidBodyPos = object3D.rigidBody.translation();
+    // object3D.rigidBody.translation(bb);
+
     // console.log('rigidBodyPos', rigidBodyPos);
 
     // TODO FIX SO IT NOT DISAPPEAR OR W/E
+
+    // object3D.position.copy(bb);
     object3D.position.copy(rigidBodyPos);
+
     // object3D.position.y = -2;
-    object3D.updateMatrix();
 
     // This also makes the floor disappear
     // object3D.position.set(new Vector3(
@@ -4626,6 +4632,8 @@ function physicsSystem(core) {
     //   colliderRotation.z,
     //   colliderRotation.w
     // ));
+
+    object3D.updateMatrix();
 
     // DynamicPhysicsComponent[eid]
   }
@@ -4741,7 +4749,7 @@ function patchObject3D_CM() {
         // .setRotation(this.rotation);
 
         if (physics.linvel) {
-          rigidBodyDesc.setLinvel(physics.linvel);
+          rigidBodyDesc.setLinvel(...physics.linvel);
         }
         if (physics.angvel) {
           rigidBodyDesc.setAngvel(physics.angvel);
@@ -11268,7 +11276,8 @@ const init = async () => {
   gg.position.y = 1.4;
   gg.init({
     physics: {
-      rigidBody: 'dynamic'
+      rigidBody: 'dynamic',
+      linvel: [3, 0, 5]
     }
   });
   window.vol = gg;

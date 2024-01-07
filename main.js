@@ -95,7 +95,12 @@ const init = async () => {
   let gg = new VolumeRect();
   store.state.game.scene.add(gg);
   gg.position.y = 1.4;
-  gg.init({ physics: { rigidBody: 'dynamic' } });
+  gg.init({
+    physics: {
+      rigidBody: 'dynamic',
+      linvel: [3, 0, 5]
+    }
+  });
   window.vol = gg;
   console.log(vol);
 };

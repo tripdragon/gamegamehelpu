@@ -66,7 +66,7 @@ export function patchObject3D_CM() {
           // .setRotation(this.rotation);
 
         if (physics.linvel) {
-          rigidBodyDesc.setLinvel(physics.linvel);
+          rigidBodyDesc.setLinvel(...physics.linvel);
         }
 
         if (physics.angvel) {
