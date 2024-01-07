@@ -34,7 +34,7 @@ export class GameGrapth{
     this.animationPool = new AnimationPool();
     this.sceneGrapth = new SceneGrapth();
     this.planningBoard = new PlanningBoard();
-    this.currentLevelMap = props.currentLevelMap || null;
+    this.currentLevelMap = props.currentLevelMap || null; // upgrade to class
     this.levels = props.levels || new Levels();
     this.importedModels = props.importedModels || new ImportedModels();
     this.helpersGroup = props.helpersGroup;

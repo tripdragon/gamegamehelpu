@@ -23,9 +23,10 @@ export default function physicsSystem(core) {
     // console.log('rigidBodyPos', rigidBodyPos);
 
     // TODO FIX SO IT NOT DISAPPEAR OR W/E
-    // object3D.position.set(new Vector3(
-    //   rigidBodyPos.x, rigidBodyPos.y, rigidBodyPos.z
-    // ));
+    object3D.position.copy(rigidBodyPos);
+    // object3D.position.y = -2;
+    object3D.updateMatrix();
+    
     // This also makes the floor disappear
     // object3D.position.set(new Vector3(
     //   0, 0, 0
