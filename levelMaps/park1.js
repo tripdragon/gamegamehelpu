@@ -80,7 +80,7 @@ export class Park1 extends LevelMap{
       floor.receiveShadow = true;
       this.add(floor);
       // floor.init({ physics: { rigidBody: 'fixed' } });
-      floor.init({ physics: { rigidBody: 'dynamic' } });
+      floor.init({ physics: { rigidBody: 'fixed' } });
       window.floor = floor;
 
       // const texture = new TextureLoader().load('./textures/myrthe-van-tol-grass-texture.jpeg' );
