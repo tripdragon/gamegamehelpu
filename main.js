@@ -95,7 +95,7 @@ const init = async () => {
   let gg = new VolumeRect();
   store.state.game.scene.add(gg);
   gg.position.y = 1.4;
-  gg.init({ physics: { rigidBody: 'dynamic' } });
+  // gg.init({ physics: { rigidBody: 'dynamic' } });
   window.vol = gg;
   console.log(vol);
 };
@@ -177,6 +177,14 @@ function buildLilGui(gameConfig){
     right: 1,
     front: 1,
     back: 1,
+    
+    minx: 1,
+    miny: 1,
+    minz: 1,
+    maxx: 1,
+    maxy: 1,
+    maxz: 1,
+    
 
   	widgetTranslate: function() { gameConfig.transformWidget.mode = "translate" },
   	widgetRotate: function() { gameConfig.transformWidget.mode = "rotate" },
@@ -186,13 +194,118 @@ function buildLilGui(gameConfig){
 
   // gui.add( obj, 'myBoolean' ); 	// checkbox
   // gui.add( obj, 'myString' ); 	// text field
+  // 
+  // gui.add( obj, 'top',0,4 ).onChange( x => { vol.setSide("top",x) } );
+  // gui.add( obj, 'bottom',0,4 ).onChange( x => { vol.setSide("bottom",x) } );
+  // gui.add( obj, 'left',0,4 ).onChange( x => { vol.setSide("left",x) } );
+  // gui.add( obj, 'right',0,4 ).onChange( x => { vol.setSide("right",x) } );
+  // gui.add( obj, 'front',0,4 ).onChange( x => { vol.setSide("front",x) } );
+  // gui.add( obj, 'back',0,4 ).onChange( x => { vol.setSide("back",x) } );
+  
+  const min = new Vector3(-0.5,-0.5,-0.5);
+  const max = new Vector3(0.5,0.5,0.5);
+  function djkfngkldfnmgh() {
+    
+    // min
+    // :o
 
-  gui.add( obj, 'top',0,4 ).onChange( x => { vol.setSide("top",x) } );
-  gui.add( obj, 'bottom',0,4 ).onChange( x => { vol.setSide("bottom",x) } );
-  gui.add( obj, 'left',0,4 ).onChange( x => { vol.setSide("left",x) } );
-  gui.add( obj, 'right',0,4 ).onChange( x => { vol.setSide("right",x) } );
-  gui.add( obj, 'front',0,4 ).onChange( x => { vol.setSide("front",x) } );
-  gui.add( obj, 'back',0,4 ).onChange( x => { vol.setSide("back",x) } );
+    // val = -1
+    
+    vol.setVectice(vol.reorderSharedVertices.bottom[0],min.x,min.y,min.z)
+
+    // y
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "y", min.y);
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "y", min.y);
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[3], "y", min.y);
+
+    // here we already need the y of the top, not to += it
+    // vol.setVectice(vol.reorderSharedVertices.top[0],val,val,val)
+
+    var v0 = []
+    vol.readVertAtSharedIndex(vol.reorderSharedVertices.bottom[0], v0)
+    // opisite
+    var v1 = []
+    vol.readVertAtSharedIndex(vol.reorderSharedVertices.top[2], v1)
+
+    // top edge
+    vol.offsetVectice(vol.reorderSharedVertices.top[0], "x", v0[0]);
+    vol.offsetVectice(vol.reorderSharedVertices.top[0], "z", v0[2]);
+    vol.offsetVectice(vol.reorderSharedVertices.top[0], "y", v1[1]);
+
+    // x edge
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[3], "z", v0[2]);
+    vol.offsetVectice(vol.reorderSharedVertices.top[3], "z", v0[2]);
+
+    // y
+    vol.offsetVectice(vol.reorderSharedVertices.top[3], "y", v1[1]);
+
+    // z edge
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "x", v0[0]);
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "z", v1[2]);
+
+    vol.offsetVectice(vol.reorderSharedVertices.top[1], "x", v0[0]);
+    vol.offsetVectice(vol.reorderSharedVertices.top[1], "y", v1[1]);
+
+    // :x
+
+    // max
+    // :o
+
+    // val = 1
+    vol.setVectice(vol.reorderSharedVertices.top[2],max.x,max.y,max.z)
+
+
+
+    // y
+    vol.offsetVectice(vol.reorderSharedVertices.top[0], "y", max.y);
+    vol.offsetVectice(vol.reorderSharedVertices.top[1], "y", max.y);
+    vol.offsetVectice(vol.reorderSharedVertices.top[3], "y", max.y);
+
+    var v0 = []
+    vol.readVertAtSharedIndex(vol.reorderSharedVertices.top[2], v0)
+    // opisite
+    var v1 = []
+    vol.readVertAtSharedIndex(vol.reorderSharedVertices.bottom[0], v1)
+
+    // bottom edge
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "x", v0[0]);
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "z", v0[2]);
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "y", v1[1]);
+
+
+    // x edge
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[3], "x", v0[0]);
+    vol.offsetVectice(vol.reorderSharedVertices.top[3], "x", v0[0]);
+
+    // z edge
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "z", v0[2]);
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "x", v1[0]);
+
+    vol.offsetVectice(vol.reorderSharedVertices.top[1], "z", v0[2]);
+    vol.offsetVectice(vol.reorderSharedVertices.top[1], "x", v1[0]);
+
+  }
+  // 
+  gui.add( obj, 'minx',0,4 ).onChange( x => { min.x = -x; djkfngkldfnmgh(); } );
+  gui.add( obj, 'miny',0,4 ).onChange( x => { min.y = -x; djkfngkldfnmgh(); } );
+  gui.add( obj, 'minz',0,4 ).onChange( x => { min.z = -x; djkfngkldfnmgh(); } );
+  
+  gui.add( obj, 'maxx',0,4 ).onChange( x => { max.x = x; djkfngkldfnmgh(); } );
+  gui.add( obj, 'maxy',0,4 ).onChange( x => { max.y = x; djkfngkldfnmgh(); } );
+  gui.add( obj, 'maxz',0,4 ).onChange( x => { max.z = x; djkfngkldfnmgh(); } );
+  // 
+  
+  // 
+  // gui.add( obj, 'minx',0,4 ).onChange( x => { min.setScalar(-x); djkfngkldfnmgh(); } );
+  // gui.add( obj, 'miny',0,4 ).onChange( x => { min.y = -x; djkfngkldfnmgh(); } );
+  // gui.add( obj, 'minz',0,4 ).onChange( x => { min.z = -x; djkfngkldfnmgh(); } );
+  // 
+  // gui.add( obj, 'maxx',0,4 ).onChange( x => { max.setScalar(x); djkfngkldfnmgh(); } );
+  // gui.add( obj, 'maxy',0,4 ).onChange( x => { max.y = x; djkfngkldfnmgh(); } );
+  // gui.add( obj, 'maxz',0,4 ).onChange( x => { max.z = x; djkfngkldfnmgh(); } );
+  // 
+  // 
+  
 
   gui.add( obj, 'widgetTranslate' ); 	// button
   gui.add( obj, 'widgetRotate' ); 	// button

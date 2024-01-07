@@ -4598,18 +4598,24 @@ const DynamicPhysicsComponent = defineComponent({
 // https://playcode.io/1528902
 
 const physQuery = defineQuery([DynamicPhysicsComponent]);
+let rigidBodyPos;
+new Vector3$2();
 function physicsSystem(core) {
   const ents = physQuery(core);
   for (let i = 0; i < ents.length; i++) {
     const eid = ents[i];
     const object3D = store$1.state.game.scene.getObjectById(DynamicPhysicsComponent.objectId[eid]);
-    const rigidBodyPos = object3D.rigidBody.translation();
+    rigidBodyPos = object3D.rigidBody.translation();
+    // object3D.rigidBody.translation(bb);
+
     // console.log('rigidBodyPos', rigidBodyPos);
 
     // TODO FIX SO IT NOT DISAPPEAR OR W/E
+
+    // object3D.position.copy(bb);
     object3D.position.copy(rigidBodyPos);
+
     // object3D.position.y = -2;
-    object3D.updateMatrix();
 
     // This also makes the floor disappear
     // object3D.position.set(new Vector3(
@@ -4626,6 +4632,8 @@ function physicsSystem(core) {
     //   colliderRotation.z,
     //   colliderRotation.w
     // ));
+
+    object3D.updateMatrix();
 
     // DynamicPhysicsComponent[eid]
   }
@@ -11266,11 +11274,7 @@ const init = async () => {
   let gg = new VolumeRect();
   store$1.state.game.scene.add(gg);
   gg.position.y = 1.4;
-  gg.init({
-    physics: {
-      rigidBody: 'dynamic'
-    }
-  });
+  // gg.init({ physics: { rigidBody: 'dynamic' } });
   window.vol = gg;
   console.log(vol);
 };
@@ -11342,6 +11346,12 @@ function buildLilGui(gameConfig) {
     right: 1,
     front: 1,
     back: 1,
+    minx: 1,
+    miny: 1,
+    minz: 1,
+    maxx: 1,
+    maxy: 1,
+    maxz: 1,
     widgetTranslate: function () {
       gameConfig.transformWidget.mode = "translate";
     },
@@ -11355,25 +11365,127 @@ function buildLilGui(gameConfig) {
 
   // gui.add( obj, 'myBoolean' ); 	// checkbox
   // gui.add( obj, 'myString' ); 	// text field
+  // 
+  // gui.add( obj, 'top',0,4 ).onChange( x => { vol.setSide("top",x) } );
+  // gui.add( obj, 'bottom',0,4 ).onChange( x => { vol.setSide("bottom",x) } );
+  // gui.add( obj, 'left',0,4 ).onChange( x => { vol.setSide("left",x) } );
+  // gui.add( obj, 'right',0,4 ).onChange( x => { vol.setSide("right",x) } );
+  // gui.add( obj, 'front',0,4 ).onChange( x => { vol.setSide("front",x) } );
+  // gui.add( obj, 'back',0,4 ).onChange( x => { vol.setSide("back",x) } );
 
-  gui.add(obj, 'top', 0, 4).onChange(x => {
-    vol.setSide("top", x);
+  const min = new Vector3$2(-0.5, -0.5, -0.5);
+  const max = new Vector3$2(0.5, 0.5, 0.5);
+  function djkfngkldfnmgh() {
+    // min
+    // :o
+
+    // val = -1
+
+    vol.setVectice(vol.reorderSharedVertices.bottom[0], min.x, min.y, min.z);
+
+    // y
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "y", min.y);
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "y", min.y);
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[3], "y", min.y);
+
+    // here we already need the y of the top, not to += it
+    // vol.setVectice(vol.reorderSharedVertices.top[0],val,val,val)
+
+    var v0 = [];
+    vol.readVertAtSharedIndex(vol.reorderSharedVertices.bottom[0], v0);
+    // opisite
+    var v1 = [];
+    vol.readVertAtSharedIndex(vol.reorderSharedVertices.top[2], v1);
+
+    // top edge
+    vol.offsetVectice(vol.reorderSharedVertices.top[0], "x", v0[0]);
+    vol.offsetVectice(vol.reorderSharedVertices.top[0], "z", v0[2]);
+    vol.offsetVectice(vol.reorderSharedVertices.top[0], "y", v1[1]);
+
+    // x edge
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[3], "z", v0[2]);
+    vol.offsetVectice(vol.reorderSharedVertices.top[3], "z", v0[2]);
+
+    // y
+    vol.offsetVectice(vol.reorderSharedVertices.top[3], "y", v1[1]);
+
+    // z edge
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "x", v0[0]);
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "z", v1[2]);
+    vol.offsetVectice(vol.reorderSharedVertices.top[1], "x", v0[0]);
+    vol.offsetVectice(vol.reorderSharedVertices.top[1], "y", v1[1]);
+
+    // :x
+
+    // max
+    // :o
+
+    // val = 1
+    vol.setVectice(vol.reorderSharedVertices.top[2], max.x, max.y, max.z);
+
+    // y
+    vol.offsetVectice(vol.reorderSharedVertices.top[0], "y", max.y);
+    vol.offsetVectice(vol.reorderSharedVertices.top[1], "y", max.y);
+    vol.offsetVectice(vol.reorderSharedVertices.top[3], "y", max.y);
+    var v0 = [];
+    vol.readVertAtSharedIndex(vol.reorderSharedVertices.top[2], v0);
+    // opisite
+    var v1 = [];
+    vol.readVertAtSharedIndex(vol.reorderSharedVertices.bottom[0], v1);
+
+    // bottom edge
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "x", v0[0]);
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "z", v0[2]);
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "y", v1[1]);
+
+    // x edge
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[3], "x", v0[0]);
+    vol.offsetVectice(vol.reorderSharedVertices.top[3], "x", v0[0]);
+
+    // z edge
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "z", v0[2]);
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "x", v1[0]);
+    vol.offsetVectice(vol.reorderSharedVertices.top[1], "z", v0[2]);
+    vol.offsetVectice(vol.reorderSharedVertices.top[1], "x", v1[0]);
+  }
+  // 
+  gui.add(obj, 'minx', 0, 4).onChange(x => {
+    min.x = -x;
+    djkfngkldfnmgh();
   });
-  gui.add(obj, 'bottom', 0, 4).onChange(x => {
-    vol.setSide("bottom", x);
+  gui.add(obj, 'miny', 0, 4).onChange(x => {
+    min.y = -x;
+    djkfngkldfnmgh();
   });
-  gui.add(obj, 'left', 0, 4).onChange(x => {
-    vol.setSide("left", x);
+  gui.add(obj, 'minz', 0, 4).onChange(x => {
+    min.z = -x;
+    djkfngkldfnmgh();
   });
-  gui.add(obj, 'right', 0, 4).onChange(x => {
-    vol.setSide("right", x);
+  gui.add(obj, 'maxx', 0, 4).onChange(x => {
+    max.x = x;
+    djkfngkldfnmgh();
   });
-  gui.add(obj, 'front', 0, 4).onChange(x => {
-    vol.setSide("front", x);
+  gui.add(obj, 'maxy', 0, 4).onChange(x => {
+    max.y = x;
+    djkfngkldfnmgh();
   });
-  gui.add(obj, 'back', 0, 4).onChange(x => {
-    vol.setSide("back", x);
+  gui.add(obj, 'maxz', 0, 4).onChange(x => {
+    max.z = x;
+    djkfngkldfnmgh();
   });
+  // 
+
+  // 
+  // gui.add( obj, 'minx',0,4 ).onChange( x => { min.setScalar(-x); djkfngkldfnmgh(); } );
+  // gui.add( obj, 'miny',0,4 ).onChange( x => { min.y = -x; djkfngkldfnmgh(); } );
+  // gui.add( obj, 'minz',0,4 ).onChange( x => { min.z = -x; djkfngkldfnmgh(); } );
+  // 
+  // gui.add( obj, 'maxx',0,4 ).onChange( x => { max.setScalar(x); djkfngkldfnmgh(); } );
+  // gui.add( obj, 'maxy',0,4 ).onChange( x => { max.y = x; djkfngkldfnmgh(); } );
+  // gui.add( obj, 'maxz',0,4 ).onChange( x => { max.z = x; djkfngkldfnmgh(); } );
+  // 
+  // 
+
   gui.add(obj, 'widgetTranslate'); // button
   gui.add(obj, 'widgetRotate'); // button
   gui.add(obj, 'widgetScale'); // button
