@@ -21,7 +21,7 @@ import {
 
 import { Entities, Enty, Move, Spin, KeyWalk, Meep } from '../entities/basicEntites';
 
-import { Plane, Cube, Sphere, MeshBuilder } from 'alexandria/primitives';
+import { PlaneMesh, Cube, SphereMesh, Object3DModifier } from 'alexandria/primitives';
 import { randomInRange } from 'alexandria/math/mathMore';
 
 export class Level extends LevelMap {
@@ -77,8 +77,8 @@ export class Level extends LevelMap {
     // this.add(hemiLight);
 
     // Floor
-    this.add(MeshBuilder({
-      mesh: new Plane({
+    this.add(Object3DModifier({
+      mesh: new PlaneMesh({
         length: 1,
         width: 1,
         color: 0x4fff0f
@@ -95,14 +95,14 @@ export class Level extends LevelMap {
       physics: { rigidBody: 'fixed' }
     }));
 
-    this.add(MeshBuilder({
+    this.add(Object3DModifier({
       mesh: new Cube({ size: 0.2, debug: false, color: 0xffffff }),
       position: { y: 1 },
       physics: { rigidBody: 'dynamic' }
     }));
 
-    this.add(MeshBuilder({
-      mesh: new Sphere({ radius: 0.2, debug: false, color: 0x00ff00 }),
+    this.add(Object3DModifier({
+      mesh: new SphereMesh({ radius: 0.2, debug: false, color: 0x00ff00 }),
       position: { y: 2 },
       physics: { rigidBody: 'dynamic' }
     }));

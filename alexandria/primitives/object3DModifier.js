@@ -1,20 +1,33 @@
 import {
   TextureLoader,
-  MeshStandardMaterial,
-  AxesHelper,
-  RepeatWrapping,
-  SRGBColorSpace
+  MeshStandardMaterial
 } from 'three';
+
+// Example usage
+// this.add(Object3DModifier({
+//   mesh: new Plane({
+//     length: 1,
+//     width: 1,
+//     color: 0x4fff0f
+//   }),
+//   scale: 12,
+//   rotation: [-Math.PI / 2, 0, 0],
+//   shadow: 'receive',
+//   texture: {
+//     path: './textures/myrthe-van-tol-grass-texture.jpeg',
+//     wrapping: RepeatWrapping,
+//     repeat: 8,
+//     colorSpace: SRGBColorSpace
+//   },
+//   physics: { rigidBody: 'fixed' }
+// }));
 
 const internals = {};
 
-export function MeshBuilder(props) {
+export function Object3DModifier(props) {
 
   const {
-    geometry,
-    material,
     position,
-    quaternion,
     scale,
     rotation,
     texture,
@@ -27,11 +40,7 @@ export function MeshBuilder(props) {
   const { setOrScalar } = internals;
 
   if (!mesh) {
-    if (!geometry || !material) {
-      throw new Error('Must provide geometry and material if not providing mesh to Builder');
-    }
-
-    mesh = new MeshStandardMaterial(geometry, material);
+    throw new Error('Must provide mesh to Object3DModifier');
   }
 
   if (position) {
@@ -48,23 +57,6 @@ export function MeshBuilder(props) {
     }
     else {
       throw new Error(`Invalid val for position '${position}'`);
-    }
-  }
-
-  if (quaternion) {
-    if (Array.isArray(quaternion) || typeof quaternion === 'number') {
-      setOrScalar({ thing: mesh, prop: 'quaternion', val: [].concat(quaternion) });
-    }
-    else if (typeof quaternion === 'object') {
-      Object.keys(quaternion).forEach((key) => {
-        mesh.quaternion[key] = quaternion[key];
-      });
-    }
-    else if (typeof quaternion === 'function') {
-      quaternion(mesh.quaternion);
-    }
-    else {
-      throw new Error(`Invalid val for quaternion '${quaternion}'`);
     }
   }
 

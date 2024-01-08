@@ -1,34 +1,29 @@
-import {
-  Mesh,
-  PlaneGeometry,
-  MeshStandardMaterial,
-  AxesHelper
-} from 'three';
+import { Mesh, SphereGeometry, MeshStandardMaterial, AxesHelper } from 'three';
 
-export class Plane extends Mesh {
+export class SphereMesh extends Mesh {
 
   constructor(props) {
 
     const {
-      length = 1,
-      width = 1,
+      radius = 1,
       color = 0x00ff00,
       debug = false
     } = props;
 
-    const geometry = new PlaneGeometry(length, width);
+    const geometry = new SphereGeometry(radius, 32, 32);
     const material = new MeshStandardMaterial({ color });
 
     super(geometry, material);
+
+    this.castShadow = true;
 
     if (debug) {
       const axesHelper = new AxesHelper(1);
       this.add(axesHelper);
     }
 
-    this.name = 'planey';
+    this.name = 'spherey';
 
-    // debugger
     this.matrixAutoUpdate = false;
   }
 }

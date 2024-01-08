@@ -2112,15 +2112,15 @@ var Html = React.forwardRef(({
           /*
             This shader is from the THREE's SpriteMaterial.
             We need to turn the backing plane into a Sprite
-            (make it always face the camera) if "transfrom" 
-            is false. 
+            (make it always face the camera) if "transfrom"
+            is false.
           */
           #include <common>
 
           void main() {
             vec2 center = vec2(0., 1.);
             float rotation = 0.0;
-            
+
             // This is somewhat arbitrary, but it seems to work well
             // Need to figure out how to derive this dynamically if it even matters
             float size = 0.03;
@@ -8353,7 +8353,7 @@ var DragEngine = class extends CoordinatesEngine {
       }
     } catch (_unused) {
       if (true) {
-        console.warn(`[@use-gesture]: If you see this message, it's likely that you're using an outdated version of \`@react-three/fiber\`. 
+        console.warn(`[@use-gesture]: If you see this message, it's likely that you're using an outdated version of \`@react-three/fiber\`.
 
 Please upgrade to the latest version.`);
       }
@@ -10204,12 +10204,12 @@ function decompress(texture, maxTextureSize = Infinity, renderer = null) {
       fragmentShader: (
         /* glsl */
         `
-          uniform sampler2D blitTexture; 
+          uniform sampler2D blitTexture;
           varying vec2 vUv;
 
-          void main(){ 
+          void main(){
               gl_FragColor = vec4(vUv.xy, 0, 1);
-              
+
               #ifdef IS_SRGB
               gl_FragColor = LinearTosRGB( texture2D( blitTexture, vUv) );
               #else
@@ -13752,7 +13752,7 @@ var _DRACOExporter = class {
       throw new Error("THREE.DRACOExporter.parse(geometry, options): geometry is not a THREE.BufferGeometry instance.");
     }
     if (object instanceof Mesh && object.isMesh) {
-      builder = new dracoEncoder.MeshBuilder();
+      builder = new dracoEncoder.Object3DModifier();
       dracoObject = new dracoEncoder.Mesh();
       const vertices = geometry3.getAttribute("position");
       builder.AddFloatAttributeToMesh(
@@ -21129,11 +21129,11 @@ var GroundProjectedEnv = class extends Mesh {
       /* glsl */
       `
         varying vec3 vWorldPosition;
-        void main() 
+        void main()
         {
             vec4 worldPosition = ( modelMatrix * vec4( position, 1.0 ) );
             vWorldPosition = worldPosition.xyz;
-            
+
             gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
         }
         `
@@ -21151,40 +21151,40 @@ var GroundProjectedEnv = class extends Mesh {
             uniform sampler2D map;
         #endif
         // From: https://www.shadertoy.com/view/4tsBD7
-        float diskIntersectWithBackFaceCulling( vec3 ro, vec3 rd, vec3 c, vec3 n, float r ) 
+        float diskIntersectWithBackFaceCulling( vec3 ro, vec3 rd, vec3 c, vec3 n, float r )
         {
             float d = dot ( rd, n );
-            
+
             if( d > 0.0 ) { return 1e6; }
-            
+
             vec3  o = ro - c;
             float t = - dot( n, o ) / d;
             vec3  q = o + rd * t;
-            
+
             return ( dot( q, q ) < r * r ) ? t : 1e6;
         }
         // From: https://www.iquilezles.org/www/articles/intersectors/intersectors.htm
-        float sphereIntersect( vec3 ro, vec3 rd, vec3 ce, float ra ) 
+        float sphereIntersect( vec3 ro, vec3 rd, vec3 ce, float ra )
         {
             vec3 oc = ro - ce;
             float b = dot( oc, rd );
             float c = dot( oc, oc ) - ra * ra;
             float h = b * b - c;
-            
+
             if( h < 0.0 ) { return -1.0; }
-            
+
             h = sqrt( h );
-            
+
             return - b + h;
         }
-        vec3 project() 
+        vec3 project()
         {
             vec3 p = normalize( vWorldPosition );
             vec3 camPos = cameraPosition;
             camPos.y -= height;
             float intersection = sphereIntersect( camPos, p, vec3( 0.0 ), radius );
             if( intersection > 0.0 ) {
-                
+
                 vec3 h = vec3( 0.0, - height, 0.0 );
                 float intersection2 = diskIntersectWithBackFaceCulling( camPos, p, h, vec3( 0.0, 1.0, 0.0 ), radius );
                 p = ( camPos + min( intersection, intersection2 ) * p ) / radius;
@@ -21195,10 +21195,10 @@ var GroundProjectedEnv = class extends Mesh {
         }
         #include <common>
         #include <cube_uv_reflection_fragment>
-        void main() 
+        void main()
         {
             vec3 projectedWorldPosition = project();
-            
+
             #ifdef ENVMAP_TYPE_CUBE
                 vec3 outcolor = textureCube( map, projectedWorldPosition ).rgb;
             #else
@@ -35360,20 +35360,20 @@ var GodRaysGenerateShader = {
     /*
     		// Unrolling didnt do much on my hardware (ATI Mobility Radeon 3450),
     		// so i've just left the loop
-    
+
     		"for ( float i = 0.0; i < TAPS_PER_PASS; i += 1.0 ) {",
-    
+
     		// Accumulate samples, making sure we dont walk past the light source.
-    
+
     		// The check for uv.y < 1 would not be necessary with "border" UV wrap
     		// mode, with a black border color. I don't think this is currently
     		// exposed by three.js. As a result there might be artifacts when the
     		// sun is to the left, right or bottom of screen as these cases are
     		// not specifically handled.
-    
+
     		"	col += ( i <= iters && uv.y < 1.0 ? texture2D( tInput, uv ).r : 0.0 );",
     		"	uv += stepv;",
-    
+
     		"}",
     		*/
     // Unrolling loop manually makes it work in ANGLE
@@ -36318,7 +36318,7 @@ var VignetteShader = {
     /*
     		// alternative version from glfx.js
     		// this one makes more "dusty" look (as opposed to "burned")
-    
+
     		"	vec4 color = texture2D( tDiffuse, vUv );",
     		"	float dist = distance( vUv, vec2( 0.5 ) );",
     		"	color.rgb *= smoothstep( 0.8, offset * 0.799, dist *( darkness + offset ) );",
@@ -45996,8 +45996,8 @@ ${nextValidSequenceItems.join("\n")}`;
       const extraArgument = getExtraProductionArgument2(duplicateProd);
       const hasExplicitIndex = index3 > 0;
       let msg = `->${dslName}${hasExplicitIndex ? index3 : ""}<- ${extraArgument ? `with argument: ->${extraArgument}<-` : ""}
-                  appears more than once (${duplicateProds.length} times) in the top level rule: ->${topLevelName}<-.                  
-                  For further details see: https://chevrotain.io/docs/FAQ.html#NUMERICAL_SUFFIXES 
+                  appears more than once (${duplicateProds.length} times) in the top level rule: ->${topLevelName}<-.
+                  For further details see: https://chevrotain.io/docs/FAQ.html#NUMERICAL_SUFFIXES
                   `;
       msg = msg.replace(/[ \t]+/g, " ");
       msg = msg.replace(/\s\s+/g, "\n");
@@ -46062,7 +46062,7 @@ Only the last alternative may be an empty alternative.`;
       const leftRecursivePath = `${ruleName} --> ${pathNames.concat([ruleName]).join(" --> ")}`;
       const errMsg = `Left Recursion found in grammar.
 rule: <${ruleName}> can be invoked from itself (directly or indirectly)
-without consuming any Tokens. The grammar path that causes this is: 
+without consuming any Tokens. The grammar path that causes this is:
  ${leftRecursivePath}
  To fix this refactor your grammar to remove the left recursion.
 see: https://en.wikipedia.org/wiki/LL_parser#Left_factoring.`;
@@ -48056,7 +48056,7 @@ see: https://en.wikipedia.org/wiki/LL_parser#Left_factoring.`;
     }
     /**
          *  @see setInitialNodeLocationOnlyOffsetRegular for explanation why this work
-    
+
          * @param cstNode
          */
     setInitialNodeLocationFullRegular(cstNode) {
@@ -82562,7 +82562,7 @@ var ImageMaterialImpl = shaderMaterial(
     vec2 uv = vUv * s / new + offset;
     vec2 zUv = (uv - vec2(0.5, 0.5)) / zoom + vec2(0.5, 0.5);
     gl_FragColor = toGrayscale(texture2D(map, zUv) * vec4(color, opacity), grayscale);
-    
+
     #include <tonemapping_fragment>
     #include <${version2 >= 154 ? "colorspace_fragment" : "encodings_fragment"}>
   }
@@ -82699,7 +82699,7 @@ var OutlinesMaterial = shaderMaterial({
      #endif
      if (screenspace == 0.0) {
        vec3 newPosition = tPosition.xyz + tNormal.xyz * thickness;
-       gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0); 
+       gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
      } else {
        vec4 clipPosition = projectionMatrix * modelViewMatrix * tPosition;
        vec4 clipNormal = projectionMatrix * modelViewMatrix * tNormal;
@@ -83043,40 +83043,40 @@ var vertexShader = `
   attribute float side;
   attribute float width;
   attribute float counters;
-  
+
   uniform vec2 resolution;
   uniform float lineWidth;
   uniform vec3 color;
   uniform float opacity;
   uniform float sizeAttenuation;
-  
+
   varying vec2 vUV;
   varying vec4 vColor;
   varying float vCounters;
-  
+
   vec2 fix(vec4 i, float aspect) {
     vec2 res = i.xy / i.w;
     res.x *= aspect;
   	vCounters = counters;
     return res;
   }
-  
+
   void main() {
     float aspect = resolution.x / resolution.y;
     vColor = vec4(color, opacity);
     vUV = uv;
-  
+
     mat4 m = projectionMatrix * modelViewMatrix;
     vec4 finalPosition = m * vec4(position, 1.0);
     vec4 prevPos = m * vec4(previous, 1.0);
     vec4 nextPos = m * vec4(next, 1.0);
-  
+
     vec2 currentP = fix(finalPosition, aspect);
     vec2 prevP = fix(prevPos, aspect);
     vec2 nextP = fix(nextPos, aspect);
-  
+
     float w = lineWidth * width;
-  
+
     vec2 dir1 = normalize(currentP - prevP);
     vec2 dir2 = normalize(nextP - currentP);
     vec2 dir = normalize(dir1 + dir2);
@@ -83084,7 +83084,7 @@ var vertexShader = `
     vec2 perp = vec2(-dir1.y, dir1.x);
     vec2 miter = vec2(-dir.y, dir.x);
     //w = clamp(w / dot(miter, perp), 0., 4. * lineWidth * width);
-  
+
     //vec2 normal = (cross(vec3(dir, 0.), vec3(0., 0., 1.))).xy;
     vec4 normal = vec4(-dir.y, dir.x, 0., 1.);
     normal.xy *= .5 * w;
@@ -83093,7 +83093,7 @@ var vertexShader = `
       normal.xy *= finalPosition.w;
       normal.xy /= (vec4(resolution, 0., 1.) * projectionMatrix).xy;
     }
-  
+
     finalPosition.xy += normal.xy * side;
     gl_Position = finalPosition;
     #include <logdepthbuf_vertex>
@@ -83105,7 +83105,7 @@ var vertexShader = `
 var fragmentShader = `
   #include <fog_pars_fragment>
   #include <logdepthbuf_pars_fragment>
-  
+
   uniform sampler2D map;
   uniform sampler2D alphaMap;
   uniform float useGradient;
@@ -83119,11 +83119,11 @@ var fragmentShader = `
   uniform float alphaTest;
   uniform vec2 repeat;
   uniform vec3 gradient[2];
-  
+
   varying vec2 vUV;
   varying vec4 vColor;
   varying float vCounters;
-  
+
   void main() {
     #include <logdepthbuf_fragment>
     vec4 c = vColor;
@@ -85178,7 +85178,7 @@ var CameraControls2 = class _CameraControls extends EventDispatcher2 {
        * 	Sphere    : Sphere,
        * 	Raycaster : Raycaster,
        * };
-  
+
        * CameraControls.install( { THREE: subsetOfTHREE } );
        * ```
        * @category Statics
@@ -92543,7 +92543,7 @@ var GridMaterial = shaderMaterial(
     void main() {
       localPosition = position.xzy;
       if (infiniteGrid) localPosition *= 1.0 + fadeDistance;
-      
+
       worldPosition = modelMatrix * vec4(localPosition, 1.0);
       if (followCamera) {
         worldPosition.xyz += (worldCamProjPosition - worldPlanePosition);
@@ -97576,7 +97576,7 @@ var boxProjectDefinitions = (
   uniform vec3 envMapSize;
   uniform vec3 envMapPosition;
   varying vec3 vWorldPosition;
-    
+
   vec3 parallaxCorrectNormal( vec3 v, vec3 cubeSize, vec3 cubePos ) {
     vec3 nDir = normalize( v );
     vec3 rbmax = ( .5 * cubeSize + cubePos - vWorldPosition ) / nDir;
@@ -97586,7 +97586,7 @@ var boxProjectDefinitions = (
     rbminmax.y = ( nDir.y > 0. ) ? rbmax.y : rbmin.y;
     rbminmax.z = ( nDir.z > 0. ) ? rbmax.z : rbmin.z;
     float correction = min( min( rbminmax.x, rbminmax.y ), rbminmax.z );
-    vec3 boxIntersection = vWorldPosition + nDir * correction;    
+    vec3 boxIntersection = vWorldPosition + nDir * correction;
     return boxIntersection - cubePos;
   }
 #endif
@@ -98439,7 +98439,7 @@ var ConvolutionMaterial = class extends ShaderMaterial {
         depthToBlurRatioBias: new Uniform(0.25)
       },
       fragmentShader: `#include <common>
-        #include <dithering_pars_fragment>      
+        #include <dithering_pars_fragment>
         uniform sampler2D inputBuffer;
         uniform sampler2D depthBuffer;
         uniform float cameraNear;
@@ -98456,14 +98456,14 @@ var ConvolutionMaterial = class extends ShaderMaterial {
 
         void main() {
           float depthFactor = 0.0;
-          
+
           #ifdef USE_DEPTH
             vec4 depth = texture2D(depthBuffer, vUv);
             depthFactor = smoothstep(minDepthThreshold, maxDepthThreshold, 1.0-(depth.r * depth.a));
             depthFactor *= depthScale;
             depthFactor = max(0.0, min(1.0, depthFactor + 0.25));
           #endif
-          
+
           vec4 sum = texture2D(inputBuffer, mix(vUv0, vUv, depthFactor));
           sum += texture2D(inputBuffer, mix(vUv1, vUv, depthFactor));
           sum += texture2D(inputBuffer, mix(vUv2, vUv, depthFactor));
@@ -99024,7 +99024,7 @@ var MeshRefractionMaterial = shaderMaterial(
   `
   uniform mat4 viewMatrixInverse;
 
-  varying vec3 vWorldPosition;  
+  varying vec3 vWorldPosition;
   varying vec3 vNormal;
   varying mat4 vModelMatrixInverse;
 
@@ -99032,7 +99032,7 @@ var MeshRefractionMaterial = shaderMaterial(
     varying vec3 vInstanceColor;
   #endif
 
-  void main() {        
+  void main() {
     vec4 transformedNormal = vec4(normal, 0.0);
     vec4 transformedPosition = vec4(position, 1.0);
     #ifdef USE_INSTANCING
@@ -99066,13 +99066,13 @@ var MeshRefractionMaterial = shaderMaterial(
   #ifdef USE_INSTANCING_COLOR
     varying vec3 vInstanceColor;
   #endif
-    
+
   #ifdef ENVMAP_TYPE_CUBEM
     uniform samplerCube envMap;
   #else
     uniform sampler2D envMap;
   #endif
-    
+
   uniform float bounces;
   ${shaderStructs}
   ${shaderIntersectFunction}
@@ -99086,11 +99086,11 @@ var MeshRefractionMaterial = shaderMaterial(
   uniform mat4 viewMatrixInverse;
   uniform float aberrationStrength;
   uniform vec3 color;
-  
+
   float fresnelFunc(vec3 viewDirection, vec3 worldNormal) {
     return pow( 1.0 + dot( viewDirection, worldNormal), 10.0 );
   }
-    
+
   vec3 totalInternalReflection(vec3 ro, vec3 rd, vec3 normal, float ior, mat4 modelMatrixInverse) {
     vec3 rayOrigin = ro;
     vec3 rayDirection = rd;
@@ -99105,7 +99105,7 @@ var MeshRefractionMaterial = shaderMaterial(
       float side = 1.0;
       float dist = 0.0;
       bvhIntersectFirstHit( bvh, rayOrigin, rayDirection, faceIndices, faceNormal, barycoord, side, dist );
-      vec3 hitPos = rayOrigin + rayDirection * max(dist - 0.001, 0.0);      
+      vec3 hitPos = rayOrigin + rayDirection * max(dist - 0.001, 0.0);
       vec3 tempDir = refract(rayDirection, faceNormal, ior);
       if (length(tempDir) != 0.0) {
         rayDirection = tempDir;
@@ -99117,10 +99117,10 @@ var MeshRefractionMaterial = shaderMaterial(
     rayDirection = normalize((modelMatrix * vec4(rayDirection, 0.0)).xyz);
     return rayDirection;
   }
-    
+
   #include <common>
   #include <cube_uv_reflection_fragment>
-    
+
   #ifdef ENVMAP_TYPE_CUBEM
     vec4 textureGradient(samplerCube envMap, vec3 rayDirection, vec3 directionCamPerfect) {
       return textureGrad(envMap, rayDirection, dFdx(correctMips ? directionCamPerfect: rayDirection), dFdy(correctMips ? directionCamPerfect: rayDirection));
@@ -99132,7 +99132,7 @@ var MeshRefractionMaterial = shaderMaterial(
       return textureGrad(envMap, uvv, dFdx(correctMips ? smoothUv : uvv), dFdy(correctMips ? smoothUv : uvv));
     }
   #endif
-  
+
   void main() {
     vec2 uv = gl_FragCoord.xy / resolution;
     vec3 directionCamPerfect = (projectionMatrixInverse * vec4(uv * 2.0 - 1.0, 0.0, 1.0)).xyz;
@@ -99144,7 +99144,7 @@ var MeshRefractionMaterial = shaderMaterial(
     vec3 finalColor;
     #ifdef CHROMATIC_ABERRATIONS
       vec3 rayDirectionG = totalInternalReflection(rayOrigin, rayDirection, normal, max(ior, 1.0), vModelMatrixInverse);
-      #ifdef FAST_CHROMA 
+      #ifdef FAST_CHROMA
         vec3 rayDirectionR = normalize(rayDirectionG + 1.0 * vec3(aberrationStrength / 2.0));
         vec3 rayDirectionB = normalize(rayDirectionG - 1.0 * vec3(aberrationStrength / 2.0));
       #else
@@ -99157,7 +99157,7 @@ var MeshRefractionMaterial = shaderMaterial(
       finalColor = vec3(finalColorR, finalColorG, finalColorB);
     #else
       rayDirection = totalInternalReflection(rayOrigin, rayDirection, normal, max(ior, 1.0), vModelMatrixInverse);
-      finalColor = textureGradient(envMap, rayDirection, directionCamPerfect).rgb;    
+      finalColor = textureGradient(envMap, rayDirection, directionCamPerfect).rgb;
     #endif
 
     finalColor *= color;
@@ -99167,7 +99167,7 @@ var MeshRefractionMaterial = shaderMaterial(
 
     vec3 viewDirection = normalize(vWorldPosition - cameraPosition);
     float nFresnel = fresnelFunc(viewDirection, normal) * fresnel;
-    gl_FragColor = vec4(mix(finalColor, vec3(1.0), nFresnel), 1.0);      
+    gl_FragColor = vec4(mix(finalColor, vec3(1.0), nFresnel), 1.0);
     #include <tonemapping_fragment>
     #include <${version2 >= 154 ? "colorspace_fragment" : "encodings_fragment"}>
   }`
@@ -99310,8 +99310,8 @@ var MeshTransmissionMaterialImpl = class extends MeshPhysicalMaterial {
         shader.defines.USE_TRANSMISSION = "";
       shader.fragmentShader = /*glsl*/
       `
-      uniform float chromaticAberration;         
-      uniform float anisotropicBlur;      
+      uniform float chromaticAberration;
+      uniform float anisotropicBlur;
       uniform float time;
       uniform float distortion;
       uniform float distortionScale;
@@ -99441,7 +99441,7 @@ var MeshTransmissionMaterialImpl = class extends MeshPhysicalMaterial {
             return roughness * clamp( ior * 2.0 - 2.0, 0.0, 1.0 );
           }
           vec4 getTransmissionSample( const in vec2 fragCoord, const in float roughness, const in float ior ) {
-            float framebufferLod = log2( transmissionSamplerSize.x ) * applyIorToRoughness( roughness, ior );            
+            float framebufferLod = log2( transmissionSamplerSize.x ) * applyIorToRoughness( roughness, ior );
             #ifdef USE_SAMPLER
               #ifdef texture2DLodEXT
                 return texture2DLodEXT(transmissionSamplerMap, fragCoord.xy, framebufferLod);
@@ -99487,7 +99487,7 @@ var MeshTransmissionMaterialImpl = class extends MeshPhysicalMaterial {
       shader.fragmentShader = shader.fragmentShader.replace(
         "#include <transmission_fragment>",
         /*glsl*/
-        `  
+        `
         // Improve the refraction to use the world pos
         material.transmission = _transmission;
         material.transmissionAlpha = 1.0;
@@ -99500,7 +99500,7 @@ var MeshTransmissionMaterialImpl = class extends MeshPhysicalMaterial {
         #ifdef USE_THICKNESSMAP
           material.thickness *= texture2D( thicknessMap, vUv ).g;
         #endif
-        
+
         vec3 pos = vWorldPosition;
         vec3 v = normalize( cameraPosition - pos );
         vec3 n = inverseTransformDirection( normal, viewMatrix );
@@ -99643,7 +99643,7 @@ var PointMaterialImpl = class extends PointsMaterial {
 #include <${opaque_fragment}>` : `#include <${opaque_fragment}>`}
       vec2 cxy = 2.0 * gl_PointCoord - 1.0;
       float r = dot(cxy, cxy);
-      float delta = fwidth(r);     
+      float delta = fwidth(r);
       float mask = 1.0 - smoothstep(1.0 - delta, 1.0 + delta, r);
       gl_FragColor = vec4(gl_FragColor.rgb, mask * gl_FragColor.a );
       #include <tonemapping_fragment>
@@ -99739,7 +99739,7 @@ float findBlocker(sampler2D shadowMap, vec2 uv, float compare, float angle) {
   return -1.0;
 }
 
-        
+
 float vogelFilter(sampler2D shadowMap, vec2 uv, float zReceiver, float filterRadius, float angle) {
   float texelSize = 1.0 / float(textureSize(shadowMap, 0).x);
   float shadow = 0.0f;
@@ -101083,22 +101083,22 @@ var CausticsProjectionMaterial = shaderMaterial({
   color: new Color(),
   lightProjMatrix: new Matrix4(),
   lightViewMatrix: new Matrix4()
-}, `varying vec3 vWorldPosition;   
+}, `varying vec3 vWorldPosition;
    void main() {
      gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.);
      vec4 worldPosition = modelMatrix * vec4(position, 1.);
      vWorldPosition = worldPosition.xyz;
    }`, `varying vec3 vWorldPosition;
   uniform vec3 color;
-  uniform sampler2D causticsTexture; 
-  uniform sampler2D causticsTextureB; 
+  uniform sampler2D causticsTexture;
+  uniform sampler2D causticsTextureB;
   uniform mat4 lightProjMatrix;
   uniform mat4 lightViewMatrix;
    void main() {
-    // Apply caustics  
+    // Apply caustics
     vec4 lightSpacePos = lightProjMatrix * lightViewMatrix * vec4(vWorldPosition, 1.0);
     lightSpacePos.xyz /= lightSpacePos.w;
-    lightSpacePos.xyz = lightSpacePos.xyz * 0.5 + 0.5; 
+    lightSpacePos.xyz = lightSpacePos.xyz * 0.5 + 0.5;
     vec3 front = texture2D(causticsTexture, lightSpacePos.xy).rgb;
     vec3 back = texture2D(causticsTextureB, lightSpacePos.xy).rgb;
     gl_FragColor = vec4((front + back) * color, 1.0);
@@ -101132,7 +101132,7 @@ var CausticsMaterial = shaderMaterial(
       gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
   }`,
   /* glsl */
-  `  
+  `
   uniform mat4 cameraMatrixWorld;
   uniform mat4 cameraProjectionMatrixInv;
   uniform vec3 lightDir;
@@ -101160,7 +101160,7 @@ var CausticsMaterial = shaderMaterial(
     viewSpacePosition /= viewSpacePosition.w;
     vec4 worldSpacePosition = cameraMatrixWorld * viewSpacePosition;
     return worldSpacePosition.xyz;
-  }                  
+  }
   float sdPlane( vec3 p, vec3 n, float h ) {
     // n must be normalized
     return dot(p,n) + h;
@@ -101637,7 +101637,7 @@ var SpotLightMaterial = class extends ShaderMaterial {
       varying float vViewZ;
       varying float vIntensity;
       uniform vec3 spotPosition;
-      uniform float attenuation;      
+      uniform float attenuation;
 
       void main() {
         // compute intensity
@@ -101648,7 +101648,7 @@ var SpotLightMaterial = class extends ShaderMaterial {
         vViewZ = viewPosition.z;
         float intensity	= distance(worldPosition.xyz, spotPosition) / attenuation;
         intensity	= 1.0 - clamp(intensity, 0.0, 1.0);
-        vIntensity = intensity;        
+        vIntensity = intensity;
         // set gl_Position
         gl_Position	= projectionMatrix * viewPosition;
 
@@ -102684,8 +102684,8 @@ var SparklesImplMaterial = shaderMaterial({
   pixelRatio: 1
 }, ` uniform float pixelRatio;
     uniform float time;
-    attribute float size;  
-    attribute float speed;  
+    attribute float size;
+    attribute float speed;
     attribute float opacity;
     attribute vec3 noise;
     attribute vec3 color;
@@ -102898,7 +102898,7 @@ var WireframeMaterialShaders = {
     /* glsl */
     `
 	  attribute vec3 barycentric;
-	
+
 		varying vec3 v_edges_Barycentric;
 		varying vec3 v_edges_Position;
 
@@ -102914,46 +102914,46 @@ var WireframeMaterialShaders = {
 		#ifndef PI
 	  	#define PI 3.1415926535897932384626433832795
 		#endif
-  
+
 	  varying vec3 v_edges_Barycentric;
 	  varying vec3 v_edges_Position;
-  
+
 	  uniform float strokeOpacity;
 	  uniform float fillOpacity;
 	  uniform float fillMix;
 	  uniform float thickness;
 	  uniform bool colorBackfaces;
-  
+
 	  // Dash
 	  uniform bool dashInvert;
 	  uniform bool dash;
 	  uniform bool dashOnly;
 	  uniform float dashRepeats;
 	  uniform float dashLength;
-  
+
 	  // Squeeze
 	  uniform bool squeeze;
 	  uniform float squeezeMin;
 	  uniform float squeezeMax;
-  
+
 	  // Colors
 	  uniform vec3 stroke;
 	  uniform vec3 backfaceStroke;
 	  uniform vec3 fill;
-  
+
 	  // This is like
 	  float wireframe_aastep(float threshold, float dist) {
 		  float afwidth = fwidth(dist) * 0.5;
 		  return smoothstep(threshold - afwidth, threshold + afwidth, dist);
 	  }
-  
+
 	  float wireframe_map(float value, float min1, float max1, float min2, float max2) {
 		  return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
 	  }
-  
+
 	  float getWireframe() {
 			vec3 barycentric = v_edges_Barycentric;
-		
+
 			// Distance from center of each triangle to its edges.
 			float d = min(min(barycentric.x, barycentric.y), barycentric.z);
 
@@ -102990,7 +102990,7 @@ var WireframeMaterialShaders = {
 				computedThickness *= 1.0 - wireframe_aastep(dashLength, pattern);
 			}
 
-			// compute the anti-aliased stroke edge  
+			// compute the anti-aliased stroke edge
 			float edge = 1.0 - wireframe_aastep(computedThickness, d);
 
 			return edge;
@@ -103015,7 +103015,7 @@ var WireframeMaterial = shaderMaterial(WireframeMaterialShaders.uniforms, Wirefr
 		#ifdef FLIP_SIDED
 			colorStroke.rgb = backfaceStroke;
 		#endif
-    
+
 		vec4 colorFill = vec4(fill, fillOpacity);
 		vec4 outColor = mix(colorFill, colorStroke, edge * strokeOpacity);
 
