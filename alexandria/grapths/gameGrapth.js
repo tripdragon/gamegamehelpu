@@ -10,7 +10,9 @@ import { Levels } from './levels.js';
 
 import { TransformControls } from 'three/addons/controls/TransformControls.js';
 
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+import { store } from 'alexandria/store';
 
 export class SelectableItems extends CheapPool{
   constructor(){
@@ -30,7 +32,12 @@ export class GameGrapth{
     this.scene = props.scene || null;
     this.renderer = props.renderer || null;
     this.domElement = props.domElement || null;
-    this.controls = props.controls || null;
+    this.cameraControls = {
+      orbit:null,
+      wasd:null,
+      main:null
+    }
+    // this.controls = props.controls || null;
     this.animationPool = new AnimationPool();
     this.sceneGrapth = new SceneGrapth();
     this.planningBoard = new PlanningBoard();
@@ -42,6 +49,15 @@ export class GameGrapth{
     this.widgetsGroup = new Group();
     this.renderPool = new Map();
     this.physicsGroup = new Group();
+  }
+  setCameraControls(mode){
+    if (mode === "orbit") {
+      this.cameraControls.main = this.cameraControls.orbit;
+    }
+  }
+  buildCameraControls(){
+    this.cameraControls.orbit = new OrbitControls( this.camera, this.domElement );
+    this.setCameraControls("orbit");
   }
 
   registerRenderCallback(func) {
@@ -64,48 +80,54 @@ export class GameGrapth{
 
     var widget;
     
-    widget = this.transformWidget = new TransformControls( this.camera, this.domElement );
+    this.transformWidget = new TransformControls( this.camera, this.domElement );
+    this.transformWidget.store = store;
     // widget = this[mode+"Widget"] = new TransformControls( this.camera, this.domElement );
 
-    widget.mode = mode;
-    this.widgetsGroup.add(widget);
+    this.transformWidget.mode = mode;
+    this.widgetsGroup.add(this.transformWidget);
 
-    widget.setSize(0.7);
+    this.transformWidget.setSize(0.7);
 
-    const _this = this;
 
-    // widget.addEventListener( 'pointerdown', function ( event ) {
-    widget.addEventListener( 'mouseDown', function ( event ) {
-      // _o.controls.enabled = ! event.value;
-      // debugger
-      // debugger
-      _this.controls.enabled = false;
-      _this.pointerDownOnTransformWidget = true;
-    });
+this.transformWidget.addEventsHandleCamera();
 
-    widget.addEventListener( 'mouseUp', function ( event ) {
-      // this.controls.enabled = ! event.value;
-      _this.controls.enabled = true;
-      _this.pointerDownOnTransformWidget = false;
-    });
-
-    // widget.addEventListener( 'dragging-changed', function ( event ) {
-    widget.addEventListener( 'change', function ( event ) {
-      // this.controls.enabled = ! event.value;
-      // this.transformWidget.object.updateMatrix();
-      // console.log("object", this.controls.object);
-      // console.log("¿¿¿¿¿");
-      if (this.object) {
-        this.object.updateMatrix();
-        // if (this.object.boxHelperPointer) {
-        //   this.object.boxHelperPointer.updateMatrix();
-        // }
-      }
-      else{
-        _this.controls.enabled = true;
-        _this.pointerDownOnTransformWidget = false;
-      }
-    });
+    // const _this = this;
+              // 
+              // // widget.addEventListener( 'pointerdown', function ( event ) {
+              // widget.addEventListener( 'mouseDown', function ( event ) {
+              //   // _o.controls.enabled = ! event.value;
+              //   // debugger
+              //   // debugger
+              //   _this.controls.enabled = false;
+              //   _this.pointerDownOnTransformWidget = true;
+              // });
+              // 
+              // widget.addEventListener( 'mouseUp', function ( event ) {
+              //   // this.controls.enabled = ! event.value;
+              //   _this.controls.enabled = true;
+              //   _this.pointerDownOnTransformWidget = false;
+              // });
+              // 
+              // // widget.addEventListener( 'dragging-changed', function ( event ) {
+              // widget.addEventListener( 'change', function ( event ) {
+              //   // this.controls.enabled = ! event.value;
+              //   // this.transformWidget.object.updateMatrix();
+              //   // console.log("object", this.controls.object);
+              //   // console.log("¿¿¿¿¿");
+              //   if (this.object) {
+              //     this.object.updateMatrix();
+              //     // if (this.object.boxHelperPointer) {
+              //     //   this.object.boxHelperPointer.updateMatrix();
+              //     // }
+              //   }
+              //   else{
+              //     _this.controls.enabled = true;
+              //     _this.pointerDownOnTransformWidget = false;
+              //   }
+              // });
+              // 
+              // 
   }
 }
 

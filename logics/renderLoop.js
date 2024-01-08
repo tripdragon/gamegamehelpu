@@ -67,7 +67,7 @@ export function renderLoop(delta) {
   //   }
   // }
 
-  st.controls.update();
+  st.cameraControls.main.update();
 
   // Main render pipeline
   gamePipeline(store.state.ecs.core);

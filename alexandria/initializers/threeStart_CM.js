@@ -19,7 +19,7 @@ import {GameGrapth} from 'alexandria/grapths/gameGrapth.js';
 // import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
 
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+// import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 
 // levels
@@ -53,7 +53,9 @@ export default () => {
   // renderer.powerPreference = "high-performance";
   document.body.appendChild( renderer.domElement );
 
-  const controls = new OrbitControls( camera, renderer.domElement );
+  // moving to gameGrapth, this couples it but its so basic of a need
+  // const orbitControls = new OrbitControls( camera, renderer.domElement );
+  
 
   function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -75,12 +77,15 @@ export default () => {
       domElement: renderer.domElement,
       scene: scene,
       camera: camera,
-      controls: controls,
+      // controls: controls,
+      // cameraControls: controls,
       helpersGroup: helpersGroup
     })
   });
 
   const st = store.state.game;
+  
+  st.buildCameraControls();
 
   // lights moved into levels
 
