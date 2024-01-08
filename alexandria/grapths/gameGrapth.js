@@ -42,7 +42,7 @@ export class GameGrapth{
     this.sceneGrapth = new SceneGrapth();
     this.planningBoard = new PlanningBoard();
     this.currentLevelMap = props.currentLevelMap || null; // upgrade to class
-    this.levels = props.levels || new Levels();
+    this.levels = props.levels || new Levels({scene:props.scene});
     this.importedModels = props.importedModels || new ImportedModels();
     this.helpersGroup = props.helpersGroup;
     this.selectableItems = new SelectableItems();
@@ -50,6 +50,7 @@ export class GameGrapth{
     this.renderPool = new Map();
     this.physicsGroup = new Group();
   }
+  
   setCameraControls(mode){
     if (mode === "orbit") {
       this.cameraControls.main = this.cameraControls.orbit;
@@ -90,7 +91,7 @@ export class GameGrapth{
     this.transformWidget.setSize(0.7);
 
 
-this.transformWidget.addEventsHandleCamera();
+    this.transformWidget.addEventsHandleCamera();
 
     // const _this = this;
               // 

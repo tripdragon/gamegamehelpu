@@ -88,12 +88,20 @@ export default () => {
 
   // lights moved into levels
 
-  // const level = new PhysPark.Level();
-  const level = new Park1();
-  scene.add(level);
-  st.levels.add(level);
+  const physlevel = new PhysPark.Level();
+  scene.add(physlevel);
+  st.levels.add(physlevel, "physlevel");
+  st.currentLevelMap = physlevel;
 
-  st.currentLevelMap = level;
+  // const parkLevel = new Park1();
+  // scene.add(parkLevel);
+  // st.levels.add(parkLevel, "Park1");
+
+  // st.currentLevelMap = parkLevel;
+  
+  // st.levels.changeLevel("Park1");
+
+
 
   const axesHelper = new AxesHelper( 5 );
   // scene.add( axesHelper );
