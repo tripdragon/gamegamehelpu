@@ -1,4 +1,4 @@
-import { MeshBasicMaterial } from 'three';
+import { MeshBasicMaterial, Mesh } from 'three';
 
 import { CoatOfArms } from 'alexandria/tools/coatOfArms';
 
@@ -43,7 +43,7 @@ export function MeshBuilder(props) {
 
   if (!mesh) {
     // Build new mesh
-    mesh = new MeshBasicMaterial(geometry, material);
+    mesh = new Mesh(geometry, material);
   }
   else {
     switch (mesh) {
