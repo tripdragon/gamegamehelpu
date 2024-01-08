@@ -7647,11 +7647,9 @@ class VolumeRect extends Object3D {
       this.minObject.isNotStatic = true;
       this.minTransformWidget.store = store;
       this.minTransformWidget.addEventsHandleCamera();
-      const yy = new CubeMesh({
-        size: 1,
-        color: 0x00ff00,
-        debug: false
-      });
+      const yy = new CubeMesh();
+      yy.scale.setScalar(0.2);
+      yy.updateMatrix();
       this.minObject.add(yy);
 
       // _a.state.game.controls.enabled = false
@@ -10520,7 +10518,9 @@ class Level extends LevelMap {
       },
       physics: {
         rigidBody: 'dynamic',
-        collider: 'sphere'
+        collider: {
+          type: 'sphere'
+        }
       }
     }));
 
@@ -10829,7 +10829,9 @@ function patchObject3D_CM() {
   Object3D.prototype.initPhysics = function (physConfig) {
     const {
       rigidBody,
-      collider = 'cuboid',
+      collider = {
+        type: 'cuboid'
+      },
       linvel,
       angvel
     } = physConfig;
@@ -10864,16 +10866,15 @@ function patchObject3D_CM() {
       // See docs https://rapier.rs/docs/api/javascript/JavaScript3D
 
       let colliderDesc;
-      switch (collider) {
+      const bounding = new Box3$1().setFromObject(this);
+      this.boundingBox = bounding.getSize(new Vector3$2()).multiplyScalar(0.5);
+      switch (collider.type) {
         case 'cuboid':
-          // eslint-disable-next-line no-case-declarations
-          const bounding = new Box3$1().setFromObject(this);
-          this.boundingBox = bounding.getSize(new Vector3$2()).multiplyScalar(0.5);
           colliderDesc = PI.ColliderDesc.cuboid(...this.boundingBox);
           break;
         case 'ball':
         case 'sphere':
-          colliderDesc = PI.ColliderDesc.ball(this.geometry.parameters.radius);
+          colliderDesc = PI.ColliderDesc.ball(this.boundingBox.x);
           break;
       }
       this.collider = physCore.createCollider(colliderDesc, this.rigidBody);

@@ -37,7 +37,7 @@ export function patchObject3D_CM() {
 
   Object3D.prototype.initPhysics = function(physConfig) {
 
-    const { rigidBody, collider = 'cuboid', linvel, angvel } = physConfig;
+    const { rigidBody, collider = { type: 'cuboid' }, linvel, angvel } = physConfig;
 
     const ecsCore = store.state.ecs.core;
     const eid = addEntity(ecsCore, Object3DComponent);
@@ -81,16 +81,16 @@ export function patchObject3D_CM() {
 
       let colliderDesc;
 
-      switch (collider) {
+      const bounding = new Box3().setFromObject(this);
+      this.boundingBox = bounding.getSize(new Vector3()).multiplyScalar(0.5);
+
+      switch (collider.type) {
       case 'cuboid':
-        // eslint-disable-next-line no-case-declarations
-        const bounding = new Box3().setFromObject(this);
-        this.boundingBox = bounding.getSize(new Vector3()).multiplyScalar(0.5);
         colliderDesc = Physics.ColliderDesc.cuboid(...this.boundingBox);
         break;
       case 'ball':
       case 'sphere':
-        colliderDesc = Physics.ColliderDesc.ball(this.geometry.parameters.radius);
+        colliderDesc = Physics.ColliderDesc.ball(this.boundingBox.x);
         break;
       }
 
