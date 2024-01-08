@@ -54,8 +54,15 @@ export function patchTransformControls(){
       // this.transformWidget.object.updateMatrix();
       // console.log("object", this.controls.object);
       // console.log("¿¿¿¿¿");
+      
+      if(_this.store.state.game.pointerDownOnTransformWidget === true){
+        if (_this.object) {
+          _this.object.updateMatrix();
+        }
+      }
+      
       if (_this.object) {
-        _this.object.updateMatrix();
+        // _this.object.updateMatrix();
         // if (this.object.boxHelperPointer) {
         //   this.object.boxHelperPointer.updateMatrix();
         // }
@@ -64,6 +71,7 @@ export function patchTransformControls(){
         _this.store.state.game.cameraControls.main.enabled = true;
         _this.store.state.game.pointerDownOnTransformWidget = false;
       }
+      
     });
     
     

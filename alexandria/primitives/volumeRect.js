@@ -74,36 +74,83 @@ export class VolumeRect extends Object3D {
 
   constructor({size=1,store}={}){
     super();
-
+    
+    this.bounds.min.setScalar(-size/2);
+    this.bounds.max.setScalar(size/2);
+    
+    // this.updateMatrix();
+    // this.updateWorldMatrix();
     if(store) this.store = store;
 
     if (store) {
       this.add(this.minObject);
       this.add(this.maxObject);
+      this.maxObject.position.copy(this.bounds.max);
+      this.minObject.position.copy(this.bounds.min);
+      // this.minObject.updateMatrix();
+      // this.minObject.updateWorldMatrix();
       this.minTransformWidget = new TransformControls( store.state.game.camera, store.state.game.domElement );
       this.maxTransformWidget = new TransformControls( store.state.game.camera, store.state.game.domElement );
-      this.add(this.minTransformWidget);
-      this.add(this.maxTransformWidget);
-      this.minTransformWidget.space = "local";
+      
+      // TransformControls hates being parented for now
+      this.store.state.game.helpersGroup.add(this.minTransformWidget);
+      this.store.state.game.helpersGroup.add(this.maxTransformWidget);
+      
+      // this.add(this.minTransformWidget);
+      // this.add(this.maxTransformWidget);
+      
+      // this.minTransformWidget.space = "local";
+      
       this.minTransformWidget.attach(this.minObject);
-      // this.minObject.position.y = -1;
-
-
-
+      this.maxTransformWidget.attach(this.maxObject);
+      
       this.minTransformWidget.isNotStatic = true;
+      this.maxTransformWidget.isNotStatic = true;
       // there are many nested objects in the transformControls class
       this.minTransformWidget.traverse((item) => {
         item.isNotStatic = true;
       });
+      this.maxTransformWidget.traverse((item) => {
+        item.isNotStatic = true;
+      });
       this.minObject.isNotStatic = true;
+      this.maxObject.isNotStatic = true;
 
       this.minTransformWidget.store = store;
+      this.maxTransformWidget.store = store;
       this.minTransformWidget.addEventsHandleCamera();
+      this.maxTransformWidget.addEventsHandleCamera();
 
       const yy = new CubeMesh();
-      yy.scale.setScalar(0.2);
+      yy.scale.setScalar(0.1);
       yy.updateMatrix();
       this.minObject.add(yy);
+      const yy2 = new CubeMesh({color:0x0000ff});
+      yy2.scale.setScalar(0.1);
+      yy2.updateMatrix();
+      this.maxObject.add(yy2);
+      
+      const _this = this;
+      this.minTransformWidget.addEventListener( 'change', function ( event ) {
+        // if (_this.object) {
+        //   _this.object.updateMatrix();
+        // }
+        if(_this.store.state.game.pointerDownOnTransformWidget === true){
+          // console.log(_this.minObject.position);
+          _this.bounds.min.copy( _this.minObject.position );
+          _this.oyVeyMinMaxResize_CM();
+        }
+      });
+      this.maxTransformWidget.addEventListener( 'change', function ( event ) {
+        // if (_this.object) {
+        //   _this.object.updateMatrix();
+        // }
+        if(_this.store.state.game.pointerDownOnTransformWidget === true){
+          _this.bounds.max.copy( _this.maxObject.position );
+          _this.oyVeyMinMaxResize_CM();
+        }
+      });
+      
 
       // _a.state.game.controls.enabled = false
       // store.state.game.widgetsGroup.setAutoMatrixAll(false, true);
@@ -282,29 +329,108 @@ export class VolumeRect extends Object3D {
 
     this.boxMesh.geometry.attributes.position.needsUpdate = true;
   }
-  // getVertice(index){
-  //   const pp = this.boxMesh.geometry.attributes.position.array;
-  //   const vert = this.sharedVertices[index];
-  //   return
-  //   pp[vert[0][0]] += x;
-  //   pp[vert[0][1]] += y;
-  //   pp[vert[0][2]] += z;
-  //   return
-  // }
+  
+  
+  
+  // 
+  // 
+  // 
+  v0 = [0,0,0];
+  v1 = [0,0,0];
+  oyVeyMinMaxResize_CM(){
+    
+    const min = this.bounds.min;
+    const max = this.bounds.max;
 
-  //   vol.boxMesh.geometry.attributes.position.array
-  //   itemSize * numVertices
-  //
-  //   positionAttribute.needsUpdate = true;
-  //   line.geometry.computeBoundingBox();
-  // line.geometry.computeBoundingSphere();
-  //
-  // get min {
-  //   return this.bounds.min;
-  // }
-  // set min(x,y,z){
-  //   this.bounds.mix.set(x,y,z);
-  // }
+    // min
+    // :o
+
+    // val = -1
+    const vol = this;
+    
+    vol.setVectice(vol.reorderSharedVertices.bottom[0],min.x,min.y,min.z)
+
+    // y
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "y", min.y);
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "y", min.y);
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[3], "y", min.y);
+
+    // here we already need the y of the top, not to += it
+    // vol.setVectice(vol.reorderSharedVertices.top[0],val,val,val)
+
+    // var v0 = []
+    var v0 = this.v0;
+    vol.readVertAtSharedIndex(vol.reorderSharedVertices.bottom[0], v0)
+    // opposite
+    // var v1 = []
+    var v1 = this.v1;
+    vol.readVertAtSharedIndex(vol.reorderSharedVertices.top[2], v1)
+
+    // top edge
+    vol.offsetVectice(vol.reorderSharedVertices.top[0], "x", v0[0]);
+    vol.offsetVectice(vol.reorderSharedVertices.top[0], "z", v0[2]);
+    vol.offsetVectice(vol.reorderSharedVertices.top[0], "y", v1[1]);
+
+    // x edge
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[3], "z", v0[2]);
+    vol.offsetVectice(vol.reorderSharedVertices.top[3], "z", v0[2]);
+
+    // y
+    vol.offsetVectice(vol.reorderSharedVertices.top[3], "y", v1[1]);
+
+    // z edge
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "x", v0[0]);
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "z", v1[2]);
+
+    vol.offsetVectice(vol.reorderSharedVertices.top[1], "x", v0[0]);
+    vol.offsetVectice(vol.reorderSharedVertices.top[1], "y", v1[1]);
+
+    // :x
+
+    // max
+    // :o
+
+    // val = 1
+    vol.setVectice(vol.reorderSharedVertices.top[2],max.x,max.y,max.z)
+
+
+
+    // y
+    vol.offsetVectice(vol.reorderSharedVertices.top[0], "y", max.y);
+    vol.offsetVectice(vol.reorderSharedVertices.top[1], "y", max.y);
+    vol.offsetVectice(vol.reorderSharedVertices.top[3], "y", max.y);
+
+    // var v0 = []
+    var v0 = this.v0;
+    vol.readVertAtSharedIndex(vol.reorderSharedVertices.top[2], v0)
+    // opposite
+    // var v1 = []
+    var v1 = this.v1;
+    vol.readVertAtSharedIndex(vol.reorderSharedVertices.bottom[0], v1)
+
+    // bottom edge
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "x", v0[0]);
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "z", v0[2]);
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "y", v1[1]);
+
+
+    // x edge
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[3], "x", v0[0]);
+    vol.offsetVectice(vol.reorderSharedVertices.top[3], "x", v0[0]);
+
+    // z edge
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "z", v0[2]);
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "x", v1[0]);
+
+    vol.offsetVectice(vol.reorderSharedVertices.top[1], "z", v0[2]);
+    vol.offsetVectice(vol.reorderSharedVertices.top[1], "x", v1[0]);
+
+
+  }
+
+
+
+
 
   select(){
 

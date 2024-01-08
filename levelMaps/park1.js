@@ -109,6 +109,8 @@ loadereee3894();
     let gg = new VolumeRect({store:store});
     store.state.game.scene.add(gg);
     gg.position.y = 1.4;
+    gg.updateMatrix();
+    // gg.updateWorldMatrix();
     // gg.initPhysics({ rigidBody: 'dynamic' });
     window.vol = gg;
     console.log(vol);
@@ -230,84 +232,89 @@ function buildLilGui(gameConfig){
   const min = new Vector3(-0.5,-0.5,-0.5);
   const max = new Vector3(0.5,0.5,0.5);
   function djkfngkldfnmgh() {
-
-    // min
-    // :o
-
-    // val = -1
-
-    vol.setVectice(vol.reorderSharedVertices.bottom[0],min.x,min.y,min.z)
-
-    // y
-    vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "y", min.y);
-    vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "y", min.y);
-    vol.offsetVectice(vol.reorderSharedVertices.bottom[3], "y", min.y);
-
-    // here we already need the y of the top, not to += it
-    // vol.setVectice(vol.reorderSharedVertices.top[0],val,val,val)
-
-    var v0 = []
-    vol.readVertAtSharedIndex(vol.reorderSharedVertices.bottom[0], v0)
-    // opisite
-    var v1 = []
-    vol.readVertAtSharedIndex(vol.reorderSharedVertices.top[2], v1)
-
-    // top edge
-    vol.offsetVectice(vol.reorderSharedVertices.top[0], "x", v0[0]);
-    vol.offsetVectice(vol.reorderSharedVertices.top[0], "z", v0[2]);
-    vol.offsetVectice(vol.reorderSharedVertices.top[0], "y", v1[1]);
-
-    // x edge
-    vol.offsetVectice(vol.reorderSharedVertices.bottom[3], "z", v0[2]);
-    vol.offsetVectice(vol.reorderSharedVertices.top[3], "z", v0[2]);
-
-    // y
-    vol.offsetVectice(vol.reorderSharedVertices.top[3], "y", v1[1]);
-
-    // z edge
-    vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "x", v0[0]);
-    vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "z", v1[2]);
-
-    vol.offsetVectice(vol.reorderSharedVertices.top[1], "x", v0[0]);
-    vol.offsetVectice(vol.reorderSharedVertices.top[1], "y", v1[1]);
-
-    // :x
-
-    // max
-    // :o
-
-    // val = 1
-    vol.setVectice(vol.reorderSharedVertices.top[2],max.x,max.y,max.z)
+    
+    vol.bounds.min.copy(min)
+    vol.bounds.max.copy(max)
+    vol.oyVeyMinMaxResize_CM()
 
 
-
-    // y
-    vol.offsetVectice(vol.reorderSharedVertices.top[0], "y", max.y);
-    vol.offsetVectice(vol.reorderSharedVertices.top[1], "y", max.y);
-    vol.offsetVectice(vol.reorderSharedVertices.top[3], "y", max.y);
-
-    var v0 = []
-    vol.readVertAtSharedIndex(vol.reorderSharedVertices.top[2], v0)
-    // opisite
-    var v1 = []
-    vol.readVertAtSharedIndex(vol.reorderSharedVertices.bottom[0], v1)
-
-    // bottom edge
-    vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "x", v0[0]);
-    vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "z", v0[2]);
-    vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "y", v1[1]);
-
-
-    // x edge
-    vol.offsetVectice(vol.reorderSharedVertices.bottom[3], "x", v0[0]);
-    vol.offsetVectice(vol.reorderSharedVertices.top[3], "x", v0[0]);
-
-    // z edge
-    vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "z", v0[2]);
-    vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "x", v1[0]);
-
-    vol.offsetVectice(vol.reorderSharedVertices.top[1], "z", v0[2]);
-    vol.offsetVectice(vol.reorderSharedVertices.top[1], "x", v1[0]);
+    // // min
+    // // :o
+    // 
+    // // val = -1
+    // 
+    // vol.setVectice(vol.reorderSharedVertices.bottom[0],min.x,min.y,min.z)
+    // 
+    // // y
+    // vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "y", min.y);
+    // vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "y", min.y);
+    // vol.offsetVectice(vol.reorderSharedVertices.bottom[3], "y", min.y);
+    // 
+    // // here we already need the y of the top, not to += it
+    // // vol.setVectice(vol.reorderSharedVertices.top[0],val,val,val)
+    // 
+    // var v0 = []
+    // vol.readVertAtSharedIndex(vol.reorderSharedVertices.bottom[0], v0)
+    // // opisite
+    // var v1 = []
+    // vol.readVertAtSharedIndex(vol.reorderSharedVertices.top[2], v1)
+    // 
+    // // top edge
+    // vol.offsetVectice(vol.reorderSharedVertices.top[0], "x", v0[0]);
+    // vol.offsetVectice(vol.reorderSharedVertices.top[0], "z", v0[2]);
+    // vol.offsetVectice(vol.reorderSharedVertices.top[0], "y", v1[1]);
+    // 
+    // // x edge
+    // vol.offsetVectice(vol.reorderSharedVertices.bottom[3], "z", v0[2]);
+    // vol.offsetVectice(vol.reorderSharedVertices.top[3], "z", v0[2]);
+    // 
+    // // y
+    // vol.offsetVectice(vol.reorderSharedVertices.top[3], "y", v1[1]);
+    // 
+    // // z edge
+    // vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "x", v0[0]);
+    // vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "z", v1[2]);
+    // 
+    // vol.offsetVectice(vol.reorderSharedVertices.top[1], "x", v0[0]);
+    // vol.offsetVectice(vol.reorderSharedVertices.top[1], "y", v1[1]);
+    // 
+    // // :x
+    // 
+    // // max
+    // // :o
+    // 
+    // // val = 1
+    // vol.setVectice(vol.reorderSharedVertices.top[2],max.x,max.y,max.z)
+    // 
+    // 
+    // 
+    // // y
+    // vol.offsetVectice(vol.reorderSharedVertices.top[0], "y", max.y);
+    // vol.offsetVectice(vol.reorderSharedVertices.top[1], "y", max.y);
+    // vol.offsetVectice(vol.reorderSharedVertices.top[3], "y", max.y);
+    // 
+    // var v0 = []
+    // vol.readVertAtSharedIndex(vol.reorderSharedVertices.top[2], v0)
+    // // opisite
+    // var v1 = []
+    // vol.readVertAtSharedIndex(vol.reorderSharedVertices.bottom[0], v1)
+    // 
+    // // bottom edge
+    // vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "x", v0[0]);
+    // vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "z", v0[2]);
+    // vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "y", v1[1]);
+    // 
+    // 
+    // // x edge
+    // vol.offsetVectice(vol.reorderSharedVertices.bottom[3], "x", v0[0]);
+    // vol.offsetVectice(vol.reorderSharedVertices.top[3], "x", v0[0]);
+    // 
+    // // z edge
+    // vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "z", v0[2]);
+    // vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "x", v1[0]);
+    // 
+    // vol.offsetVectice(vol.reorderSharedVertices.top[1], "z", v0[2]);
+    // vol.offsetVectice(vol.reorderSharedVertices.top[1], "x", v1[0]);
 
   }
   //
