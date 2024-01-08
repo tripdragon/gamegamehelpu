@@ -25,8 +25,6 @@ import {ToolsShelfEditor} from 'alexandria/tools/toolsShelfEditor';
 //
 // import GUI from 'lil-gui';
 
-
-
 class AltBox3Helper extends Box3Helper{
   constructor( box, color = 0xffff00 ) {
     super(box, color)
@@ -45,9 +43,7 @@ class AltBox3Helper extends Box3Helper{
     this.scale.multiplyScalar( 0.5 );
 
     super.updateMatrixWorld( force );
-
   }
-
 }
 
 const init = async () => {
@@ -67,7 +63,6 @@ const init = async () => {
 
   // attachLeftShelf();
 
-
   store.setState({
     toolsShelfEditor: new ToolsShelfEditor()
   });
@@ -76,8 +71,7 @@ const init = async () => {
   window.Box3 = Box3;
   window.Box3Helper = Box3Helper;
   window.AltBox3Helper = AltBox3Helper;
-  // console.log("vectorA", vectorA);
-
+  // console.log('vectorA', vectorA);
 
   // forcing optimisations
   // #code: scene28475#
@@ -89,9 +83,6 @@ const init = async () => {
   //   item.matrixAutoUpdate = true;
   // });
   store.state.game.widgetsGroup.setAutoMatrixAll(false, true);
-
-
-
 };
 
 init();

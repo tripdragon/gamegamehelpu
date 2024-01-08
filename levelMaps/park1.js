@@ -1,16 +1,12 @@
-
 import LevelMap from './levelMap';
 
-
 import { store } from 'alexandria/store';
-
 
 import { DirectionalLight, AmbientLight,
   BoxGeometry, MeshBasicMaterial, Mesh, MeshStandardMaterial, PlaneGeometry,
   DoubleSide, AxesHelper, TextureLoader, RepeatWrapping, SRGBColorSpace, CameraHelper,
   HemisphereLight
 } from 'three';
-
 
 import {Entities, Enty, Move, Spin, KeyWalk, Meep } from '../entities/basicEntites';
 
@@ -89,8 +85,6 @@ export class Park1 extends LevelMap{
       floor.rotation.set(-Math.PI/2,0,0);
       floor.receiveShadow = true;
       this.add(floor);
-      // floor.init({ physics: { rigidBody: 'fixed' } });
-      floor.init({ physics: { rigidBody: 'fixed' } });
       window.floor = floor;
 
       // const texture = new TextureLoader().load('./textures/myrthe-van-tol-grass-texture.jpeg' );

@@ -35,56 +35,58 @@ export function patchObject3D_CM() {
   const rigidBodyTypes = ['dynamic', 'fixed', 'kinematicPositionBased', 'kinematicVelocityBased'];
   const physicsKeys = ['rigidBody', 'collider', 'linvel', 'angvel'];
 
-  Object3D.prototype.init = function({ physics } = {}) {
+  Object3D.prototype.initPhysics = function(physConfig) {
+
+    console.log('physConfig', physConfig);
+
+    const { rigidBody, collider, linvel, angvel } = physConfig;
 
     const ecsCore = store.state.ecs.core;
     const eid = addEntity(ecsCore, Object3DComponent);
     this.eid = eid;
 
-    if (typeof physics === 'object') {
-      const physCore = store.state.physics.core;
+    const physCore = store.state.physics.core;
 
-      const invalidKeys = Object.keys(physics).filter((key) => !physicsKeys.includes(key));
+    const invalidKeys = Object.keys(physConfig).filter((key) => !physicsKeys.includes(key));
 
-      if (invalidKeys.length) {
-        throw new Error(`Invalid keys on object3D physics: '${invalidKeys}'`)
+    if (invalidKeys.length) {
+      throw new Error(`Invalid keys passed to object3D.initPhysics: '${invalidKeys}'`)
+    }
+
+    if (rigidBody) {
+      if (!rigidBodyTypes.includes(rigidBody)) {
+        throw new Error(`Invalid rigidBody '${rigidBody}'. Must be one of ${rigidBodyTypes}`);
       }
 
-      if (physics.rigidBody) {
-        if (!rigidBodyTypes.includes(physics.rigidBody)) {
-          throw new Error(`Invalid rigidBody '${physics.rigidBody}'. Must be one of ${rigidBodyTypes}`);
-        }
-
-        if (physics.rigidBody === 'dynamic') {
-          addComponent(ecsCore, DynamicPhysicsComponent, eid);
-        }
-
-        DynamicPhysicsComponent.objectId[eid] = this.id;
-
-        const rigidBodyDesc = Physics.RigidBodyDesc[physics.rigidBody]()
-          .setTranslation(...this.position);
-          // .setRotation(this.rotation);
-
-        if (physics.linvel) {
-          rigidBodyDesc.setLinvel(...physics.linvel);
-        }
-
-        if (physics.angvel) {
-          rigidBodyDesc.setAngvel(physics.angvel);
-        }
-
-        this.rigidBody = physCore.createRigidBody(rigidBodyDesc);
-
-        // TODO support more collider types
-        // See docs https://rapier.rs/docs/api/javascript/JavaScript3D
-        const bounding = new Box3().setFromObject(this);
-        // bounding.applyMatrix(this);
-        const colliderDesc = Physics.ColliderDesc.cuboid(
-          ...bounding.getSize(new Vector3())
-        );
-
-        this.collider = physCore.createCollider(colliderDesc, this.rigidBody);
+      if (rigidBody === 'dynamic') {
+        addComponent(ecsCore, DynamicPhysicsComponent, eid);
       }
+
+      DynamicPhysicsComponent.objectId[eid] = this.id;
+
+      const rigidBodyDesc = Physics.RigidBodyDesc[rigidBody]()
+        .setTranslation(...this.position);
+        // .setRotation(this.rotation);
+
+      if (linvel) {
+        rigidBodyDesc.setLinvel(...linvel);
+      }
+
+      if (angvel) {
+        rigidBodyDesc.setAngvel(angvel);
+      }
+
+      this.rigidBody = physCore.createRigidBody(rigidBodyDesc);
+
+      // TODO support more collider types
+      // See docs https://rapier.rs/docs/api/javascript/JavaScript3D
+      const bounding = new Box3().setFromObject(this);
+      // bounding.applyMatrix(this);
+      const colliderDesc = Physics.ColliderDesc.cuboid(
+        ...bounding.getSize(new Vector3())
+      );
+
+      this.collider = physCore.createCollider(colliderDesc, this.rigidBody);
     }
   }
 

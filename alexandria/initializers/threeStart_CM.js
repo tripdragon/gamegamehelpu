@@ -18,12 +18,11 @@ import {GameGrapth} from 'alexandria/grapths/gameGrapth.js';
 
 // import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
-
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-
 // levels
-import {Park1} from 'levelMaps/park1';
+import { Park1 } from 'levelMaps/park1';
+import * as PhysPark from 'levelMaps/physPark';
 
 export default () => {
 
@@ -50,7 +49,7 @@ export default () => {
   // renderer.outputColorSpace = SRGBColorSpace;
 
   renderer.shadowMap.type = PCFSoftShadowMap; // default THREE.PCFShadowMap
-  // renderer.powerPreference = "high-performance";
+  // renderer.powerPreference = 'high-performance';
   document.body.appendChild( renderer.domElement );
 
   const controls = new OrbitControls( camera, renderer.domElement );
@@ -61,7 +60,7 @@ export default () => {
     renderer.setSize( window.innerWidth, window.innerHeight );
   }
 
-  window.addEventListener( 'resize', onWindowResize, false );
+  window.addEventListener('resize', onWindowResize, false);
 
   // setup state and other
 
@@ -84,19 +83,19 @@ export default () => {
 
   // lights moved into levels
 
-  const parkLevel = new Park1();
-  scene.add(parkLevel);
-  st.levels.add(parkLevel);
+  const level = new PhysPark.Level();
+  scene.add(level);
+  st.levels.add(level);
 
-  st.currentLevelMap = parkLevel;
+  st.currentLevelMap = level;
 
   const axesHelper = new AxesHelper( 5 );
   // scene.add( axesHelper );
 
-  st.buildTransformWidget("translate");
-  st.buildTransformWidget("rotate");
-  st.buildTransformWidget("scale");
-  
+  st.buildTransformWidget('translate');
+  st.buildTransformWidget('rotate');
+  st.buildTransformWidget('scale');
+
   st.buildPhysicsGroup();
 
   // renderloop moved to later process

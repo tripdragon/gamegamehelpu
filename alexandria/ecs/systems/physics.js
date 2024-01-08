@@ -23,18 +23,17 @@ export default function physicsSystem(core) {
     );
 
     rigidBodyPos = object3D.rigidBody.translation();
+    console.log('rigidBodyPos', rigidBodyPos);
     // object3D.rigidBody.translation(bb);
-    
+
     // console.log('rigidBodyPos', rigidBodyPos);
 
-    // TODO FIX SO IT NOT DISAPPEAR OR W/E
-    
     // object3D.position.copy(bb);
     object3D.position.copy(rigidBodyPos);
-    
+
     // object3D.position.y = -2;
-    
-    
+
+
     // This also makes the floor disappear
     // object3D.position.set(new Vector3(
     //   0, 0, 0
@@ -52,8 +51,6 @@ export default function physicsSystem(core) {
     // ));
 
     object3D.updateMatrix();
-
-    // DynamicPhysicsComponent[eid]
   }
 
   // Step the simulation forward
