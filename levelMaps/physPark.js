@@ -81,7 +81,6 @@ export class Level extends LevelMap {
       mesh: 'plane',
       meshProps: { color: 0x4fff0f },
       scale: 12,
-      rotation: [-Math.PI / 2, 0, 0],
       shadow: 'receive',
       texture: {
         path: './textures/myrthe-van-tol-grass-texture.jpeg',
@@ -92,22 +91,77 @@ export class Level extends LevelMap {
       physics: { rigidBody: 'fixed' }
     }));
 
+    // Goal 1
     this.add(MeshBuilder({
-      mesh: 'cube',
-      meshProps: { size: 1, color: 0xffffff },
-      position: { x: 1.2, y: 4 },
-      physics: { rigidBody: 'dynamic' }
-    }));
-
-    this.add(MeshBuilder({
-      mesh: 'sphere',
-      meshProps: { radius: 0.5, color: 0x00ff00 },
-      position: { x: 2, y: 2 },
+      mesh: 'rectangle',
+      meshProps: {
+        width: 1,
+        height: 5,
+        depth: 12,
+        color: 0xff0000
+      },
+      position: {
+        x: -5.5,
+        y: 2.5,
+        z: 0
+      },
       physics: {
-        rigidBody: 'dynamic',
-        collider: { type: 'sphere' }
+        rigidBody: 'fixed'
       }
     }));
+
+    // Goal 2
+    this.add(MeshBuilder({
+      mesh: 'rectangle',
+      meshProps: {
+        width: 1,
+        height: 5,
+        depth: 12,
+        color: 0x0000ff
+      },
+      position: {
+        x: 5.5,
+        y: 2.5,
+        z: 0
+      },
+      physics: {
+        rigidBody: 'fixed'
+      }
+    }));
+
+    // const items = 10;
+    // const maxHeight = 10;
+
+    // for (let i = 0; i < items; ++i) {
+    //   this.add(MeshBuilder({
+    //     mesh: 'cube',
+    //     meshProps: { size: 1, color: 0xffffff },
+    //     position: {
+    //       x: randomInRange(-4, 4),
+    //       y: randomInRange(maxHeight, 1),
+    //       z: randomInRange(-4, 4)
+    //     },
+    //     physics: {
+    //       rigidBody: 'dynamic'
+    //     }
+    //   }));
+    // }
+
+    // for (let i = 0; i < items; ++i) {
+    //   this.add(MeshBuilder({
+    //     mesh: 'sphere',
+    //     meshProps: { radius: 0.5, color: 0x00ff00 },
+    //     position: {
+    //       x: randomInRange(-4, 4),
+    //       y: randomInRange(maxHeight, 1),
+    //       z: randomInRange(-4, 4)
+    //     },
+    //     physics: {
+    //       rigidBody: 'dynamic',
+    //       collider: { type: 'sphere' }
+    //     }
+    //   }));
+    // }
 
     // return
 

@@ -694,7 +694,6 @@ var Physics = (async store => {
       core: new PI.World({
         x: 0.0,
         // y: -9.81,
-        // y: -0.00001,
         y: -10,
         z: 0.0
       })
@@ -10365,6 +10364,33 @@ class SphereMesh extends Mesh {
   }
 }
 
+class RectangleMesh extends Mesh {
+  constructor(props = {}) {
+    const {
+      width = 1,
+      height = 1,
+      depth = 2,
+      color = 0x00ff00,
+      debug = false
+    } = props;
+    const geometry = new BoxGeometry(width, height, depth);
+    const material = new MeshStandardMaterial({
+      color
+    });
+    super(geometry, material);
+    this.castShadow = true;
+    if (debug) {
+      const axesHelper = new AxesHelper(1);
+      this.add(axesHelper);
+    }
+    this.name = 'rectangley';
+
+    // pick.matrixWorldAutoUpdate
+    // debugger
+    this.matrixAutoUpdate = false;
+  }
+}
+
 /*
 Example usage
 this.add(MeshBuilder({
@@ -10401,6 +10427,9 @@ function MeshBuilder(props) {
     switch (mesh) {
       case 'cube':
         mesh = new CubeMesh(meshProps);
+        break;
+      case 'rectangle':
+        mesh = new RectangleMesh(meshProps);
         break;
       case 'plane':
         mesh = new PlaneMesh(meshProps);
@@ -10480,7 +10509,6 @@ class Level extends LevelMap {
         color: 0x4fff0f
       },
       scale: 12,
-      rotation: [-Math.PI / 2, 0, 0],
       shadow: 'receive',
       texture: {
         path: './textures/myrthe-van-tol-grass-texture.jpeg',
@@ -10492,37 +10520,78 @@ class Level extends LevelMap {
         rigidBody: 'fixed'
       }
     }));
+
+    // Goal 1
     this.add(MeshBuilder({
-      mesh: 'cube',
+      mesh: 'rectangle',
       meshProps: {
-        size: 1,
-        color: 0xffffff
+        width: 1,
+        height: 5,
+        depth: 12,
+        color: 0xff0000
       },
       position: {
-        x: 1.2,
-        y: 4
+        x: -5.5,
+        y: 2.5,
+        z: 0
       },
       physics: {
-        rigidBody: 'dynamic'
+        rigidBody: 'fixed'
       }
     }));
+
+    // Goal 2
     this.add(MeshBuilder({
-      mesh: 'sphere',
+      mesh: 'rectangle',
       meshProps: {
-        radius: 0.5,
-        color: 0x00ff00
+        width: 1,
+        height: 5,
+        depth: 12,
+        color: 0x0000ff
       },
       position: {
-        x: 2,
-        y: 2
+        x: 5.5,
+        y: 2.5,
+        z: 0
       },
       physics: {
-        rigidBody: 'dynamic',
-        collider: {
-          type: 'sphere'
-        }
+        rigidBody: 'fixed'
       }
     }));
+
+    // const items = 10;
+    // const maxHeight = 10;
+
+    // for (let i = 0; i < items; ++i) {
+    //   this.add(MeshBuilder({
+    //     mesh: 'cube',
+    //     meshProps: { size: 1, color: 0xffffff },
+    //     position: {
+    //       x: randomInRange(-4, 4),
+    //       y: randomInRange(maxHeight, 1),
+    //       z: randomInRange(-4, 4)
+    //     },
+    //     physics: {
+    //       rigidBody: 'dynamic'
+    //     }
+    //   }));
+    // }
+
+    // for (let i = 0; i < items; ++i) {
+    //   this.add(MeshBuilder({
+    //     mesh: 'sphere',
+    //     meshProps: { radius: 0.5, color: 0x00ff00 },
+    //     position: {
+    //       x: randomInRange(-4, 4),
+    //       y: randomInRange(maxHeight, 1),
+    //       z: randomInRange(-4, 4)
+    //     },
+    //     physics: {
+    //       rigidBody: 'dynamic',
+    //       collider: { type: 'sphere' }
+    //     }
+    //   }));
+    // }
 
     // return
 
@@ -10583,7 +10652,7 @@ var threeStart_CM = (() => {
   helpersGroup.matrixAutoUpdate = false;
   const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.05, 1000);
   // camera.position.z = 5;
-  camera.position.fromArray([0.9625265375798292, 4.0272857200013625, 4.984509277416068]);
+  camera.position.fromArray([3, 14, 15]);
   camera.lookAt(new Vector3$2());
   const renderer = new WebGLRenderer({
     antialias: true

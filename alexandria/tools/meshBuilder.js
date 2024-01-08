@@ -5,7 +5,8 @@ import { CoatOfArms } from 'alexandria/tools/coatOfArms';
 import {
   CubeMesh,
   PlaneMesh,
-  SphereMesh
+  SphereMesh,
+  RectangleMesh
 } from 'alexandria/primitives';
 
 /*
@@ -49,6 +50,9 @@ export function MeshBuilder(props) {
     switch (mesh) {
     case 'cube':
       mesh = new CubeMesh(meshProps);
+      break;
+    case 'rectangle':
+      mesh = new RectangleMesh(meshProps);
       break;
     case 'plane':
       mesh = new PlaneMesh(meshProps);

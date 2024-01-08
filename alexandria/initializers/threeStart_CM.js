@@ -37,7 +37,7 @@ export default () => {
 
   const camera = new PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.05, 1000 );
   // camera.position.z = 5;
-  camera.position.fromArray([0.9625265375798292, 4.0272857200013625, 4.984509277416068]);
+  camera.position.fromArray([3, 14, 15]);
   camera.lookAt(new Vector3());
 
   const renderer = new WebGLRenderer({antialias:true});
