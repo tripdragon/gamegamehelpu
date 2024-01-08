@@ -8,20 +8,22 @@ import {
   SphereMesh
 } from 'alexandria/primitives';
 
-// Example usage
-// this.add(MeshBuilder({
-//   mesh: 'plane',
-//   meshProps: { color: 0x4fff0f },
-//   scale: 12,
-//   shadow: 'receive',
-//   texture: {
-//     path: './textures/myrthe-van-tol-grass-texture.jpeg',
-//     wrapping: RepeatWrapping,
-//     repeat: 8,
-//     colorSpace: SRGBColorSpace
-//   },
-//   physics: { rigidBody: 'fixed' }
-// }));
+/*
+Example usage
+this.add(MeshBuilder({
+  mesh: 'plane',
+  meshProps: { color: 0x4fff0f },
+  scale: 12,
+  shadow: 'receive',
+  texture: {
+    path: './textures/myrthe-van-tol-grass-texture.jpeg',
+    wrapping: RepeatWrapping,
+    repeat: 8,
+    colorSpace: SRGBColorSpace
+  },
+  physics: { rigidBody: 'fixed' }
+}));
+*/
 
 export function MeshBuilder(props) {
 
