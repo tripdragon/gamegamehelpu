@@ -88,10 +88,27 @@ export default () => {
 
   // lights moved into levels
 
-  const physlevel = new PhysPark.Level();
-  scene.add(physlevel);
-  st.levels.add(physlevel, "physlevel");
-  st.currentLevelMap = physlevel;
+  const queryLvl = window.location.search
+    .replace('?', '')
+    .split('lvl=')[1] || 'park1';
+
+  let level;
+  let levelName;
+
+  switch (queryLvl) {
+  case 'physPark':
+    level = new PhysPark.Level();
+    levelName = 'physLevel';
+    break;
+  case 'park1':
+    level = new Park1();
+    levelName = 'park1';
+    break;
+  }
+
+  scene.add(level);
+  st.levels.add(level, levelName);
+  st.currentLevelMap = level;
 
   // const parkLevel = new Park1();
   // scene.add(parkLevel);
