@@ -37,8 +37,6 @@ export function patchObject3D_CM() {
 
   Object3D.prototype.initPhysics = function(physConfig) {
 
-    console.log('physConfig', physConfig);
-
     const { rigidBody, collider, linvel, angvel } = physConfig;
 
     const ecsCore = store.state.ecs.core;

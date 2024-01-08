@@ -98,12 +98,13 @@ export class Level extends LevelMap {
     this.add(MeshBuilder({
       mesh: new Cube({ size: 0.2, debug: true, color: 0xffffff }),
       position: { y: 1 },
-      physics: { rigidBody: 'dynamic' }
+      // physics: { rigidBody: 'dynamic' }
     }));
 
     this.add(MeshBuilder({
       mesh: new Sphere({ radius: 0.2, debug: true, color: 0x00ff00 }),
-      position: { y: 2 }
+      position: { y: 2 },
+      physics: { rigidBody: 'dynamic' }
     }));
 
     // return

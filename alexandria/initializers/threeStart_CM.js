@@ -83,7 +83,8 @@ export default () => {
 
   // lights moved into levels
 
-  const level = new PhysPark.Level();
+  // const level = new PhysPark.Level();
+  const level = new Park1();
   scene.add(level);
   st.levels.add(level);
 
