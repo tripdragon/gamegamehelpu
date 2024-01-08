@@ -22,6 +22,11 @@ export default function physicsSystem(core) {
       DynamicPhysicsComponent.objectId[eid]
     );
 
+    // Bail if rigidBody is sleeping
+    if (object3D.rigidBody.isSleeping()) {
+      continue;
+    }
+
     rigidBodyPos = object3D.rigidBody.translation();
     // object3D.rigidBody.translation(bb);
 

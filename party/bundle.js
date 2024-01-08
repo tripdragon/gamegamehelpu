@@ -10195,6 +10195,11 @@ function physicsSystem(core) {
   for (let i = 0; i < ents.length; i++) {
     const eid = ents[i];
     const object3D = store$1.state.game.scene.getObjectById(DynamicPhysicsComponent.objectId[eid]);
+
+    // Bail if rigidBody is sleeping
+    if (object3D.rigidBody.isSleeping()) {
+      continue;
+    }
     rigidBodyPos = object3D.rigidBody.translation();
     // object3D.rigidBody.translation(bb);
 
