@@ -37,7 +37,7 @@ export function patchObject3D_CM() {
 
   Object3D.prototype.initPhysics = function(physConfig) {
 
-    const { rigidBody, collider, linvel, angvel } = physConfig;
+    const { rigidBody, collider = 'cuboid', linvel, angvel } = physConfig;
 
     const ecsCore = store.state.ecs.core;
     const eid = addEntity(ecsCore, Object3DComponent);
@@ -78,12 +78,21 @@ export function patchObject3D_CM() {
 
       // TODO support more collider types
       // See docs https://rapier.rs/docs/api/javascript/JavaScript3D
-      const bounding = new Box3().setFromObject(this);
-      this.boundingBox = bounding.getSize(new Vector3());
-      // bounding.applyMatrix(this);
-      const colliderDesc = Physics.ColliderDesc.cuboid(
-        ...this.boundingBox
-      );
+
+      let colliderDesc;
+
+      switch (collider) {
+      case 'cuboid':
+        // eslint-disable-next-line no-case-declarations
+        const bounding = new Box3().setFromObject(this);
+        this.boundingBox = bounding.getSize(new Vector3()).multiplyScalar(0.5);
+        colliderDesc = Physics.ColliderDesc.cuboid(...this.boundingBox);
+        break;
+      case 'ball':
+      case 'sphere':
+        colliderDesc = Physics.ColliderDesc.ball(this.geometry.parameters.radius);
+        break;
+      }
 
       this.collider = physCore.createCollider(colliderDesc, this.rigidBody);
     }

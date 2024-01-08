@@ -29,22 +29,12 @@ export default function physicsSystem(core) {
     }
 
     rigidBodyPos = object3D.rigidBody.translation();
-    rigidBodyPos.y -= object3D.boundingBox.y / 2;
-    // object3D.rigidBody.translation(bb);
 
-    // object3D.position.copy(bb);
     object3D.position.copy(rigidBodyPos);
 
     colliderRotation = object3D.collider.rotation();
-    console.log('colliderRotation', colliderRotation);
 
-    // TODO FIX SO IT NOT DISAPPEAR OR W/E
-    // object3D.quaternion.set(new Quaternion(
-    //   colliderRotation.x,
-    //   colliderRotation.y,
-    //   colliderRotation.z,
-    //   colliderRotation.w
-    // ));
+    object3D.quaternion.copy(colliderRotation);
 
     object3D.updateMatrix();
   }

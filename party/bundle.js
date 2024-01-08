@@ -10519,7 +10519,8 @@ class Level extends LevelMap {
         y: 2
       },
       physics: {
-        rigidBody: 'dynamic'
+        rigidBody: 'dynamic',
+        collider: 'sphere'
       }
     }));
 
@@ -10732,22 +10733,9 @@ function physicsSystem(core) {
       continue;
     }
     rigidBodyPos = object3D.rigidBody.translation();
-    rigidBodyPos.y -= object3D.boundingBox.y / 2;
-    // object3D.rigidBody.translation(bb);
-
-    // object3D.position.copy(bb);
     object3D.position.copy(rigidBodyPos);
     colliderRotation = object3D.collider.rotation();
-    console.log('colliderRotation', colliderRotation);
-
-    // TODO FIX SO IT NOT DISAPPEAR OR W/E
-    // object3D.quaternion.set(new Quaternion(
-    //   colliderRotation.x,
-    //   colliderRotation.y,
-    //   colliderRotation.z,
-    //   colliderRotation.w
-    // ));
-
+    object3D.quaternion.copy(colliderRotation);
     object3D.updateMatrix();
   }
 
@@ -10841,7 +10829,7 @@ function patchObject3D_CM() {
   Object3D.prototype.initPhysics = function (physConfig) {
     const {
       rigidBody,
-      collider,
+      collider = 'cuboid',
       linvel,
       angvel
     } = physConfig;
@@ -10874,10 +10862,20 @@ function patchObject3D_CM() {
 
       // TODO support more collider types
       // See docs https://rapier.rs/docs/api/javascript/JavaScript3D
-      const bounding = new Box3$1().setFromObject(this);
-      this.boundingBox = bounding.getSize(new Vector3$2());
-      // bounding.applyMatrix(this);
-      const colliderDesc = PI.ColliderDesc.cuboid(...this.boundingBox);
+
+      let colliderDesc;
+      switch (collider) {
+        case 'cuboid':
+          // eslint-disable-next-line no-case-declarations
+          const bounding = new Box3$1().setFromObject(this);
+          this.boundingBox = bounding.getSize(new Vector3$2()).multiplyScalar(0.5);
+          colliderDesc = PI.ColliderDesc.cuboid(...this.boundingBox);
+          break;
+        case 'ball':
+        case 'sphere':
+          colliderDesc = PI.ColliderDesc.ball(this.geometry.parameters.radius);
+          break;
+      }
       this.collider = physCore.createCollider(colliderDesc, this.rigidBody);
     }
   };
