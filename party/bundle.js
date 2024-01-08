@@ -4375,7 +4375,7 @@ class OrbitControls extends EventDispatcher {
 // // import * as THREE from 'three';
 // import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 // import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-// 
+//
 // const controls = new OrbitControls( camera, renderer.domElement );
 // const loader = new GLTFLoader();
 
@@ -9815,12 +9815,6 @@ class Park1 extends LevelMap {
       floor.rotation.set(-Math.PI / 2, 0, 0);
       floor.receiveShadow = true;
       this.add(floor);
-      // floor.init({ physics: { rigidBody: 'fixed' } });
-      floor.init({
-        physics: {
-          rigidBody: 'fixed'
-        }
-      });
       window.floor = floor;
 
       // const texture = new TextureLoader().load('./textures/myrthe-van-tol-grass-texture.jpeg' );
@@ -9840,7 +9834,7 @@ class Park1 extends LevelMap {
     let gg = new VolumeRect();
     store$1.state.game.scene.add(gg);
     gg.position.y = 1.4;
-    // gg.init({ physics: { rigidBody: 'dynamic' } });
+    // gg.initPhysics({ rigidBody: 'dynamic' });
     window.vol = gg;
     console.log(vol);
     return;
@@ -9885,7 +9879,7 @@ function buildLilGui(gameConfig) {
 
   // gui.add( obj, 'myBoolean' ); 	// checkbox
   // gui.add( obj, 'myString' ); 	// text field
-  // 
+  //
   // gui.add( obj, 'top',0,4 ).onChange( x => { vol.setSide("top",x) } );
   // gui.add( obj, 'bottom',0,4 ).onChange( x => { vol.setSide("bottom",x) } );
   // gui.add( obj, 'left',0,4 ).onChange( x => { vol.setSide("left",x) } );
@@ -9968,7 +9962,7 @@ function buildLilGui(gameConfig) {
     vol.offsetVectice(vol.reorderSharedVertices.top[1], "z", v0[2]);
     vol.offsetVectice(vol.reorderSharedVertices.top[1], "x", v1[0]);
   }
-  // 
+  //
   gui.add(obj, 'minx', 0, 4).onChange(x => {
     min.x = -x;
     djkfngkldfnmgh();
@@ -9993,18 +9987,18 @@ function buildLilGui(gameConfig) {
     max.z = x;
     djkfngkldfnmgh();
   });
-  // 
+  //
 
-  // 
+  //
   // gui.add( obj, 'minx',0,4 ).onChange( x => { min.setScalar(-x); djkfngkldfnmgh(); } );
   // gui.add( obj, 'miny',0,4 ).onChange( x => { min.y = -x; djkfngkldfnmgh(); } );
   // gui.add( obj, 'minz',0,4 ).onChange( x => { min.z = -x; djkfngkldfnmgh(); } );
-  // 
+  //
   // gui.add( obj, 'maxx',0,4 ).onChange( x => { max.setScalar(x); djkfngkldfnmgh(); } );
   // gui.add( obj, 'maxy',0,4 ).onChange( x => { max.y = x; djkfngkldfnmgh(); } );
   // gui.add( obj, 'maxz',0,4 ).onChange( x => { max.z = x; djkfngkldfnmgh(); } );
-  // 
-  // 
+  //
+  //
 
   gui.add(obj, 'widgetTranslate'); // button
   gui.add(obj, 'widgetRotate'); // button
@@ -10097,7 +10091,7 @@ var threeStart_CM = (() => {
   // renderer.outputColorSpace = SRGBColorSpace;
 
   renderer.shadowMap.type = PCFSoftShadowMap; // default THREE.PCFShadowMap
-  // renderer.powerPreference = "high-performance";
+  // renderer.powerPreference = 'high-performance';
   document.body.appendChild(renderer.domElement);
   const controls = new OrbitControls(camera, renderer.domElement);
   function onWindowResize() {
@@ -10127,16 +10121,17 @@ var threeStart_CM = (() => {
 
   // lights moved into levels
 
-  const parkLevel = new Park1();
-  scene.add(parkLevel);
-  st.levels.add(parkLevel);
-  st.currentLevelMap = parkLevel;
+  // const level = new PhysPark.Level();
+  const level = new Park1();
+  scene.add(level);
+  st.levels.add(level);
+  st.currentLevelMap = level;
   new AxesHelper(5);
   // scene.add( axesHelper );
 
-  st.buildTransformWidget("translate");
-  st.buildTransformWidget("rotate");
-  st.buildTransformWidget("scale");
+  st.buildTransformWidget('translate');
+  st.buildTransformWidget('rotate');
+  st.buildTransformWidget('scale');
   st.buildPhysicsGroup();
 
   // renderloop moved to later process
@@ -10203,20 +10198,8 @@ function physicsSystem(core) {
     rigidBodyPos = object3D.rigidBody.translation();
     // object3D.rigidBody.translation(bb);
 
-    // console.log('rigidBodyPos', rigidBodyPos);
-
-    // TODO FIX SO IT NOT DISAPPEAR OR W/E
-
     // object3D.position.copy(bb);
     object3D.position.copy(rigidBodyPos);
-
-    // object3D.position.y = -2;
-
-    // This also makes the floor disappear
-    // object3D.position.set(new Vector3(
-    //   0, 0, 0
-    // ));
-
     object3D.collider.rotation();
     // console.log('colliderRotation', colliderRotation);
 
@@ -10229,8 +10212,6 @@ function physicsSystem(core) {
     // ));
 
     object3D.updateMatrix();
-
-    // DynamicPhysicsComponent[eid]
   }
 
   // Step the simulation forward
@@ -10320,44 +10301,46 @@ function fish() {
 function patchObject3D_CM() {
   const rigidBodyTypes = ['dynamic', 'fixed', 'kinematicPositionBased', 'kinematicVelocityBased'];
   const physicsKeys = ['rigidBody', 'collider', 'linvel', 'angvel'];
-  Object3D.prototype.init = function ({
-    physics
-  } = {}) {
+  Object3D.prototype.initPhysics = function (physConfig) {
+    const {
+      rigidBody,
+      collider,
+      linvel,
+      angvel
+    } = physConfig;
     const ecsCore = store$1.state.ecs.core;
     const eid = addEntity(ecsCore);
     this.eid = eid;
-    if (typeof physics === 'object') {
-      const physCore = store$1.state.physics.core;
-      const invalidKeys = Object.keys(physics).filter(key => !physicsKeys.includes(key));
-      if (invalidKeys.length) {
-        throw new Error(`Invalid keys on object3D physics: '${invalidKeys}'`);
+    const physCore = store$1.state.physics.core;
+    const invalidKeys = Object.keys(physConfig).filter(key => !physicsKeys.includes(key));
+    if (invalidKeys.length) {
+      throw new Error(`Invalid keys passed to object3D.initPhysics: '${invalidKeys}'`);
+    }
+    if (rigidBody) {
+      if (!rigidBodyTypes.includes(rigidBody)) {
+        throw new Error(`Invalid rigidBody '${rigidBody}'. Must be one of ${rigidBodyTypes}`);
       }
-      if (physics.rigidBody) {
-        if (!rigidBodyTypes.includes(physics.rigidBody)) {
-          throw new Error(`Invalid rigidBody '${physics.rigidBody}'. Must be one of ${rigidBodyTypes}`);
-        }
-        if (physics.rigidBody === 'dynamic') {
-          addComponent(ecsCore, DynamicPhysicsComponent, eid);
-        }
-        DynamicPhysicsComponent.objectId[eid] = this.id;
-        const rigidBodyDesc = PI.RigidBodyDesc[physics.rigidBody]().setTranslation(...this.position);
-        // .setRotation(this.rotation);
-
-        if (physics.linvel) {
-          rigidBodyDesc.setLinvel(...physics.linvel);
-        }
-        if (physics.angvel) {
-          rigidBodyDesc.setAngvel(physics.angvel);
-        }
-        this.rigidBody = physCore.createRigidBody(rigidBodyDesc);
-
-        // TODO support more collider types
-        // See docs https://rapier.rs/docs/api/javascript/JavaScript3D
-        const bounding = new Box3$1().setFromObject(this);
-        // bounding.applyMatrix(this);
-        const colliderDesc = PI.ColliderDesc.cuboid(...bounding.getSize(new Vector3$2()));
-        this.collider = physCore.createCollider(colliderDesc, this.rigidBody);
+      if (rigidBody === 'dynamic') {
+        addComponent(ecsCore, DynamicPhysicsComponent, eid);
       }
+      DynamicPhysicsComponent.objectId[eid] = this.id;
+      const rigidBodyDesc = PI.RigidBodyDesc[rigidBody]().setTranslation(...this.position);
+      // .setRotation(this.rotation);
+
+      if (linvel) {
+        rigidBodyDesc.setLinvel(...linvel);
+      }
+      if (angvel) {
+        rigidBodyDesc.setAngvel(angvel);
+      }
+      this.rigidBody = physCore.createRigidBody(rigidBodyDesc);
+
+      // TODO support more collider types
+      // See docs https://rapier.rs/docs/api/javascript/JavaScript3D
+      const bounding = new Box3$1().setFromObject(this);
+      // bounding.applyMatrix(this);
+      const colliderDesc = PI.ColliderDesc.cuboid(...bounding.getSize(new Vector3$2()));
+      this.collider = physCore.createCollider(colliderDesc, this.rigidBody);
     }
   };
   Object3D.prototype.fish = 'neat!!';
@@ -11499,7 +11482,7 @@ const init = async () => {
   window.Box3 = Box3$1;
   window.Box3Helper = Box3Helper;
   window.AltBox3Helper = AltBox3Helper;
-  // console.log("vectorA", vectorA);
+  // console.log('vectorA', vectorA);
 
   // forcing optimisations
   // #code: scene28475#

@@ -1,16 +1,12 @@
-
 import LevelMap from './levelMap';
 
-
 import { store } from 'alexandria/store';
-
 
 import { DirectionalLight, AmbientLight,
   BoxGeometry, MeshBasicMaterial, Mesh, MeshStandardMaterial, PlaneGeometry,
   DoubleSide, AxesHelper, TextureLoader, RepeatWrapping, SRGBColorSpace, CameraHelper,
   HemisphereLight
 } from 'three';
-
 
 import {Entities, Enty, Move, Spin, KeyWalk, Meep } from '../entities/basicEntites';
 
@@ -89,8 +85,6 @@ export class Park1 extends LevelMap{
       floor.rotation.set(-Math.PI/2,0,0);
       floor.receiveShadow = true;
       this.add(floor);
-      // floor.init({ physics: { rigidBody: 'fixed' } });
-      floor.init({ physics: { rigidBody: 'fixed' } });
       window.floor = floor;
 
       // const texture = new TextureLoader().load('./textures/myrthe-van-tol-grass-texture.jpeg' );
@@ -115,10 +109,10 @@ loadereee3894();
     let gg = new VolumeRect({store:store});
     store.state.game.scene.add(gg);
     gg.position.y = 1.4;
-    // gg.init({ physics: { rigidBody: 'dynamic' } });
+    // gg.initPhysics({ rigidBody: 'dynamic' });
     window.vol = gg;
     console.log(vol);
-    
+
 
 return
 
@@ -208,14 +202,14 @@ function buildLilGui(gameConfig){
     right: 1,
     front: 1,
     back: 1,
-    
+
     minx: 1,
     miny: 1,
     minz: 1,
     maxx: 1,
     maxy: 1,
     maxz: 1,
-    
+
 
   	widgetTranslate: function() { gameConfig.transformWidget.mode = "translate" },
   	widgetRotate: function() { gameConfig.transformWidget.mode = "rotate" },
@@ -225,23 +219,23 @@ function buildLilGui(gameConfig){
 
   // gui.add( obj, 'myBoolean' ); 	// checkbox
   // gui.add( obj, 'myString' ); 	// text field
-  // 
+  //
   // gui.add( obj, 'top',0,4 ).onChange( x => { vol.setSide("top",x) } );
   // gui.add( obj, 'bottom',0,4 ).onChange( x => { vol.setSide("bottom",x) } );
   // gui.add( obj, 'left',0,4 ).onChange( x => { vol.setSide("left",x) } );
   // gui.add( obj, 'right',0,4 ).onChange( x => { vol.setSide("right",x) } );
   // gui.add( obj, 'front',0,4 ).onChange( x => { vol.setSide("front",x) } );
   // gui.add( obj, 'back',0,4 ).onChange( x => { vol.setSide("back",x) } );
-  
+
   const min = new Vector3(-0.5,-0.5,-0.5);
   const max = new Vector3(0.5,0.5,0.5);
   function djkfngkldfnmgh() {
-    
+
     // min
     // :o
 
     // val = -1
-    
+
     vol.setVectice(vol.reorderSharedVertices.bottom[0],min.x,min.y,min.z)
 
     // y
@@ -316,27 +310,27 @@ function buildLilGui(gameConfig){
     vol.offsetVectice(vol.reorderSharedVertices.top[1], "x", v1[0]);
 
   }
-  // 
+  //
   gui.add( obj, 'minx',0,4 ).onChange( x => { min.x = -x; djkfngkldfnmgh(); } );
   gui.add( obj, 'miny',0,4 ).onChange( x => { min.y = -x; djkfngkldfnmgh(); } );
   gui.add( obj, 'minz',0,4 ).onChange( x => { min.z = -x; djkfngkldfnmgh(); } );
-  
+
   gui.add( obj, 'maxx',0,4 ).onChange( x => { max.x = x; djkfngkldfnmgh(); } );
   gui.add( obj, 'maxy',0,4 ).onChange( x => { max.y = x; djkfngkldfnmgh(); } );
   gui.add( obj, 'maxz',0,4 ).onChange( x => { max.z = x; djkfngkldfnmgh(); } );
-  // 
-  
-  // 
+  //
+
+  //
   // gui.add( obj, 'minx',0,4 ).onChange( x => { min.setScalar(-x); djkfngkldfnmgh(); } );
   // gui.add( obj, 'miny',0,4 ).onChange( x => { min.y = -x; djkfngkldfnmgh(); } );
   // gui.add( obj, 'minz',0,4 ).onChange( x => { min.z = -x; djkfngkldfnmgh(); } );
-  // 
+  //
   // gui.add( obj, 'maxx',0,4 ).onChange( x => { max.setScalar(x); djkfngkldfnmgh(); } );
   // gui.add( obj, 'maxy',0,4 ).onChange( x => { max.y = x; djkfngkldfnmgh(); } );
   // gui.add( obj, 'maxz',0,4 ).onChange( x => { max.z = x; djkfngkldfnmgh(); } );
-  // 
-  // 
-  
+  //
+  //
+
 
   gui.add( obj, 'widgetTranslate' ); 	// button
   gui.add( obj, 'widgetRotate' ); 	// button
