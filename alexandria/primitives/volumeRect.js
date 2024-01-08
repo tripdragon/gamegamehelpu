@@ -2,13 +2,28 @@
 
 import { Object3D, Box3, BoxGeometry, MeshBasicMaterial, Mesh, BufferAttribute } from 'three';
 
+import { TransformControls } from 'three/addons/controls/TransformControls.js';
+
 
 export class VolumeRect extends Object3D {
+  
+  
+  store = null;
   
   bounds = new Box3();
   
   boxMesh;
   boxMeshWire;
+  
+  // TransformControls assigns widget to an object
+  // so we need proxy objects
+  minObject = new Object3D();
+  maxObject = new Object3D();
+  
+  minTransformWidget;// = new TransformControls( this.camera, this.domElement );
+
+  maxTransformWidget;
+  
   
   // See note file for derive
   // 0~3 right side
@@ -59,8 +74,38 @@ export class VolumeRect extends Object3D {
   }
   
   
-  constructor(size){
+  constructor({size=1,store}={}){
     super();
+    
+    if(store) this.store = store;
+    
+    if (store) {
+      this.add(this.minObject);
+      this.add(this.maxObject);
+      this.minTransformWidget = new TransformControls( store.state.game.camera, store.state.game.domElement );
+      this.maxTransformWidget = new TransformControls( store.state.game.camera, store.state.game.domElement );
+      this.add(this.minTransformWidget);
+      this.add(this.maxTransformWidget);
+      this.minTransformWidget.space = "local";
+      this.minTransformWidget.attach(this.minObject);
+      // this.minObject.position.y = -1;
+      
+      
+      
+      this.minTransformWidget.isNotStatic = true;
+      // there are many nested objects in the transformControls class
+      this.minTransformWidget.traverse((item) => {
+        item.isNotStatic = true;
+      });
+      this.minObject.isNotStatic = true;
+      
+      this.minTransformWidget.store = store;
+      this.minTransformWidget.addEventsHandleCamera();
+      
+      // _a.state.game.controls.enabled = false
+      // store.state.game.widgetsGroup.setAutoMatrixAll(false, true);
+    }
+    
     
     // IF we built the geometry ourselves we could set the indices to 8 points
     // but since we cheaped out and spent more time to figure out the sorting wellll

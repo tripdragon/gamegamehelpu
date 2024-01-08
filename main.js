@@ -7,7 +7,8 @@ import { renderLoop } from 'logics/renderLoop';
 
 import { fish } from 'narf';
 
-import { patchObject3D_CM } from 'alexandria/initializers/patchObject3D';
+import { patchObject3D_CM } from 'alexandria/patches/patchObject3D';
+import { patchTransformControls } from 'alexandria/patches/patchTransformControls';
 
 // import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { Box3, Vector3, Box3Helper } from 'three';
@@ -53,6 +54,8 @@ class AltBox3Helper extends Box3Helper{
 const init = async () => {
 
   patchObject3D_CM();
+  
+  patchTransformControls();
 
   await Initializers(store);
 
@@ -83,6 +86,9 @@ const init = async () => {
   // #code: scene28475#
   store.state.game.scene.traverse((item) => {
     item.matrixAutoUpdate = false;
+    if (item.isNotStatic) {
+      item.matrixAutoUpdate = true;
+    }
   });
   // EXCEPT widgets!!
   // store.state.game.widgetsGroup.traverse((item) => {

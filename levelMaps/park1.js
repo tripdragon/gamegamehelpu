@@ -112,7 +112,7 @@ loadereee3894();
 
     buildLilGui(store.state.game);
 
-    let gg = new VolumeRect();
+    let gg = new VolumeRect({store:store});
     store.state.game.scene.add(gg);
     gg.position.y = 1.4;
     // gg.init({ physics: { rigidBody: 'dynamic' } });
