@@ -2,6 +2,9 @@ import { Object3D, Box3, BoxGeometry, MeshBasicMaterial, Mesh, BufferAttribute }
 
 import { TransformControls } from 'three/addons/controls/TransformControls.js';
 
+import { CubeMesh } from 'alexandria/primitives/cubeMesh.js';
+
+
 export class VolumeRect extends Object3D {
 
   store = null;
@@ -96,6 +99,13 @@ export class VolumeRect extends Object3D {
 
       this.minTransformWidget.store = store;
       this.minTransformWidget.addEventsHandleCamera();
+
+      const yy = new CubeMesh({
+      size : 1,
+      color : 0x00ff00,
+      debug : false
+    });
+      this.minObject.add(yy);
 
       // _a.state.game.controls.enabled = false
       // store.state.game.widgetsGroup.setAutoMatrixAll(false, true);

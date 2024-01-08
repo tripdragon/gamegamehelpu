@@ -10,7 +10,7 @@ import { DirectionalLight, AmbientLight,
 
 import {Entities, Enty, Move, Spin, KeyWalk, Meep } from '../entities/basicEntites';
 
-import {Cube} from "../alexandria/primitives/cube";
+import {CubeMesh} from "alexandria/primitives/cubeMesh.js";
 import {randomInRange} from "alexandria/math/mathMore";
 
 import { Box3, Vector3, Box3Helper } from 'three';
@@ -116,7 +116,7 @@ loadereee3894();
 
 return
 
-    const cube = new Cube({size: 0.2,debug: true, color:0xffffff});
+    const cube = new CubeMesh({size: 0.2,debug: true, color:0xffffff});
     cube.position.y = 1;
 
     // cube.update = function(){

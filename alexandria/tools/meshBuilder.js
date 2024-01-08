@@ -3,7 +3,7 @@ import { MeshBasicMaterial } from 'three';
 import { CoatOfArms } from 'alexandria/tools/coatOfArms';
 
 import {
-  Cube,
+  CubeMesh,
   PlaneMesh,
   SphereMesh
 } from 'alexandria/primitives';
@@ -48,7 +48,7 @@ export function MeshBuilder(props) {
   else {
     switch (mesh) {
     case 'cube':
-      mesh = new Cube(meshProps);
+      mesh = new CubeMesh(meshProps);
       break;
     case 'plane':
       mesh = new PlaneMesh(meshProps);
