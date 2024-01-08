@@ -13752,7 +13752,7 @@ var _DRACOExporter = class {
       throw new Error("THREE.DRACOExporter.parse(geometry, options): geometry is not a THREE.BufferGeometry instance.");
     }
     if (object instanceof Mesh && object.isMesh) {
-      builder = new dracoEncoder.Object3DModifier();
+      builder = new dracoEncoder.CoatOfArms();
       dracoObject = new dracoEncoder.Mesh();
       const vertices = geometry3.getAttribute("position");
       builder.AddFloatAttributeToMesh(

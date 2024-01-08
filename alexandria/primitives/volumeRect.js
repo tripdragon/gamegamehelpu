@@ -1,30 +1,25 @@
-
-
 import { Object3D, Box3, BoxGeometry, MeshBasicMaterial, Mesh, BufferAttribute } from 'three';
 
 import { TransformControls } from 'three/addons/controls/TransformControls.js';
 
-
 export class VolumeRect extends Object3D {
-  
-  
+
   store = null;
-  
+
   bounds = new Box3();
-  
+
   boxMesh;
   boxMeshWire;
-  
+
   // TransformControls assigns widget to an object
   // so we need proxy objects
   minObject = new Object3D();
   maxObject = new Object3D();
-  
+
   minTransformWidget;// = new TransformControls( this.camera, this.domElement );
 
   maxTransformWidget;
-  
-  
+
   // See note file for derive
   // 0~3 right side
   // 4~7 left side
@@ -42,7 +37,7 @@ export class VolumeRect extends Object3D {
   // 6 : b 0
   // 7 : b 1
   reorderSharedVertices = { top: [4,5,0,1], bottom: [6,7,2,3] };
-  
+
   shareArray = [0,0,0];
   // this is intended as read only
   readVertAtSharedIndex(index, arrayIn){
@@ -53,8 +48,8 @@ export class VolumeRect extends Object3D {
     tempArray[2] = pp[this.sharedVertices[index][0][2]];
     return tempArray;
   }
-  
-  
+
+
   // top view, counter clockwise, top left, bottom left, bottom right, top left
   // this refers to sharedVertices
   // test with addVectice(2,1,1,1)
@@ -72,13 +67,13 @@ export class VolumeRect extends Object3D {
     min : [6,3,4,7,2],
     max : [0,5,2,1,4]
   }
-  
-  
+
+
   constructor({size=1,store}={}){
     super();
-    
+
     if(store) this.store = store;
-    
+
     if (store) {
       this.add(this.minObject);
       this.add(this.maxObject);
@@ -89,28 +84,28 @@ export class VolumeRect extends Object3D {
       this.minTransformWidget.space = "local";
       this.minTransformWidget.attach(this.minObject);
       // this.minObject.position.y = -1;
-      
-      
-      
+
+
+
       this.minTransformWidget.isNotStatic = true;
       // there are many nested objects in the transformControls class
       this.minTransformWidget.traverse((item) => {
         item.isNotStatic = true;
       });
       this.minObject.isNotStatic = true;
-      
+
       this.minTransformWidget.store = store;
       this.minTransformWidget.addEventsHandleCamera();
-      
+
       // _a.state.game.controls.enabled = false
       // store.state.game.widgetsGroup.setAutoMatrixAll(false, true);
     }
-    
-    
+
+
     // IF we built the geometry ourselves we could set the indices to 8 points
     // but since we cheaped out and spent more time to figure out the sorting wellll
     // wee the mess that there is !!!
-    
+
     // need the reverse winding order or coulter clockwise to get the faces pointing outwards
     // the initial vertice positions look to be
     // 0 -------- 1
@@ -120,15 +115,15 @@ export class VolumeRect extends Object3D {
     // with vol.addVectice(2,0,0,1) moving bottom to z
     // pattern is i i+2 i+1, then i+1 of previous, i+2 i+3
     // const indices = new Uint16Array( [
-    //   // 0, 2, 1, 1, 2, 3, 
+    //   // 0, 2, 1, 1, 2, 3,
     //   // 4,6,5, 5,6,7
     //   7,9,8
     // ] );
-    // const indices = new Uint16Array( [0, 2, 1, 1, 2, 3, 3, 5, 4, 4, 5, 6, 6, 8, 7, 7, 8, 9, 9, 11, 10, 10, 11, 12, 12, 14, 13, 13, 14, 15, 15, 17, 16, 16, 17, 18, 18, 20, 19, 19, 20, 21, 21, 23, 22, 22, 23, 24, 24, 26, 25, 25, 26, 27, 27, 29, 28, 28, 29, 30, 30, 32, 31, 31, 32, 33, 33, 35, 34, 34, 35, 36] );    
+    // const indices = new Uint16Array( [0, 2, 1, 1, 2, 3, 3, 5, 4, 4, 5, 6, 6, 8, 7, 7, 8, 9, 9, 11, 10, 10, 11, 12, 12, 14, 13, 13, 14, 15, 15, 17, 16, 16, 17, 18, 18, 20, 19, 19, 20, 21, 21, 23, 22, 22, 23, 24, 24, 26, 25, 25, 26, 27, 27, 29, 28, 28, 29, 30, 30, 32, 31, 31, 32, 33, 33, 35, 34, 34, 35, 36] );
     // const indices = new Uint16Array( [0, 11, 17, 1, 9, 20, 2, 13, 19, 3, 15, 22, 4, 8, 21, 5, 10, 16, 6, 14, 23, 7, 12, 18, 4, 8, 21, 1, 9, 20, 5, 10, 16, 0, 11, 17, 7, 12, 18, 2, 13, 19, 6, 14, 23, 3, 15, 22, 5, 10, 16, 0, 11, 17] );
 
     // size = 12;
-    const geometry = new BoxGeometry( size, size, size ); 
+    const geometry = new BoxGeometry( size, size, size );
     // geometry.setIndex( new BufferAttribute( indices, 1 ) );
 
     {
@@ -138,7 +133,7 @@ export class VolumeRect extends Object3D {
     }
     {
       // driving the boxMesh geometry should drive this
-      // const geometry = new BoxGeometry( size, size, size ); 
+      // const geometry = new BoxGeometry( size, size, size );
       const material = new MeshBasicMaterial( {color: 0xffff00, wireframe: true} );
       this.boxMeshWire = new Mesh( geometry, material );
       this.add( this.boxMeshWire );
@@ -146,7 +141,7 @@ export class VolumeRect extends Object3D {
   }
   setMinMax(type,x,y,z){
     const maps = this.minMaxMappings[type];
-    
+
     // cant for loop this, each axis has its own space
     // root moves in all axis
     this.setVectice(maps[0],x,y,z);
@@ -155,7 +150,7 @@ export class VolumeRect extends Object3D {
     // y : x and z
     // z : x and y
     // op : y
-    
+
     // x
     this.offsetVectice(maps[1], "y", y);
     this.offsetVectice(maps[1], "z", z);
@@ -174,8 +169,8 @@ export class VolumeRect extends Object3D {
   setMin(x,y,z){
     this.setMinMax("min",-x,-y,-z);
   }
-  
-  
+
+
   // @side refer to this.sides
   addSide(side, x,y,z){
     for (var i = 0; i < 4; i++) this.addVectice(this.sides[side][i],x,y,z);
@@ -183,7 +178,7 @@ export class VolumeRect extends Object3D {
   setSide(side, x,y,z){
     for (var i = 0; i < 4; i++) this.setVectice(this.sides[side][i],x,y,z);
   }
-  
+
   offsetSide(side, val){
     if (side==="top") {
       for (var i = 0; i < 4; i++) this.addVectice(this.sides.top[i],0,val,0);
@@ -195,13 +190,13 @@ export class VolumeRect extends Object3D {
       for (var i = 0; i < 4; i++) this.addVectice(this.sides.left[i],0,0,0);
     }
     else if (side==="right") {
-      
+
     }
     else if (side==="sdgdfg") {
-      
+
     }
   }
-  
+
   setSide(side, val){
     if (side==="top") for (var i = 0; i < 4; i++) this.offsetVectice(this.sides.top[i],"y",val);
     else if (side==="bottom") for (var i = 0; i < 4; i++) this.offsetVectice(this.sides.bottom[i],"y",-val);
@@ -211,7 +206,7 @@ export class VolumeRect extends Object3D {
     else if (side==="back") for (var i = 0; i < 4; i++) this.offsetVectice(this.sides.back[i],"z",val);
 
   }
-  
+
 
   getOffset(index){
     return index * 3;
@@ -230,7 +225,7 @@ export class VolumeRect extends Object3D {
   //   pp[index*3+2] += z;
   //   this.boxMesh.geometry.attributes.position.needsUpdate = true;
   // }
-  
+
   setVectice(index, x,y,z){
     const pp = this.boxMesh.geometry.attributes.position.array;
     const vert = this.sharedVertices[index];
@@ -245,9 +240,9 @@ export class VolumeRect extends Object3D {
     pp[vert[2][2]] = z;
     this.boxMesh.geometry.attributes.position.needsUpdate = true;
   }
-  
 
-  
+
+
   // in teh vinacular of add offset value to vertice
   addVectice(index, x,y,z){
     const pp = this.boxMesh.geometry.attributes.position.array;
@@ -268,11 +263,11 @@ export class VolumeRect extends Object3D {
     const pp = this.boxMesh.geometry.attributes.position.array;
     const vert = this.sharedVertices[index];
     let ii = 0;
-    
+
     if(axis === "x"){ ii = 0;}
     else if(axis === "y"){ ii = 1;}
     else if(axis === "z"){ ii = 2;}
-    
+
     pp[vert[0][ii]] = val;
     pp[vert[1][ii]] = val;
     pp[vert[2][ii]] = val;
@@ -282,34 +277,34 @@ export class VolumeRect extends Object3D {
   // getVertice(index){
   //   const pp = this.boxMesh.geometry.attributes.position.array;
   //   const vert = this.sharedVertices[index];
-  //   return 
+  //   return
   //   pp[vert[0][0]] += x;
   //   pp[vert[0][1]] += y;
   //   pp[vert[0][2]] += z;
-  //   return 
+  //   return
   // }
-  
+
   //   vol.boxMesh.geometry.attributes.position.array
   //   itemSize * numVertices
-  // 
+  //
   //   positionAttribute.needsUpdate = true;
   //   line.geometry.computeBoundingBox();
   // line.geometry.computeBoundingSphere();
-  // 
+  //
   // get min {
   //   return this.bounds.min;
   // }
   // set min(x,y,z){
   //   this.bounds.mix.set(x,y,z);
   // }
-  
+
   select(){
-    
+
   }
   deselect(){
-    
+
   }
-  
-  
-  
+
+
+
 }
