@@ -100,11 +100,9 @@ export class VolumeRect extends Object3D {
       this.minTransformWidget.store = store;
       this.minTransformWidget.addEventsHandleCamera();
 
-      const yy = new CubeMesh({
-      size : 1,
-      color : 0x00ff00,
-      debug : false
-    });
+      const yy = new CubeMesh();
+      yy.scale.setScalar(0.2);
+      yy.updateMatrix();
       this.minObject.add(yy);
 
       // _a.state.game.controls.enabled = false
