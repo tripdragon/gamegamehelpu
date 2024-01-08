@@ -13,7 +13,6 @@ import {
 //   mesh: 'plane',
 //   meshProps: { color: 0x4fff0f },
 //   scale: 12,
-//   rotation: [-Math.PI / 2, 0, 0],
 //   shadow: 'receive',
 //   texture: {
 //     path: './textures/myrthe-van-tol-grass-texture.jpeg',
