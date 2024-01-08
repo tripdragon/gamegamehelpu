@@ -4437,8 +4437,8 @@ class LevelMap extends Group {
   }
 }
 
-class Cube extends Mesh {
-  constructor(props) {
+class CubeMesh extends Mesh {
+  constructor(props = {}) {
     const {
       size = 1,
       color = 0x00ff00,
@@ -7647,6 +7647,12 @@ class VolumeRect extends Object3D {
       this.minObject.isNotStatic = true;
       this.minTransformWidget.store = store;
       this.minTransformWidget.addEventsHandleCamera();
+      const yy = new CubeMesh({
+        size: 1,
+        color: 0x00ff00,
+        debug: false
+      });
+      this.minObject.add(yy);
 
       // _a.state.game.controls.enabled = false
       // store.state.game.widgetsGroup.setAutoMatrixAll(false, true);
@@ -10178,24 +10184,26 @@ async function loadereee3894() {
   // piece3.moreBuild_CM({targetGroup:store.state.game.helpersGroup});
 }
 
-// Example usage
-// this.add(CoatOfArms({
-//   mesh: new Plane({
-//     length: 1,
-//     width: 1,
-//     color: 0x4fff0f
-//   }),
-//   scale: 12,
-//   rotation: [-Math.PI / 2, 0, 0],
-//   shadow: 'receive',
-//   texture: {
-//     path: './textures/myrthe-van-tol-grass-texture.jpeg',
-//     wrapping: RepeatWrapping,
-//     repeat: 8,
-//     colorSpace: SRGBColorSpace
-//   },
-//   physics: { rigidBody: 'fixed' }
-// }));
+/*
+Example usage
+this.add(CoatOfArms({
+  mesh: new Plane({
+    length: 1,
+    width: 1,
+    color: 0x4fff0f
+  }),
+  scale: 12,
+  rotation: [-Math.PI / 2, 0, 0],
+  shadow: 'receive',
+  texture: {
+    path: './textures/myrthe-van-tol-grass-texture.jpeg',
+    wrapping: RepeatWrapping,
+    repeat: 8,
+    colorSpace: SRGBColorSpace
+  },
+  physics: { rigidBody: 'fixed' }
+}));
+*/
 
 const internals = {};
 function CoatOfArms(props) {
@@ -10314,7 +10322,7 @@ internals.setOrScalar = ({
 };
 
 class PlaneMesh extends Mesh {
-  constructor(props) {
+  constructor(props = {}) {
     const {
       length = 1,
       width = 1,
@@ -10338,7 +10346,7 @@ class PlaneMesh extends Mesh {
 }
 
 class SphereMesh extends Mesh {
-  constructor(props) {
+  constructor(props = {}) {
     const {
       radius = 1,
       color = 0x00ff00,
@@ -10359,20 +10367,22 @@ class SphereMesh extends Mesh {
   }
 }
 
-// Example usage
-// this.add(MeshBuilder({
-//   mesh: 'plane',
-//   meshProps: { color: 0x4fff0f },
-//   scale: 12,
-//   shadow: 'receive',
-//   texture: {
-//     path: './textures/myrthe-van-tol-grass-texture.jpeg',
-//     wrapping: RepeatWrapping,
-//     repeat: 8,
-//     colorSpace: SRGBColorSpace
-//   },
-//   physics: { rigidBody: 'fixed' }
-// }));
+/*
+Example usage
+this.add(MeshBuilder({
+  mesh: 'plane',
+  meshProps: { color: 0x4fff0f },
+  scale: 12,
+  shadow: 'receive',
+  texture: {
+    path: './textures/myrthe-van-tol-grass-texture.jpeg',
+    wrapping: RepeatWrapping,
+    repeat: 8,
+    colorSpace: SRGBColorSpace
+  },
+  physics: { rigidBody: 'fixed' }
+}));
+*/
 
 function MeshBuilder(props) {
   const {
@@ -10388,11 +10398,11 @@ function MeshBuilder(props) {
   }
   if (!mesh) {
     // Build new mesh
-    mesh = new MeshBasicMaterial(geometry, material);
+    mesh = new Mesh(geometry, material);
   } else {
     switch (mesh) {
       case 'cube':
-        mesh = new Cube(meshProps);
+        mesh = new CubeMesh(meshProps);
         break;
       case 'plane':
         mesh = new PlaneMesh(meshProps);
@@ -10491,7 +10501,8 @@ class Level extends LevelMap {
         color: 0xffffff
       },
       position: {
-        y: 3
+        x: 1.2,
+        y: 4
       },
       physics: {
         rigidBody: 'dynamic'
@@ -10619,6 +10630,7 @@ var threeStart_CM = (() => {
 
   // lights moved into levels
 
+  // temporary level swapper, need something more complex so we can load multi on start
   const queryLvl = window.location.search.replace('?', '').split('lvl=')[1] || 'park1';
   let level;
   let levelName;
@@ -10707,6 +10719,7 @@ const DynamicPhysicsComponent = defineComponent({
 
 const physQuery = defineQuery([DynamicPhysicsComponent]);
 let rigidBodyPos;
+let colliderRotation;
 new Vector3$2();
 function physicsSystem(core) {
   const ents = physQuery(core);
@@ -10724,8 +10737,8 @@ function physicsSystem(core) {
 
     // object3D.position.copy(bb);
     object3D.position.copy(rigidBodyPos);
-    object3D.collider.rotation();
-    // console.log('colliderRotation', colliderRotation);
+    colliderRotation = object3D.collider.rotation();
+    console.log('colliderRotation', colliderRotation);
 
     // TODO FIX SO IT NOT DISAPPEAR OR W/E
     // object3D.quaternion.set(new Quaternion(

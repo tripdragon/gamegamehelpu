@@ -2,7 +2,7 @@ import { Mesh, SphereGeometry, MeshStandardMaterial, AxesHelper } from 'three';
 
 export class SphereMesh extends Mesh {
 
-  constructor(props) {
+  constructor(props = {}) {
 
     const {
       radius = 1,

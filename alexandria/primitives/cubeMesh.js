@@ -2,7 +2,7 @@ import { Mesh, BoxGeometry, MeshStandardMaterial, AxesHelper} from 'three';
 
 export class CubeMesh extends Mesh {
 
-  constructor(props){
+  constructor(props = {}){
 
     const {
       size = 1,

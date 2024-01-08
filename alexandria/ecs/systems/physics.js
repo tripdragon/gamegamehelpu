@@ -36,7 +36,7 @@ export default function physicsSystem(core) {
     object3D.position.copy(rigidBodyPos);
 
     colliderRotation = object3D.collider.rotation();
-    // console.log('colliderRotation', colliderRotation);
+    console.log('colliderRotation', colliderRotation);
 
     // TODO FIX SO IT NOT DISAPPEAR OR W/E
     // object3D.quaternion.set(new Quaternion(

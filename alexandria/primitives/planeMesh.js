@@ -7,7 +7,7 @@ import {
 
 export class PlaneMesh extends Mesh {
 
-  constructor(props) {
+  constructor(props = {}) {
 
     const {
       length = 1,
