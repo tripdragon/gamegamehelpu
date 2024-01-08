@@ -79,9 +79,10 @@ export function patchObject3D_CM() {
       // TODO support more collider types
       // See docs https://rapier.rs/docs/api/javascript/JavaScript3D
       const bounding = new Box3().setFromObject(this);
+      this.boundingBox = bounding.getSize(new Vector3());
       // bounding.applyMatrix(this);
       const colliderDesc = Physics.ColliderDesc.cuboid(
-        ...bounding.getSize(new Vector3())
+        ...this.boundingBox
       );
 
       this.collider = physCore.createCollider(colliderDesc, this.rigidBody);

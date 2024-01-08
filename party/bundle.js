@@ -10487,11 +10487,11 @@ class Level extends LevelMap {
     this.add(MeshBuilder({
       mesh: 'cube',
       meshProps: {
-        size: 0.2,
+        size: 1,
         color: 0xffffff
       },
       position: {
-        y: 1
+        y: 2
       },
       physics: {
         rigidBody: 'dynamic'
@@ -10500,10 +10500,11 @@ class Level extends LevelMap {
     this.add(MeshBuilder({
       mesh: 'sphere',
       meshProps: {
-        radius: 0.2,
+        radius: 0.5,
         color: 0x00ff00
       },
       position: {
+        x: 2,
         y: 2
       },
       physics: {
@@ -10718,6 +10719,7 @@ function physicsSystem(core) {
       continue;
     }
     rigidBodyPos = object3D.rigidBody.translation();
+    rigidBodyPos.y -= object3D.boundingBox.y / 2;
     // object3D.rigidBody.translation(bb);
 
     // object3D.position.copy(bb);
@@ -10860,8 +10862,9 @@ function patchObject3D_CM() {
       // TODO support more collider types
       // See docs https://rapier.rs/docs/api/javascript/JavaScript3D
       const bounding = new Box3$1().setFromObject(this);
+      this.boundingBox = bounding.getSize(new Vector3$2());
       // bounding.applyMatrix(this);
-      const colliderDesc = PI.ColliderDesc.cuboid(...bounding.getSize(new Vector3$2()));
+      const colliderDesc = PI.ColliderDesc.cuboid(...this.boundingBox);
       this.collider = physCore.createCollider(colliderDesc, this.rigidBody);
     }
   };

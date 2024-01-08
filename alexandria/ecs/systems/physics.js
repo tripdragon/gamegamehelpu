@@ -28,6 +28,7 @@ export default function physicsSystem(core) {
     }
 
     rigidBodyPos = object3D.rigidBody.translation();
+    rigidBodyPos.y -= object3D.boundingBox.y / 2;
     // object3D.rigidBody.translation(bb);
 
     // object3D.position.copy(bb);
