@@ -11,6 +11,7 @@ export const physQuery = defineQuery([DynamicPhysicsComponent]);
 let rigidBodyPos;
 let colliderRotation;
 var bb = new Vector3();
+
 export default function physicsSystem(core) {
 
   const ents = physQuery(core);

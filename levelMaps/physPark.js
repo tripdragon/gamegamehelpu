@@ -95,7 +95,7 @@ export class Level extends LevelMap {
     this.add(MeshBuilder({
       mesh: 'cube',
       meshProps: { size: 1, color: 0xffffff },
-      position: { y: 2 },
+      position: { y: 3 },
       physics: { rigidBody: 'dynamic' }
     }));
 

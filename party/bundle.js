@@ -10491,7 +10491,7 @@ class Level extends LevelMap {
         color: 0xffffff
       },
       position: {
-        y: 2
+        y: 3
       },
       physics: {
         rigidBody: 'dynamic'
