@@ -88,6 +88,7 @@ export default () => {
 
   // lights moved into levels
 
+  // temporary level swapper, need something more complex so we can load multi on start
   const queryLvl = window.location.search
     .replace('?', '')
     .split('lvl=')[1] || 'park1';
