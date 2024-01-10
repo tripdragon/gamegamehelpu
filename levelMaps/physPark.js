@@ -79,7 +79,7 @@ export class Level extends LevelMap {
     // Floor
     this.add(MeshBuilder({
       mesh: 'plane',
-      meshProps: { color: 0x4fff0f },
+      color: 0x4fff0f,
       scale: 12,
       shadow: 'receive',
       texture: {
@@ -94,12 +94,10 @@ export class Level extends LevelMap {
     // Goal 1
     this.add(MeshBuilder({
       mesh: 'rectangle',
-      meshProps: {
-        width: 1,
-        height: 5,
-        depth: 12,
-        color: 0xff0000
-      },
+      width: 1,
+      height: 5,
+      depth: 12,
+      color: 0xff0000,
       position: {
         x: -5.5,
         y: 2.5,
@@ -113,12 +111,10 @@ export class Level extends LevelMap {
     // Goal 2
     this.add(MeshBuilder({
       mesh: 'rectangle',
-      meshProps: {
-        width: 1,
-        height: 5,
-        depth: 12,
-        color: 0x0000ff
-      },
+      width: 1,
+      height: 5,
+      depth: 12,
+      color: 0x0000ff,
       position: {
         x: 5.5,
         y: 2.5,
@@ -129,23 +125,24 @@ export class Level extends LevelMap {
       }
     }));
 
-    // const items = 10;
-    // const maxHeight = 10;
+    const items = 100;
+    const maxHeight = 30;
 
-    // for (let i = 0; i < items; ++i) {
-    //   this.add(MeshBuilder({
-    //     mesh: 'cube',
-    //     meshProps: { size: 1, color: 0xffffff },
-    //     position: {
-    //       x: randomInRange(-4, 4),
-    //       y: randomInRange(maxHeight, 1),
-    //       z: randomInRange(-4, 4)
-    //     },
-    //     physics: {
-    //       rigidBody: 'dynamic'
-    //     }
-    //   }));
-    // }
+    for (let i = 0; i < items; ++i) {
+      this.add(MeshBuilder({
+        mesh: 'cube',
+        size: 1,
+        color: 0x0ff0f0,
+        position: {
+          x: randomInRange(-4, 4),
+          y: randomInRange(maxHeight, 1),
+          z: randomInRange(-4, 4)
+        },
+        physics: {
+          rigidBody: 'dynamic'
+        }
+      }));
+    }
 
     // for (let i = 0; i < items; ++i) {
     //   this.add(MeshBuilder({

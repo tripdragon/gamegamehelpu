@@ -7,17 +7,17 @@
 
 // stooooore stuuuufff
 const listeners = [];
-const internals$1 = {};
+const internals$2 = {};
 const store$1 = window.store = window._a = {
   state: {},
   setState: newState => {
     const changedSelectors = [];
 
     // Deep merge the new state
-    internals$1.deepMerge(store$1.state, newState, changedSelectors);
+    internals$2.deepMerge(store$1.state, newState, changedSelectors);
 
     // Notify listeners with changed selectors
-    internals$1.notifyListeners(changedSelectors);
+    internals$2.notifyListeners(changedSelectors);
   },
   subscribe: function (selector, callback) {
     // Add a callback listener for updates with optional deep selector
@@ -41,13 +41,13 @@ const store$1 = window.store = window._a = {
     };
   }
 };
-internals$1.deepMerge = (target, source, changedSelectors, currentSelector = '') => {
+internals$2.deepMerge = (target, source, changedSelectors, currentSelector = '') => {
   for (const key in source) {
     // eslint-disable-next-line no-prototype-builtins
     if (source.hasOwnProperty(key)) {
       const propertyPath = currentSelector ? `${currentSelector}.${key}` : key;
       if (source[key] instanceof Object && key in target) {
-        internals$1.deepMerge(target[key], source[key], changedSelectors, propertyPath);
+        internals$2.deepMerge(target[key], source[key], changedSelectors, propertyPath);
       } else {
         if (target[key] !== source[key]) {
           changedSelectors.push(propertyPath);
@@ -57,7 +57,7 @@ internals$1.deepMerge = (target, source, changedSelectors, currentSelector = '')
     }
   }
 };
-internals$1.notifyListeners = changedSelectors => {
+internals$2.notifyListeners = changedSelectors => {
   listeners.forEach(listener => {
     const selectorParts = listener.selector.split('.');
     const matchingSelectors = changedSelectors.filter(selector => selectorParts.some(part => selector.startsWith(part)));
@@ -7626,30 +7626,78 @@ class VolumeRect extends Object3D {
     store
   } = {}) {
     super();
+    this.bounds.min.setScalar(-size / 2);
+    this.bounds.max.setScalar(size / 2);
+
+    // this.updateMatrix();
+    // this.updateWorldMatrix();
     if (store) this.store = store;
     if (store) {
       this.add(this.minObject);
       this.add(this.maxObject);
+      this.maxObject.position.copy(this.bounds.max);
+      this.minObject.position.copy(this.bounds.min);
+      // this.minObject.updateMatrix();
+      // this.minObject.updateWorldMatrix();
       this.minTransformWidget = new TransformControls(store.state.game.camera, store.state.game.domElement);
       this.maxTransformWidget = new TransformControls(store.state.game.camera, store.state.game.domElement);
-      this.add(this.minTransformWidget);
-      this.add(this.maxTransformWidget);
-      this.minTransformWidget.space = "local";
-      this.minTransformWidget.attach(this.minObject);
-      // this.minObject.position.y = -1;
 
+      // TransformControls hates being parented for now
+      this.store.state.game.helpersGroup.add(this.minTransformWidget);
+      this.store.state.game.helpersGroup.add(this.maxTransformWidget);
+
+      // this.add(this.minTransformWidget);
+      // this.add(this.maxTransformWidget);
+
+      // this.minTransformWidget.space = "local";
+
+      this.minTransformWidget.attach(this.minObject);
+      this.maxTransformWidget.attach(this.maxObject);
       this.minTransformWidget.isNotStatic = true;
+      this.maxTransformWidget.isNotStatic = true;
       // there are many nested objects in the transformControls class
       this.minTransformWidget.traverse(item => {
         item.isNotStatic = true;
       });
+      this.maxTransformWidget.traverse(item => {
+        item.isNotStatic = true;
+      });
       this.minObject.isNotStatic = true;
+      this.maxObject.isNotStatic = true;
       this.minTransformWidget.store = store;
+      this.maxTransformWidget.store = store;
       this.minTransformWidget.addEventsHandleCamera();
+      this.maxTransformWidget.addEventsHandleCamera();
       const yy = new CubeMesh();
-      yy.scale.setScalar(0.2);
+      yy.scale.setScalar(0.1);
       yy.updateMatrix();
       this.minObject.add(yy);
+      const yy2 = new CubeMesh({
+        color: 0x0000ff
+      });
+      yy2.scale.setScalar(0.1);
+      yy2.updateMatrix();
+      this.maxObject.add(yy2);
+      const _this = this;
+      this.minTransformWidget.addEventListener('change', function (event) {
+        // if (_this.object) {
+        //   _this.object.updateMatrix();
+        // }
+        if (_this.store.state.game.pointerDownOnTransformWidget === true) {
+          // console.log(_this.minObject.position);
+          _this.bounds.min.copy(_this.minObject.position);
+          _this.oyVeyMinMaxResize_CM();
+        }
+      });
+      this.maxTransformWidget.addEventListener('change', function (event) {
+        // if (_this.object) {
+        //   _this.object.updateMatrix();
+        // }
+        if (_this.store.state.game.pointerDownOnTransformWidget === true) {
+          _this.bounds.max.copy(_this.maxObject.position);
+          _this.oyVeyMinMaxResize_CM();
+        }
+      });
 
       // _a.state.game.controls.enabled = false
       // store.state.game.widgetsGroup.setAutoMatrixAll(false, true);
@@ -7814,30 +7862,93 @@ class VolumeRect extends Object3D {
     pp[vert[2][ii]] = val;
     this.boxMesh.geometry.attributes.position.needsUpdate = true;
   }
-  // getVertice(index){
-  //   const pp = this.boxMesh.geometry.attributes.position.array;
-  //   const vert = this.sharedVertices[index];
-  //   return
-  //   pp[vert[0][0]] += x;
-  //   pp[vert[0][1]] += y;
-  //   pp[vert[0][2]] += z;
-  //   return
-  // }
 
-  //   vol.boxMesh.geometry.attributes.position.array
-  //   itemSize * numVertices
-  //
-  //   positionAttribute.needsUpdate = true;
-  //   line.geometry.computeBoundingBox();
-  // line.geometry.computeBoundingSphere();
-  //
-  // get min {
-  //   return this.bounds.min;
-  // }
-  // set min(x,y,z){
-  //   this.bounds.mix.set(x,y,z);
-  // }
+  // 
+  // 
+  // 
+  v0 = [0, 0, 0];
+  v1 = [0, 0, 0];
+  oyVeyMinMaxResize_CM() {
+    const min = this.bounds.min;
+    const max = this.bounds.max;
 
+    // min
+    // :o
+
+    // val = -1
+    const vol = this;
+    vol.setVectice(vol.reorderSharedVertices.bottom[0], min.x, min.y, min.z);
+
+    // y
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "y", min.y);
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "y", min.y);
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[3], "y", min.y);
+
+    // here we already need the y of the top, not to += it
+    // vol.setVectice(vol.reorderSharedVertices.top[0],val,val,val)
+
+    // var v0 = []
+    var v0 = this.v0;
+    vol.readVertAtSharedIndex(vol.reorderSharedVertices.bottom[0], v0);
+    // opposite
+    // var v1 = []
+    var v1 = this.v1;
+    vol.readVertAtSharedIndex(vol.reorderSharedVertices.top[2], v1);
+
+    // top edge
+    vol.offsetVectice(vol.reorderSharedVertices.top[0], "x", v0[0]);
+    vol.offsetVectice(vol.reorderSharedVertices.top[0], "z", v0[2]);
+    vol.offsetVectice(vol.reorderSharedVertices.top[0], "y", v1[1]);
+
+    // x edge
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[3], "z", v0[2]);
+    vol.offsetVectice(vol.reorderSharedVertices.top[3], "z", v0[2]);
+
+    // y
+    vol.offsetVectice(vol.reorderSharedVertices.top[3], "y", v1[1]);
+
+    // z edge
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "x", v0[0]);
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "z", v1[2]);
+    vol.offsetVectice(vol.reorderSharedVertices.top[1], "x", v0[0]);
+    vol.offsetVectice(vol.reorderSharedVertices.top[1], "y", v1[1]);
+
+    // :x
+
+    // max
+    // :o
+
+    // val = 1
+    vol.setVectice(vol.reorderSharedVertices.top[2], max.x, max.y, max.z);
+
+    // y
+    vol.offsetVectice(vol.reorderSharedVertices.top[0], "y", max.y);
+    vol.offsetVectice(vol.reorderSharedVertices.top[1], "y", max.y);
+    vol.offsetVectice(vol.reorderSharedVertices.top[3], "y", max.y);
+
+    // var v0 = []
+    var v0 = this.v0;
+    vol.readVertAtSharedIndex(vol.reorderSharedVertices.top[2], v0);
+    // opposite
+    // var v1 = []
+    var v1 = this.v1;
+    vol.readVertAtSharedIndex(vol.reorderSharedVertices.bottom[0], v1);
+
+    // bottom edge
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "x", v0[0]);
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "z", v0[2]);
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "y", v1[1]);
+
+    // x edge
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[3], "x", v0[0]);
+    vol.offsetVectice(vol.reorderSharedVertices.top[3], "x", v0[0]);
+
+    // z edge
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "z", v0[2]);
+    vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "x", v1[0]);
+    vol.offsetVectice(vol.reorderSharedVertices.top[1], "z", v0[2]);
+    vol.offsetVectice(vol.reorderSharedVertices.top[1], "x", v1[0]);
+  }
   select() {}
   deselect() {}
 }
@@ -9947,6 +10058,8 @@ class Park1 extends LevelMap {
     });
     store$1.state.game.scene.add(gg);
     gg.position.y = 1.4;
+    gg.updateMatrix();
+    // gg.updateWorldMatrix();
     // gg.initPhysics({ rigidBody: 'dynamic' });
     window.vol = gg;
     console.log(vol);
@@ -10003,77 +10116,87 @@ function buildLilGui(gameConfig) {
   const min = new Vector3$2(-0.5, -0.5, -0.5);
   const max = new Vector3$2(0.5, 0.5, 0.5);
   function djkfngkldfnmgh() {
-    // min
-    // :o
+    vol.bounds.min.copy(min);
+    vol.bounds.max.copy(max);
+    vol.oyVeyMinMaxResize_CM();
 
-    // val = -1
-
-    vol.setVectice(vol.reorderSharedVertices.bottom[0], min.x, min.y, min.z);
-
-    // y
-    vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "y", min.y);
-    vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "y", min.y);
-    vol.offsetVectice(vol.reorderSharedVertices.bottom[3], "y", min.y);
-
-    // here we already need the y of the top, not to += it
-    // vol.setVectice(vol.reorderSharedVertices.top[0],val,val,val)
-
-    var v0 = [];
-    vol.readVertAtSharedIndex(vol.reorderSharedVertices.bottom[0], v0);
-    // opisite
-    var v1 = [];
-    vol.readVertAtSharedIndex(vol.reorderSharedVertices.top[2], v1);
-
-    // top edge
-    vol.offsetVectice(vol.reorderSharedVertices.top[0], "x", v0[0]);
-    vol.offsetVectice(vol.reorderSharedVertices.top[0], "z", v0[2]);
-    vol.offsetVectice(vol.reorderSharedVertices.top[0], "y", v1[1]);
-
-    // x edge
-    vol.offsetVectice(vol.reorderSharedVertices.bottom[3], "z", v0[2]);
-    vol.offsetVectice(vol.reorderSharedVertices.top[3], "z", v0[2]);
-
-    // y
-    vol.offsetVectice(vol.reorderSharedVertices.top[3], "y", v1[1]);
-
-    // z edge
-    vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "x", v0[0]);
-    vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "z", v1[2]);
-    vol.offsetVectice(vol.reorderSharedVertices.top[1], "x", v0[0]);
-    vol.offsetVectice(vol.reorderSharedVertices.top[1], "y", v1[1]);
-
-    // :x
-
-    // max
-    // :o
-
-    // val = 1
-    vol.setVectice(vol.reorderSharedVertices.top[2], max.x, max.y, max.z);
-
-    // y
-    vol.offsetVectice(vol.reorderSharedVertices.top[0], "y", max.y);
-    vol.offsetVectice(vol.reorderSharedVertices.top[1], "y", max.y);
-    vol.offsetVectice(vol.reorderSharedVertices.top[3], "y", max.y);
-    var v0 = [];
-    vol.readVertAtSharedIndex(vol.reorderSharedVertices.top[2], v0);
-    // opisite
-    var v1 = [];
-    vol.readVertAtSharedIndex(vol.reorderSharedVertices.bottom[0], v1);
-
-    // bottom edge
-    vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "x", v0[0]);
-    vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "z", v0[2]);
-    vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "y", v1[1]);
-
-    // x edge
-    vol.offsetVectice(vol.reorderSharedVertices.bottom[3], "x", v0[0]);
-    vol.offsetVectice(vol.reorderSharedVertices.top[3], "x", v0[0]);
-
-    // z edge
-    vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "z", v0[2]);
-    vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "x", v1[0]);
-    vol.offsetVectice(vol.reorderSharedVertices.top[1], "z", v0[2]);
-    vol.offsetVectice(vol.reorderSharedVertices.top[1], "x", v1[0]);
+    // // min
+    // // :o
+    // 
+    // // val = -1
+    // 
+    // vol.setVectice(vol.reorderSharedVertices.bottom[0],min.x,min.y,min.z)
+    // 
+    // // y
+    // vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "y", min.y);
+    // vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "y", min.y);
+    // vol.offsetVectice(vol.reorderSharedVertices.bottom[3], "y", min.y);
+    // 
+    // // here we already need the y of the top, not to += it
+    // // vol.setVectice(vol.reorderSharedVertices.top[0],val,val,val)
+    // 
+    // var v0 = []
+    // vol.readVertAtSharedIndex(vol.reorderSharedVertices.bottom[0], v0)
+    // // opisite
+    // var v1 = []
+    // vol.readVertAtSharedIndex(vol.reorderSharedVertices.top[2], v1)
+    // 
+    // // top edge
+    // vol.offsetVectice(vol.reorderSharedVertices.top[0], "x", v0[0]);
+    // vol.offsetVectice(vol.reorderSharedVertices.top[0], "z", v0[2]);
+    // vol.offsetVectice(vol.reorderSharedVertices.top[0], "y", v1[1]);
+    // 
+    // // x edge
+    // vol.offsetVectice(vol.reorderSharedVertices.bottom[3], "z", v0[2]);
+    // vol.offsetVectice(vol.reorderSharedVertices.top[3], "z", v0[2]);
+    // 
+    // // y
+    // vol.offsetVectice(vol.reorderSharedVertices.top[3], "y", v1[1]);
+    // 
+    // // z edge
+    // vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "x", v0[0]);
+    // vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "z", v1[2]);
+    // 
+    // vol.offsetVectice(vol.reorderSharedVertices.top[1], "x", v0[0]);
+    // vol.offsetVectice(vol.reorderSharedVertices.top[1], "y", v1[1]);
+    // 
+    // // :x
+    // 
+    // // max
+    // // :o
+    // 
+    // // val = 1
+    // vol.setVectice(vol.reorderSharedVertices.top[2],max.x,max.y,max.z)
+    // 
+    // 
+    // 
+    // // y
+    // vol.offsetVectice(vol.reorderSharedVertices.top[0], "y", max.y);
+    // vol.offsetVectice(vol.reorderSharedVertices.top[1], "y", max.y);
+    // vol.offsetVectice(vol.reorderSharedVertices.top[3], "y", max.y);
+    // 
+    // var v0 = []
+    // vol.readVertAtSharedIndex(vol.reorderSharedVertices.top[2], v0)
+    // // opisite
+    // var v1 = []
+    // vol.readVertAtSharedIndex(vol.reorderSharedVertices.bottom[0], v1)
+    // 
+    // // bottom edge
+    // vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "x", v0[0]);
+    // vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "z", v0[2]);
+    // vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "y", v1[1]);
+    // 
+    // 
+    // // x edge
+    // vol.offsetVectice(vol.reorderSharedVertices.bottom[3], "x", v0[0]);
+    // vol.offsetVectice(vol.reorderSharedVertices.top[3], "x", v0[0]);
+    // 
+    // // z edge
+    // vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "z", v0[2]);
+    // vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "x", v1[0]);
+    // 
+    // vol.offsetVectice(vol.reorderSharedVertices.top[1], "z", v0[2]);
+    // vol.offsetVectice(vol.reorderSharedVertices.top[1], "x", v1[0]);
   }
   //
   gui.add(obj, 'minx', 0, 4).onChange(x => {
@@ -10202,7 +10325,7 @@ this.add(CoatOfArms({
 }));
 */
 
-const internals = {};
+const internals$1 = {};
 function CoatOfArms(props) {
   const {
     mesh,
@@ -10215,7 +10338,7 @@ function CoatOfArms(props) {
   } = props;
   const {
     setOrScalar
-  } = internals;
+  } = internals$1;
   if (!mesh) {
     throw new Error('Must provide mesh to CoatOfArms');
   }
@@ -10306,7 +10429,7 @@ function CoatOfArms(props) {
   }
   return mesh;
 }
-internals.setOrScalar = ({
+internals$1.setOrScalar = ({
   thing,
   prop,
   val
@@ -10408,14 +10531,34 @@ this.add(MeshBuilder({
 }));
 */
 
+const internals = {};
 function MeshBuilder(props) {
   const {
     mesh: _mesh,
     geometry,
     material,
-    meshProps = {},
+    // Props for primitives defined at root lvl for convenience
+    color,
+    size,
+    width,
+    height,
+    depth,
+    radius,
+    debug,
     ...coatOfArmsProps
   } = props;
+  let {
+    meshProps = {}
+  } = props;
+  internals.mergeKeysWithObject(meshProps, {
+    color,
+    size,
+    width,
+    height,
+    depth,
+    radius,
+    debug
+  });
   let mesh = _mesh;
   if (!mesh && (!geometry || !material)) {
     throw new Error('Must provide \'geometry\' and \'material\' to MeshBuilder if \'mesh\' is not passed');
@@ -10449,6 +10592,13 @@ function MeshBuilder(props) {
     ...coatOfArmsProps
   });
 }
+internals.mergeKeysWithObject = (obj, items) => {
+  Object.entries(items).forEach(([key, val]) => {
+    if (val) {
+      obj[key] = val;
+    }
+  });
+};
 
 class Level extends LevelMap {
   constructor() {
@@ -10505,9 +10655,7 @@ class Level extends LevelMap {
     // Floor
     this.add(MeshBuilder({
       mesh: 'plane',
-      meshProps: {
-        color: 0x4fff0f
-      },
+      color: 0x4fff0f,
       scale: 12,
       shadow: 'receive',
       texture: {
@@ -10524,12 +10672,10 @@ class Level extends LevelMap {
     // Goal 1
     this.add(MeshBuilder({
       mesh: 'rectangle',
-      meshProps: {
-        width: 1,
-        height: 5,
-        depth: 12,
-        color: 0xff0000
-      },
+      width: 1,
+      height: 5,
+      depth: 12,
+      color: 0xff0000,
       position: {
         x: -5.5,
         y: 2.5,
@@ -10543,12 +10689,10 @@ class Level extends LevelMap {
     // Goal 2
     this.add(MeshBuilder({
       mesh: 'rectangle',
-      meshProps: {
-        width: 1,
-        height: 5,
-        depth: 12,
-        color: 0x0000ff
-      },
+      width: 1,
+      height: 5,
+      depth: 12,
+      color: 0x0000ff,
       position: {
         x: 5.5,
         y: 2.5,
@@ -10558,24 +10702,23 @@ class Level extends LevelMap {
         rigidBody: 'fixed'
       }
     }));
-
-    // const items = 10;
-    // const maxHeight = 10;
-
-    // for (let i = 0; i < items; ++i) {
-    //   this.add(MeshBuilder({
-    //     mesh: 'cube',
-    //     meshProps: { size: 1, color: 0xffffff },
-    //     position: {
-    //       x: randomInRange(-4, 4),
-    //       y: randomInRange(maxHeight, 1),
-    //       z: randomInRange(-4, 4)
-    //     },
-    //     physics: {
-    //       rigidBody: 'dynamic'
-    //     }
-    //   }));
-    // }
+    const items = 100;
+    const maxHeight = 30;
+    for (let i = 0; i < items; ++i) {
+      this.add(MeshBuilder({
+        mesh: 'cube',
+        size: 1,
+        color: 0x0ff0f0,
+        position: {
+          x: randomInRange(-4, 4),
+          y: randomInRange(maxHeight, 1),
+          z: randomInRange(-4, 4)
+        },
+        physics: {
+          rigidBody: 'dynamic'
+        }
+      }));
+    }
 
     // for (let i = 0; i < items; ++i) {
     //   this.add(MeshBuilder({
@@ -11212,12 +11355,13 @@ function patchTransformControls() {
       // this.transformWidget.object.updateMatrix();
       // console.log("object", this.controls.object);
       // console.log("¿¿¿¿¿");
-      if (_this.object) {
-        _this.object.updateMatrix();
-        // if (this.object.boxHelperPointer) {
-        //   this.object.boxHelperPointer.updateMatrix();
-        // }
-      } else {
+
+      if (_this.store.state.game.pointerDownOnTransformWidget === true) {
+        if (_this.object) {
+          _this.object.updateMatrix();
+        }
+      }
+      if (_this.object) ; else {
         _this.store.state.game.cameraControls.main.enabled = true;
         _this.store.state.game.pointerDownOnTransformWidget = false;
       }

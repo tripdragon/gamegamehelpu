@@ -1,4 +1,4 @@
-import { MeshBasicMaterial, Mesh } from 'three';
+import { Mesh } from 'three';
 
 import { CoatOfArms } from 'alexandria/tools/coatOfArms';
 
@@ -26,15 +26,36 @@ this.add(MeshBuilder({
 }));
 */
 
+const internals = {};
+
 export function MeshBuilder(props) {
 
   const {
     mesh: _mesh,
     geometry,
     material,
-    meshProps = {},
+    // Props for primitives defined at root lvl for convenience
+    color,
+    size,
+    width,
+    height,
+    depth,
+    radius,
+    debug,
     ...coatOfArmsProps
   } = props;
+
+  let { meshProps = {} } = props;
+
+  internals.mergeKeysWithObject(meshProps, {
+    color,
+    size,
+    width,
+    height,
+    depth,
+    radius,
+    debug
+  });
 
   let mesh = _mesh;
 
@@ -71,5 +92,15 @@ export function MeshBuilder(props) {
   return CoatOfArms({
     mesh,
     ...coatOfArmsProps
+  });
+}
+
+internals.mergeKeysWithObject = (obj, items) => {
+
+  Object.entries(items).forEach(([key, val]) => {
+
+    if (val) {
+      obj[key] = val;
+    }
   });
 }
