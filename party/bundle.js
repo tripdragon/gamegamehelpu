@@ -10704,7 +10704,9 @@ class Level extends LevelMap {
       physics: {
         rigidBody: 'fixed',
         collider: {
-          friction: 100
+          type: 'cuboid',
+          // TODO friction doesn't seem to be working
+          friction: 1000
         }
       }
     }));
@@ -10724,7 +10726,9 @@ class Level extends LevelMap {
       physics: {
         rigidBody: 'fixed',
         collider: {
-          type: 'cuboid'
+          type: 'cuboid',
+          // TODO friction doesn't seem to be working
+          friction: 1000
         }
       }
     }));
@@ -10745,7 +10749,9 @@ class Level extends LevelMap {
         rigidBody: 'fixed',
         collider: {
           type: 'cuboid',
-          isSensor: true
+          isSensor: true,
+          // TODO onEvent isn't working
+          onEvent: stuff => console.log('ON COLLISION stuff', stuff)
         }
       }
     }));
@@ -10989,6 +10995,8 @@ const SleepingPhysicsComponent = defineComponent({
 // https://playcode.io/1528902
 
 const physQuery$1 = defineQuery([DynamicPhysicsComponent]);
+// const eventQueue = new Physics.EventQueue(true);
+
 let rigidBodyPos;
 let colliderRotation;
 function physicsSystem(core) {
@@ -11011,10 +11019,44 @@ function physicsSystem(core) {
     colliderRotation = object3D.collider.rotation();
     object3D.quaternion.copy(colliderRotation);
     object3D.updateMatrix();
+
+    // Some code in the docs about character collision system
+    // DOCS
+    // https://rapier.rs/docs/user_guides/javascript/character_controller
+    // let characterController = world.createCharacterController(0.01);
+    // characterController.computeColliderMovement(collider, desiredMovementVector);
+
+    // // After the collider movement calculation is done, we can read the
+    // // collision events.
+    // for (let i = 0; i < characterController.numComputedCollisions(); i++) {
+    //     let collision = characterController.computedCollision(i);
+    //     // Do something with that collision information.
+    // }
+
+    // And this for elsewhere
+    // let characterController = world.createCharacterController(0.01);
+    // // Enable the automatic application of impulses to the dynamic bodies
+    // // hit by the character along its path.
+    // characterController.setApplyImpulsesToDynamicBodies(true);
   }
 
   // Step the simulation forward
+  // TODO supposedly supposed to pass an EventQueue here but it's not working
   store$1.state.physics.core.step();
+  // store.state.physics.core.step(eventQueue);
+
+  // eventQueue.drainCollisionEvents((handle1, handle2, started) => {
+  //   /* Handle the contact event. */
+  //   console.log(handle1, handle2, started);
+  // });
+
+  // eventQueue.drainContactEvents((handle1, handle2, contactStarted) => {
+  //   events.push({ type: "contact", handle1, handle2, contactStarted });
+  // });
+  // eventQueue.drainIntersectionEvents((handle1, handle2, intersecting) => {
+  //   events.push({ type: "intersection", handle1, handle2, intersecting });
+  // });
+
   return core;
 }
 
@@ -11226,7 +11268,7 @@ function patchObject3D_CM() {
       if (!rigidBodyTypes.includes(rigidBody)) {
         throw new Error(`Invalid rigidBody '${rigidBody}'. Must be one of ${rigidBodyTypes}`);
       }
-      if (rigidBody === 'dynamic') {
+      if (rigidBody === 'dynamic' || collider.isSensor) {
         addComponent(ecsCore, DynamicPhysicsComponent, eid);
         DynamicPhysicsComponent.objectId[eid] = this.id;
       }
@@ -11289,6 +11331,19 @@ function patchObject3D_CM() {
         colliderDesc[key] = collider[key];
       });
       this.collider = physCore.createCollider(colliderDesc, this.rigidBody);
+      if (collider.onEvent) {
+        console.log('collider.onEvent', collider.onEvent);
+        if (rigidBody === 'fixed') {
+          this.collider.setActiveCollisionTypes(
+          // Physics.ActiveCollisionTypes.DYNAMIC_FIXED
+          PI.ActiveCollisionTypes.DYNAMIC_FIXED);
+        } else {
+          this.collider.setActiveCollisionTypes(PI.ActiveCollisionTypes.DYNAMIC_DYNAMIC, PI.ActiveCollisionTypes.DYNAMIC_FIXED);
+        }
+        console.log('this.collider.activeEvents', this.collider.activeEvents());
+        this.onColliderEvent = collider.onEvent;
+        this.previousColliderEvents = [];
+      }
     }
   };
   Object3D.prototype.fish = 'neat!!';

@@ -60,7 +60,7 @@ export function patchObject3D_CM() {
         throw new Error(`Invalid rigidBody '${rigidBody}'. Must be one of ${rigidBodyTypes}`);
       }
 
-      if (rigidBody === 'dynamic') {
+      if (rigidBody === 'dynamic' || collider.isSensor) {
         addComponent(ecsCore, DynamicPhysicsComponent, eid);
         DynamicPhysicsComponent.objectId[eid] = this.id;
       }
@@ -128,6 +128,27 @@ export function patchObject3D_CM() {
         });
 
       this.collider = physCore.createCollider(colliderDesc, this.rigidBody);
+
+      if (collider.onEvent) {
+        console.log('collider.onEvent', collider.onEvent);
+
+        if (rigidBody === 'fixed') {
+          this.collider.setActiveCollisionTypes(
+            // Physics.ActiveCollisionTypes.DYNAMIC_FIXED
+            Physics.ActiveCollisionTypes.DYNAMIC_FIXED
+          );
+        }
+        else {
+          this.collider.setActiveCollisionTypes(
+            Physics.ActiveCollisionTypes.DYNAMIC_DYNAMIC,
+            Physics.ActiveCollisionTypes.DYNAMIC_FIXED
+          );
+        }
+
+        console.log('this.collider.activeEvents', this.collider.activeEvents());
+        this.onColliderEvent = collider.onEvent;
+        this.previousColliderEvents = [];
+      }
     }
   }
 

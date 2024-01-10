@@ -93,7 +93,11 @@ export class Level extends LevelMap {
       },
       physics: {
         rigidBody: 'fixed',
-        collider: { friction: 100 }
+        collider: {
+          type: 'cuboid',
+          // TODO friction doesn't seem to be working
+          friction: 1000
+        }
       }
     }));
 
@@ -111,7 +115,11 @@ export class Level extends LevelMap {
       },
       physics: {
         rigidBody: 'fixed',
-        collider: { type: 'cuboid' }
+        collider: {
+          type: 'cuboid',
+          // TODO friction doesn't seem to be working
+          friction: 1000
+        }
       }
     }));
 
@@ -129,7 +137,12 @@ export class Level extends LevelMap {
       },
       physics: {
         rigidBody: 'fixed',
-        collider: { type: 'cuboid', isSensor: true }
+        collider: {
+          type: 'cuboid',
+          isSensor: true,
+          // TODO onEvent isn't working
+          onEvent: (stuff) => console.log('ON COLLISION stuff', stuff)
+        }
       }
     }));
 
