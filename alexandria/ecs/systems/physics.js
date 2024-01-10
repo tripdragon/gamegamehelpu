@@ -14,7 +14,7 @@ import {
   SleepingPhysicsComponent
 } from 'alexandria/ecs/components';
 
-export const physQuery = defineQuery([DynamicPhysicsComponent]);
+const physQuery = defineQuery([DynamicPhysicsComponent]);
 
 let rigidBodyPos;
 let colliderRotation;
@@ -36,9 +36,12 @@ export default function physicsSystem(core) {
     if (object3D.rigidBody.isSleeping()) {
       removeComponent(core, DynamicPhysicsComponent, eid);
       delete DynamicPhysicsComponent.objectId[eid];
-      SleepingPhysicsComponent.objectId[eid] = object3D.id;
       addComponent(core, SleepingPhysicsComponent, eid);
-      if (Object.keys(DynamicPhysicsComponent.objectId).length === 0) {
+      SleepingPhysicsComponent.objectId[eid] = object3D.id;
+      // Turn off physics if all dynamic objects are asleep
+      const _ents = physQuery(core);
+      if (_ents.length === 0) {
+        console.log('zlog TURNING OFF PHYSICS');
         store.setState({ game: { physicsOn: false } });
       }
       continue;

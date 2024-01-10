@@ -1,24 +1,19 @@
 // Interesting example here syncing some babylon stuff w/ rapier
 // https://playcode.io/1528902
 
-import {
-  defineQuery,
-  addComponent,
-  removeComponent
-} from 'bitecs';
+import { defineQuery, removeComponent } from 'bitecs';
 
 import { store } from 'alexandria/store';
 
-import {
-  DynamicPhysicsComponent,
-  SleepingPhysicsComponent
-} from 'alexandria/ecs/components';
+import { DynamicPhysicsComponent } from 'alexandria/ecs/components';
 
-export const objQuery = defineQuery([DynamicPhysicsComponent]);
+const OUT_OF_BOUNDS = 30;
 
-export default function physicsSystem(core) {
+const physQuery = defineQuery([DynamicPhysicsComponent]);
 
-  const ents = objQuery(core);
+export default function outOfBoundsCheckSystem(core) {
+
+  const ents = physQuery(core);
 
   for (let i = 0; i < ents.length; i++) {
     const eid = ents[i];
@@ -27,33 +22,24 @@ export default function physicsSystem(core) {
       DynamicPhysicsComponent.objectId[eid]
     );
 
-    // Bail if rigidBody is sleeping
-    // and swap object to sleepingPhysicsSystem
-    if (object3D.rigidBody.isSleeping()) {
+    const outOfBounds = (
+      Math.abs(object3D?.position.y) > OUT_OF_BOUNDS
+      || Math.abs(object3D?.position.x) > OUT_OF_BOUNDS
+      || Math.abs(object3D?.position.z) > OUT_OF_BOUNDS
+    );
+
+    if (outOfBounds) {
       removeComponent(core, DynamicPhysicsComponent, eid);
       delete DynamicPhysicsComponent.objectId[eid];
-      SleepingPhysicsComponent.objectId[eid] = object3D.id;
-      addComponent(core, SleepingPhysicsComponent, eid);
-      console.log('zlog DynamicPhysicsComponent.objectId', DynamicPhysicsComponent.objectId);
-      // if (store.state.game) {
-      //   //
-      // }
-      continue;
+      // Turn off physics if all dynamic objects are asleep
+      const _ents = physQuery(core);
+      if (_ents.length === 0) {
+        console.log('zlog TURNING OFF PHYSICS');
+        store.setState({ game: { physicsOn: false } });
+      }
+      object3D.parent.remove(object3D);
     }
-
-    rigidBodyPos = object3D.rigidBody.translation();
-
-    object3D.position.copy(rigidBodyPos);
-
-    colliderRotation = object3D.collider.rotation();
-
-    object3D.quaternion.copy(colliderRotation);
-
-    object3D.updateMatrix();
   }
-
-  // Step the simulation forward
-  store.state.physics.core.step();
 
   return core;
 }

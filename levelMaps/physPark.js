@@ -129,7 +129,7 @@ export class Level extends LevelMap {
       }
     }));
 
-    const items = 400;
+    const items = 100;
     const maxHeight = 30;
 
     const colorTheme = ['#FF5733', '#3498db', '#2ecc71', '#e74c3c', '#9b59b6', '#f39c12', '#1abc9c', '#d35400', '#c0392b', '#2980b9'];

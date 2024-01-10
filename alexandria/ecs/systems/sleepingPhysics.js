@@ -17,7 +17,8 @@ import {
   SleepingPhysicsComponent
 } from 'alexandria/ecs/components';
 
-export const sleepingPhysQuery = defineQuery([SleepingPhysicsComponent]);
+const sleepingPhysQuery = defineQuery([SleepingPhysicsComponent]);
+const physQuery = defineQuery([DynamicPhysicsComponent]);
 
 export default function sleepingPhysicsSystem(core) {
 
@@ -32,13 +33,15 @@ export default function sleepingPhysicsSystem(core) {
 
     // Put back in the main physics system if it wakes up
     if (!object3D?.rigidBody.isSleeping()) {
+      // TODO figure out why we have to both addComponent / removeComponent and set the eid on .objectId
       removeComponent(core, SleepingPhysicsComponent, eid);
       delete SleepingPhysicsComponent.objectId[eid];
-      DynamicPhysicsComponent.objectId[eid] = object3D.id;
       addComponent(core, DynamicPhysicsComponent, eid);
-      // The gamePipeline watches the store.state.game.physicsOn value and adapts
+      DynamicPhysicsComponent.objectId[eid] = object3D.id;
+      // The gamePipeline watches the store.state.game.physicsOn value and adapts.
       // If physics is off and an ent wakes up, turn physics back on
-      if (!store.state.game.physicsOn && Object.keys(DynamicPhysicsComponent.objectId).length === 1) {
+      const _ents = physQuery(core);
+      if (!store.state.game.physicsOn && _ents.length === 1) {
         store.setState({ game: { physicsOn: true } });
       }
     }

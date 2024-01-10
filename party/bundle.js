@@ -1681,6 +1681,7 @@ const store$1 = window.store = window._a = {
     // Notify listeners with changed selectors
     internals$3.notifyListeners(changedSelectors);
   },
+  // Returns unsubscribe func
   subscribe: function (selector, callback) {
     // Add a callback listener for updates with optional deep selector
     listeners.push({
@@ -1721,8 +1722,7 @@ internals$3.deepMerge = (target, source, changedSelectors, currentSelector = '')
 };
 internals$3.notifyListeners = changedSelectors => {
   listeners.forEach(listener => {
-    const selectorParts = listener.selector.split('.');
-    const matchingSelectors = changedSelectors.filter(selector => selectorParts.some(part => selector.startsWith(part)));
+    const matchingSelectors = changedSelectors.filter(selector => selector === listener.selector);
 
     // Check if any part of the deep selector matches the changed selectors
     if (!listener.selector || matchingSelectors.length > 0) {
@@ -10740,7 +10740,7 @@ class Level extends LevelMap {
         rigidBody: 'fixed'
       }
     }));
-    const items = 400;
+    const items = 100;
     const maxHeight = 30;
     const blueTealMonochromaticTheme = ['#348888', '#22BABB', '#9EF8EE', '#FA7F08', '#F24405'];
     const color = blueTealMonochromaticTheme;
@@ -10980,11 +10980,11 @@ const SleepingPhysicsComponent = defineComponent({
 // Interesting example here syncing some babylon stuff w/ rapier
 // https://playcode.io/1528902
 
-const physQuery = defineQuery([DynamicPhysicsComponent]);
+const physQuery$2 = defineQuery([DynamicPhysicsComponent]);
 let rigidBodyPos;
 let colliderRotation;
 function physicsSystem(core) {
-  const ents = physQuery(core);
+  const ents = physQuery$2(core);
   // console.log('zlog PHYS ents', ents.length);
 
   for (let i = 0; i < ents.length; i++) {
@@ -10996,9 +10996,12 @@ function physicsSystem(core) {
     if (object3D.rigidBody.isSleeping()) {
       removeComponent(core, DynamicPhysicsComponent, eid);
       delete DynamicPhysicsComponent.objectId[eid];
-      SleepingPhysicsComponent.objectId[eid] = object3D.id;
       addComponent(core, SleepingPhysicsComponent, eid);
-      if (Object.keys(DynamicPhysicsComponent.objectId).length === 0) {
+      SleepingPhysicsComponent.objectId[eid] = object3D.id;
+      // Turn off physics if all dynamic objects are asleep
+      const _ents = physQuery$2(core);
+      if (_ents.length === 0) {
+        console.log('zlog TURNING OFF PHYSICS');
         store$1.setState({
           game: {
             physicsOn: false
@@ -11023,6 +11026,7 @@ function physicsSystem(core) {
 // https://playcode.io/1528902
 
 const sleepingPhysQuery = defineQuery([SleepingPhysicsComponent]);
+const physQuery$1 = defineQuery([DynamicPhysicsComponent]);
 function sleepingPhysicsSystem(core) {
   const ents = sleepingPhysQuery(core);
   for (let i = 0; i < ents.length; i++) {
@@ -11031,13 +11035,15 @@ function sleepingPhysicsSystem(core) {
 
     // Put back in the main physics system if it wakes up
     if (!object3D?.rigidBody.isSleeping()) {
+      // TODO figure out why we have to both addComponent / removeComponent and set the eid on .objectId
       removeComponent(core, SleepingPhysicsComponent, eid);
       delete SleepingPhysicsComponent.objectId[eid];
-      DynamicPhysicsComponent.objectId[eid] = object3D.id;
       addComponent(core, DynamicPhysicsComponent, eid);
-      // The gamePipeline watches the store.state.game.physicsOn value and adapts
+      DynamicPhysicsComponent.objectId[eid] = object3D.id;
+      // The gamePipeline watches the store.state.game.physicsOn value and adapts.
       // If physics is off and an ent wakes up, turn physics back on
-      if (!store$1.state.game.physicsOn && Object.keys(DynamicPhysicsComponent.objectId).length === 1) {
+      const _ents = physQuery$1(core);
+      if (!store$1.state.game.physicsOn && _ents.length === 1) {
         store$1.setState({
           game: {
             physicsOn: true
@@ -11060,19 +11066,50 @@ function renderSystem(core) {
 // Interesting example here syncing some babylon stuff w/ rapier
 // https://playcode.io/1528902
 
-defineQuery([DynamicPhysicsComponent]);
+const OUT_OF_BOUNDS = 30;
+const physQuery = defineQuery([DynamicPhysicsComponent]);
+function outOfBoundsCheckSystem(core) {
+  const ents = physQuery(core);
+  for (let i = 0; i < ents.length; i++) {
+    const eid = ents[i];
+    const object3D = store$1.state.game.scene.getObjectById(DynamicPhysicsComponent.objectId[eid]);
+    const outOfBounds = Math.abs(object3D?.position.y) > OUT_OF_BOUNDS || Math.abs(object3D?.position.x) > OUT_OF_BOUNDS || Math.abs(object3D?.position.z) > OUT_OF_BOUNDS;
+    if (outOfBounds) {
+      removeComponent(core, DynamicPhysicsComponent, eid);
+      delete DynamicPhysicsComponent.objectId[eid];
+      // Turn off physics if all dynamic objects are asleep
+      const _ents = physQuery(core);
+      if (_ents.length === 0) {
+        console.log('zlog TURNING OFF PHYSICS');
+        store$1.setState({
+          game: {
+            physicsOn: false
+          }
+        });
+      }
+      object3D.parent.remove(object3D);
+    }
+  }
+  return core;
+}
 
 const internals = {};
 const sleepingPhysicsTick = 300;
+const outOfBoundsCheckTick = 1000;
 
 // eslint-disable-next-line no-unused-vars
 function initGameLoop() {
   // Kick off the slow tick loop for sleeping physics
   const sleepingPhysicsPipeline = pipe(sleepingPhysicsSystem);
+
+  // Slow tick to remove out-of-bounds objects
+  const outOfBoundsCheckPipeline = pipe(outOfBoundsCheckSystem);
   const setGamePipeline = () => {
     // Game system loop!
     const loop = [store$1.state.game.timeSystemOn && timeSystem, store$1.state.game.physicsOn && physicsSystem, renderSystem].filter(x => !!x);
     internals.gamePipeline = pipe(...loop);
+
+    // sleepingPhysics
     clearInterval(internals.sleepingPhysicsInterval);
     if (store$1.state.game.physicsOn) {
       internals.sleepingPhysicsInterval = setInterval(() => {
@@ -11080,9 +11117,20 @@ function initGameLoop() {
         sleepingPhysicsPipeline(store$1.state.ecs.core);
       }, sleepingPhysicsTick);
     }
+
+    // outOfBoundsCheck
+    clearInterval(internals.outOfBoundsCheckInterval);
+    if (store$1.state.game.outOfBoundsCheck) {
+      internals.outOfBoundsCheckInterval = setInterval(() => {
+        // If object goes out of bounds, remove it
+        outOfBoundsCheckPipeline(store$1.state.ecs.core);
+      }, outOfBoundsCheckTick);
+    }
+    console.log('gamePipeline UPDATED', loop);
   };
   setGamePipeline();
   store$1.subscribe('game.physicsOn', setGamePipeline);
+  store$1.subscribe('game.outOfBoundsCheck', setGamePipeline);
 
   // Kickoff render loop
   renderLoop();
@@ -11181,6 +11229,7 @@ function patchObject3D_CM() {
         throw new Error(`Invalid rigidBody '${rigidBody}'. Must be one of ${rigidBodyTypes}`);
       }
       if (rigidBody === 'dynamic') {
+        console.log('ADDING', this);
         addComponent(ecsCore, DynamicPhysicsComponent, eid);
       }
       DynamicPhysicsComponent.objectId[eid] = this.id;

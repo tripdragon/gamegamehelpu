@@ -61,6 +61,7 @@ export function patchObject3D_CM() {
       }
 
       if (rigidBody === 'dynamic') {
+        console.log('ADDING', this);
         addComponent(ecsCore, DynamicPhysicsComponent, eid);
       }
 

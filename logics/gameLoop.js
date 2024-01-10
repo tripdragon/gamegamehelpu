@@ -22,6 +22,7 @@ var useComposer = true;
 const internals = {};
 
 const sleepingPhysicsTick = 300;
+const outOfBoundsCheckTick = 1000;
 
 // eslint-disable-next-line no-unused-vars
 export function initGameLoop() {
@@ -29,6 +30,11 @@ export function initGameLoop() {
   // Kick off the slow tick loop for sleeping physics
   const sleepingPhysicsPipeline = pipe(
     sleepingPhysicsSystem
+  );
+
+  // Slow tick to remove out-of-bounds objects
+  const outOfBoundsCheckPipeline = pipe(
+    outOfBoundsCheckSystem
   );
 
   const setGamePipeline = () => {
@@ -42,6 +48,7 @@ export function initGameLoop() {
 
     internals.gamePipeline = pipe(...loop);
 
+    // sleepingPhysics
     clearInterval(internals.sleepingPhysicsInterval);
 
     if (store.state.game.physicsOn) {
@@ -51,11 +58,25 @@ export function initGameLoop() {
         sleepingPhysicsPipeline(store.state.ecs.core);
       }, sleepingPhysicsTick);
     }
+
+    // outOfBoundsCheck
+    clearInterval(internals.outOfBoundsCheckInterval);
+
+    if (store.state.game.outOfBoundsCheck) {
+      internals.outOfBoundsCheckInterval = setInterval(() => {
+
+        // If object goes out of bounds, remove it
+        outOfBoundsCheckPipeline(store.state.ecs.core);
+      }, outOfBoundsCheckTick);
+    }
+
+    console.log('gamePipeline UPDATED', loop);
   };
 
   setGamePipeline();
 
   store.subscribe('game.physicsOn', setGamePipeline);
+  store.subscribe('game.outOfBoundsCheck', setGamePipeline);
 
   // Kickoff render loop
   renderLoop();
