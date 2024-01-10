@@ -38,12 +38,6 @@ export default function physicsSystem(core) {
       delete DynamicPhysicsComponent.objectId[eid];
       addComponent(core, SleepingPhysicsComponent, eid);
       SleepingPhysicsComponent.objectId[eid] = object3D.id;
-      // Turn off physics if all dynamic objects are asleep
-      const _ents = physQuery(core);
-      if (_ents.length === 0) {
-        console.log('zlog TURNING OFF PHYSICS');
-        store.setState({ game: { physicsOn: false } });
-      }
       continue;
     }
 

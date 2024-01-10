@@ -10980,11 +10980,11 @@ const SleepingPhysicsComponent = defineComponent({
 // Interesting example here syncing some babylon stuff w/ rapier
 // https://playcode.io/1528902
 
-const physQuery$2 = defineQuery([DynamicPhysicsComponent]);
+const physQuery$1 = defineQuery([DynamicPhysicsComponent]);
 let rigidBodyPos;
 let colliderRotation;
 function physicsSystem(core) {
-  const ents = physQuery$2(core);
+  const ents = physQuery$1(core);
   // console.log('zlog PHYS ents', ents.length);
 
   for (let i = 0; i < ents.length; i++) {
@@ -10998,16 +10998,6 @@ function physicsSystem(core) {
       delete DynamicPhysicsComponent.objectId[eid];
       addComponent(core, SleepingPhysicsComponent, eid);
       SleepingPhysicsComponent.objectId[eid] = object3D.id;
-      // Turn off physics if all dynamic objects are asleep
-      const _ents = physQuery$2(core);
-      if (_ents.length === 0) {
-        console.log('zlog TURNING OFF PHYSICS');
-        store$1.setState({
-          game: {
-            physicsOn: false
-          }
-        });
-      }
       continue;
     }
     rigidBodyPos = object3D.rigidBody.translation();
@@ -11026,7 +11016,6 @@ function physicsSystem(core) {
 // https://playcode.io/1528902
 
 const sleepingPhysQuery = defineQuery([SleepingPhysicsComponent]);
-const physQuery$1 = defineQuery([DynamicPhysicsComponent]);
 function sleepingPhysicsSystem(core) {
   const ents = sleepingPhysQuery(core);
   for (let i = 0; i < ents.length; i++) {
@@ -11040,18 +11029,11 @@ function sleepingPhysicsSystem(core) {
       delete SleepingPhysicsComponent.objectId[eid];
       addComponent(core, DynamicPhysicsComponent, eid);
       DynamicPhysicsComponent.objectId[eid] = object3D.id;
-      // The gamePipeline watches the store.state.game.physicsOn value and adapts.
-      // If physics is off and an ent wakes up, turn physics back on
-      const _ents = physQuery$1(core);
-      if (!store$1.state.game.physicsOn && _ents.length === 1) {
-        store$1.setState({
-          game: {
-            physicsOn: true
-          }
-        });
-      }
     }
   }
+
+  // Step the simulation forward
+  store$1.state.physics.core.step();
   return core;
 }
 

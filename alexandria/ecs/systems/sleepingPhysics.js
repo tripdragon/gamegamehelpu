@@ -18,7 +18,6 @@ import {
 } from 'alexandria/ecs/components';
 
 const sleepingPhysQuery = defineQuery([SleepingPhysicsComponent]);
-const physQuery = defineQuery([DynamicPhysicsComponent]);
 
 export default function sleepingPhysicsSystem(core) {
 
@@ -38,14 +37,11 @@ export default function sleepingPhysicsSystem(core) {
       delete SleepingPhysicsComponent.objectId[eid];
       addComponent(core, DynamicPhysicsComponent, eid);
       DynamicPhysicsComponent.objectId[eid] = object3D.id;
-      // The gamePipeline watches the store.state.game.physicsOn value and adapts.
-      // If physics is off and an ent wakes up, turn physics back on
-      const _ents = physQuery(core);
-      if (!store.state.game.physicsOn && _ents.length === 1) {
-        store.setState({ game: { physicsOn: true } });
-      }
     }
   }
+
+  // Step the simulation forward
+  store.state.physics.core.step();
 
   return core;
 }
