@@ -27,7 +27,7 @@ export class GameGrapth{
   pointerDownOnTransformWidget = false;
 
   constructor(props) {
-    // Default Settings
+    // Default Game Pipeline Settings
     this.timeSystem = false;
     this.physics = true;
     this.outOfBoundsCheck = true;
