@@ -13,7 +13,7 @@ import {
 Example usage
 this.add(MeshBuilder({
   mesh: 'plane',
-  meshProps: { color: 0x4fff0f },
+  color: 0x4fff0f,
   scale: 12,
   shadow: 'receive',
   texture: {
@@ -47,15 +47,18 @@ export function MeshBuilder(props) {
 
   let { meshProps = {} } = props;
 
-  internals.mergeKeysWithObject(meshProps, {
-    color,
-    size,
-    width,
-    height,
-    depth,
-    radius,
-    debug
-  });
+  internals.mergeWithObjectIfExists(
+    meshProps,
+    {
+      color,
+      size,
+      width,
+      height,
+      depth,
+      radius,
+      debug
+    }
+  );
 
   let mesh = _mesh;
 
@@ -95,7 +98,7 @@ export function MeshBuilder(props) {
   });
 }
 
-internals.mergeKeysWithObject = (obj, items) => {
+internals.mergeWithObjectIfExists = (obj, items) => {
 
   Object.entries(items).forEach(([key, val]) => {
 

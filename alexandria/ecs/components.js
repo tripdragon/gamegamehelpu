@@ -18,3 +18,7 @@ export const Object3DComponent = defineComponent();
 export const DynamicPhysicsComponent = defineComponent({
   objectId: [Types.ui32]
 });
+
+export const SleepingPhysicsComponent = defineComponent({
+  objectId: [Types.ui32]
+});

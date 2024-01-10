@@ -1,20 +1,28 @@
 // Interesting example here syncing some babylon stuff w/ rapier
 // https://playcode.io/1528902
 
-import { defineQuery } from 'bitecs';
+import {
+  defineQuery,
+  addComponent,
+  removeComponent
+} from 'bitecs';
+
 import { store } from 'alexandria/store';
-import { Vector3, Quaternion } from 'three';
-import { DynamicPhysicsComponent } from 'alexandria/ecs/components';
+
+import {
+  DynamicPhysicsComponent,
+  SleepingPhysicsComponent
+} from 'alexandria/ecs/components';
 
 export const physQuery = defineQuery([DynamicPhysicsComponent]);
 
 let rigidBodyPos;
 let colliderRotation;
-var bb = new Vector3();
 
 export default function physicsSystem(core) {
 
   const ents = physQuery(core);
+  // console.log('zlog PHYS ents', ents.length);
 
   for (let i = 0; i < ents.length; i++) {
     const eid = ents[i];
@@ -24,7 +32,12 @@ export default function physicsSystem(core) {
     );
 
     // Bail if rigidBody is sleeping
+    // and swap object to sleepingPhysicsSystem
     if (object3D.rigidBody.isSleeping()) {
+      removeComponent(core, DynamicPhysicsComponent, eid);
+      delete DynamicPhysicsComponent.objectId[eid];
+      SleepingPhysicsComponent.objectId[eid] = object3D.id;
+      addComponent(core, SleepingPhysicsComponent, eid);
       continue;
     }
 

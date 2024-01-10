@@ -14,12 +14,11 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 import { store } from 'alexandria/store';
 
-export class SelectableItems extends CheapPool{
+export class SelectableItems extends CheapPool {
   constructor(){
     super();
   }
 }
-
 
 // #TODO: fix some of these and GameGrapth to be arrays instead
 // #code: gaaame238 #
@@ -28,6 +27,10 @@ export class GameGrapth{
   pointerDownOnTransformWidget = false;
 
   constructor(props) {
+    // Default Settings
+    this.timeSystemOn = true;
+    this.physicsOn = true;
+    // Stuff
     this.camera = props.camera || null;
     this.scene = props.scene || null;
     this.renderer = props.renderer || null;
@@ -50,15 +53,16 @@ export class GameGrapth{
     this.renderPool = new Map();
     this.physicsGroup = new Group();
   }
-  
+
   setCameraControls(mode){
-    if (mode === "orbit") {
+    if (mode === 'orbit') {
       this.cameraControls.main = this.cameraControls.orbit;
     }
   }
+
   buildCameraControls(){
     this.cameraControls.orbit = new OrbitControls( this.camera, this.domElement );
-    this.setCameraControls("orbit");
+    this.setCameraControls('orbit');
   }
 
   registerRenderCallback(func) {
@@ -66,12 +70,12 @@ export class GameGrapth{
     // Return unregister func
     return () => this.renderPool.delete(func);
   }
-  
-  buildPhysicsGroup(){
+
+  buildPhysicsGroup() {
     this.scene.add(this.physicsGroup);
   }
 
-  // @mode "translate", "rotate" and "scale"
+  // @mode 'translate', 'rotate' and 'scale'
   buildTransformWidget(mode){
 
     // having all 3 in scene does not work by threejs design at the moment
@@ -80,10 +84,10 @@ export class GameGrapth{
     this.scene.add(this.widgetsGroup);
 
     var widget;
-    
+
     this.transformWidget = new TransformControls( this.camera, this.domElement );
     this.transformWidget.store = store;
-    // widget = this[mode+"Widget"] = new TransformControls( this.camera, this.domElement );
+    // widget = this[mode+'Widget'] = new TransformControls( this.camera, this.domElement );
 
     this.transformWidget.mode = mode;
     this.widgetsGroup.add(this.transformWidget);
@@ -94,44 +98,42 @@ export class GameGrapth{
     this.transformWidget.addEventsHandleCamera();
 
     // const _this = this;
-              // 
-              // // widget.addEventListener( 'pointerdown', function ( event ) {
-              // widget.addEventListener( 'mouseDown', function ( event ) {
-              //   // _o.controls.enabled = ! event.value;
-              //   // debugger
-              //   // debugger
-              //   _this.controls.enabled = false;
-              //   _this.pointerDownOnTransformWidget = true;
-              // });
-              // 
-              // widget.addEventListener( 'mouseUp', function ( event ) {
-              //   // this.controls.enabled = ! event.value;
-              //   _this.controls.enabled = true;
-              //   _this.pointerDownOnTransformWidget = false;
-              // });
-              // 
-              // // widget.addEventListener( 'dragging-changed', function ( event ) {
-              // widget.addEventListener( 'change', function ( event ) {
-              //   // this.controls.enabled = ! event.value;
-              //   // this.transformWidget.object.updateMatrix();
-              //   // console.log("object", this.controls.object);
-              //   // console.log("¿¿¿¿¿");
-              //   if (this.object) {
-              //     this.object.updateMatrix();
-              //     // if (this.object.boxHelperPointer) {
-              //     //   this.object.boxHelperPointer.updateMatrix();
-              //     // }
-              //   }
-              //   else{
-              //     _this.controls.enabled = true;
-              //     _this.pointerDownOnTransformWidget = false;
-              //   }
-              // });
-              // 
-              // 
+    //
+    // // widget.addEventListener( 'pointerdown', function ( event ) {
+    // widget.addEventListener( 'mouseDown', function ( event ) {
+    //   // _o.controls.enabled = ! event.value;
+    //   // debugger
+    //   // debugger
+    //   _this.controls.enabled = false;
+    //   _this.pointerDownOnTransformWidget = true;
+    // });
+    //
+    // widget.addEventListener( 'mouseUp', function ( event ) {
+    //   // this.controls.enabled = ! event.value;
+    //   _this.controls.enabled = true;
+    //   _this.pointerDownOnTransformWidget = false;
+    // });
+    //
+    // // widget.addEventListener( 'dragging-changed', function ( event ) {
+    // widget.addEventListener( 'change', function ( event ) {
+    //   // this.controls.enabled = ! event.value;
+    //   // this.transformWidget.object.updateMatrix();
+    //   // console.log('object', this.controls.object);
+    //   // console.log('¿¿¿¿¿');
+    //   if (this.object) {
+    //     this.object.updateMatrix();
+    //     // if (this.object.boxHelperPointer) {
+    //     //   this.object.boxHelperPointer.updateMatrix();
+    //     // }
+    //   }
+    //   else{
+    //     _this.controls.enabled = true;
+    //     _this.pointerDownOnTransformWidget = false;
+    //   }
+    // });
+    //
+    //
   }
 }
-
-
 
 // others

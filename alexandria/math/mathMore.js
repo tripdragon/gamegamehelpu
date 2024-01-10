@@ -5,3 +5,17 @@ export function randomInRange(start, end) {
   // return Math.round(result);
   return result;
 }
+
+export function randomFromArr(arr) {
+
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+export function random3InRange(start, end) {
+
+  return [
+    randomInRange(start, end),
+    randomInRange(start, end),
+    randomInRange(start, end)
+  ]
+}

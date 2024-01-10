@@ -1,17 +1,18 @@
 import './basestyles.scss';
 
+// import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { Box3, Vector3, Box3Helper } from 'three';
+
 import { store } from 'alexandria/store';
 import Initializers from 'alexandria/initializers/index';
 
-import { renderLoop } from 'logics/renderLoop';
+import { initGameLoop } from 'logics/gameLoop';
 
 import { fish } from 'narf';
 
 import { patchObject3D_CM } from 'alexandria/patches/patchObject3D';
 import { patchTransformControls } from 'alexandria/patches/patchTransformControls';
 
-// import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { Box3, Vector3, Box3Helper } from 'three';
 import { loadModelAsync } from 'alexandria/utils/loadModel';
 import { randomInRange } from 'alexandria/utils/stuff';
 
@@ -19,8 +20,8 @@ import { randomInRange } from 'alexandria/utils/stuff';
 
 // import { Notlilgui } from './notlilgui/notlilgui.js';
 
-// import {Editor} from 'logics/editor';
-import {ToolsShelfEditor} from 'alexandria/tools/toolsShelfEditor';
+// import { Editor } from 'logics/editor';
+import { ToolsShelfEditor } from 'alexandria/tools/toolsShelfEditor';
 //
 // import { VolumeRect } from 'alexandria/primitives/volumeRect';
 //
@@ -50,13 +51,13 @@ class AltBox3Helper extends Box3Helper{
 const init = async () => {
 
   patchObject3D_CM();
-  
+
   patchTransformControls();
 
   await Initializers(store);
 
-  // Kickoff render loop!
-  renderLoop();
+  // Kickoff game loop!
+  initGameLoop();
 
   console.log('store', store);
 

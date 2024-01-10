@@ -22,7 +22,7 @@ import {
 import { Entities, Enty, Move, Spin, KeyWalk, Meep } from '../entities/basicEntites';
 
 import { MeshBuilder } from 'alexandria/tools/meshBuilder';
-import { randomInRange } from 'alexandria/math/mathMore';
+import { randomInRange, randomFromArr } from 'alexandria/math/mathMore';
 
 export class Level extends LevelMap {
 
@@ -76,16 +76,19 @@ export class Level extends LevelMap {
     // const hemiLight = new HemisphereLight( 0x0000ff, 0x00ff00, 0.6 );
     // this.add(hemiLight);
 
+    const floorSize = 38;
+    const goalHeight = 10;
+
     // Floor
     this.add(MeshBuilder({
       mesh: 'plane',
       color: 0x4fff0f,
-      scale: 12,
+      scale: floorSize,
       shadow: 'receive',
       texture: {
         path: './textures/myrthe-van-tol-grass-texture.jpeg',
         wrapping: RepeatWrapping,
-        repeat: 8,
+        repeat: floorSize / 3,
         colorSpace: SRGBColorSpace
       },
       physics: { rigidBody: 'fixed' }
@@ -95,16 +98,17 @@ export class Level extends LevelMap {
     this.add(MeshBuilder({
       mesh: 'rectangle',
       width: 1,
-      height: 5,
-      depth: 12,
+      height: goalHeight,
+      depth: floorSize,
       color: 0xff0000,
       position: {
-        x: -5.5,
-        y: 2.5,
+        x: -floorSize / 2,
+        y: goalHeight / 2,
         z: 0
       },
       physics: {
-        rigidBody: 'fixed'
+        rigidBody: 'fixed',
+        collider: 'cuboid'
       }
     }));
 
@@ -112,12 +116,12 @@ export class Level extends LevelMap {
     this.add(MeshBuilder({
       mesh: 'rectangle',
       width: 1,
-      height: 5,
-      depth: 12,
+      height: goalHeight,
+      depth: floorSize,
       color: 0x0000ff,
       position: {
-        x: 5.5,
-        y: 2.5,
+        x: floorSize / 2,
+        y: goalHeight / 2,
         z: 0
       },
       physics: {
@@ -125,40 +129,57 @@ export class Level extends LevelMap {
       }
     }));
 
-    const items = 100;
+    const items = 400;
     const maxHeight = 30;
 
+    const colorTheme = ['#FF5733', '#3498db', '#2ecc71', '#e74c3c', '#9b59b6', '#f39c12', '#1abc9c', '#d35400', '#c0392b', '#2980b9'];
+    const warmColorTheme1 = ['#FF5733', '#FFC300', '#FF5733', '#C70039', '#900C3F'];
+    const lightColorTheme1 = ['#FAD02E', '#FFEB3B', '#C5E1A5', '#81C784', '#4DB6AC'];
+    // https://color.adobe.com/s://adobe.ly/3ofZBcp
+    const rockOnColorTheme = ['#010221', '#0A7373', '#B7BF99', '#EDAA25', '#C43302'];
+    const blueTealMonochromaticTheme = ['#348888', '#22BABB', '#9EF8EE', '#FA7F08', '#F24405'];
+
+    const color = blueTealMonochromaticTheme;
+
+    // Cubes
     for (let i = 0; i < items; ++i) {
       this.add(MeshBuilder({
         mesh: 'cube',
         size: 1,
-        color: 0x0ff0f0,
+        color: randomFromArr(color),
         position: {
           x: randomInRange(-4, 4),
           y: randomInRange(maxHeight, 1),
           z: randomInRange(-4, 4)
         },
         physics: {
-          rigidBody: 'dynamic'
+          rigidBody: 'dynamic',
+          linvel: [
+            Math.round(randomInRange(-40, 40)),
+            Math.round(randomInRange(-4, 40)),
+            Math.round(randomInRange(-4, 4))
+          ]
         }
       }));
     }
 
-    // for (let i = 0; i < items; ++i) {
-    //   this.add(MeshBuilder({
-    //     mesh: 'sphere',
-    //     meshProps: { radius: 0.5, color: 0x00ff00 },
-    //     position: {
-    //       x: randomInRange(-4, 4),
-    //       y: randomInRange(maxHeight, 1),
-    //       z: randomInRange(-4, 4)
-    //     },
-    //     physics: {
-    //       rigidBody: 'dynamic',
-    //       collider: { type: 'sphere' }
-    //     }
-    //   }));
-    // }
+    // Spheres
+    for (let i = 0; i < items; ++i) {
+      this.add(MeshBuilder({
+        mesh: 'sphere',
+        radius: 0.5,
+        color: randomFromArr(color),
+        position: {
+          x: randomInRange(-4, 4),
+          y: randomInRange(maxHeight, 1),
+          z: randomInRange(-4, 4)
+        },
+        physics: {
+          rigidBody: 'dynamic',
+          collider: { type: 'sphere' }
+        }
+      }));
+    }
 
     // return
 

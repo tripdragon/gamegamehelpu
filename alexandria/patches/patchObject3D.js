@@ -1,6 +1,9 @@
 // we need a core patch of object3D to have interfaces
 // so this is the simpliest route
 
+// Documentation
+// https://rapier.rs/docs/api/javascript/JavaScript3D
+
 import {
   Object3D,
   Vector3,
@@ -37,7 +40,8 @@ export function patchObject3D_CM() {
 
   Object3D.prototype.initPhysics = function(physConfig) {
 
-    const { rigidBody, collider = { type: 'cuboid' }, linvel, angvel } = physConfig;
+    const { rigidBody, linvel, angvel } = physConfig;
+    let { collider = { type: 'cuboid' } } = physConfig;
 
     const ecsCore = store.state.ecs.core;
     const eid = addEntity(ecsCore, Object3DComponent);
@@ -64,9 +68,13 @@ export function patchObject3D_CM() {
 
       const rigidBodyDesc = Physics.RigidBodyDesc[rigidBody]()
         .setTranslation(...this.position);
+        // TODO really should get this rotation working
         // .setRotation(this.rotation);
 
       if (linvel) {
+        if (linvel.length !== 3) {
+          throw new Error('linvel requires an array [x, y, z]')
+        }
         rigidBodyDesc.setLinvel(...linvel);
       }
 
@@ -84,6 +92,10 @@ export function patchObject3D_CM() {
       const bounding = new Box3().setFromObject(this);
       this.boundingBox = bounding.getSize(new Vector3()).multiplyScalar(0.5);
 
+      if (typeof collider === 'string') {
+        collider = { type: collider };
+      }
+
       switch (collider.type) {
       case 'cuboid':
         colliderDesc = Physics.ColliderDesc.cuboid(...this.boundingBox);
@@ -92,6 +104,8 @@ export function patchObject3D_CM() {
       case 'sphere':
         colliderDesc = Physics.ColliderDesc.ball(this.boundingBox.x);
         break;
+      default:
+        throw new Error(`Invalid collider type '${collider.type}'`);
       }
 
       this.collider = physCore.createCollider(colliderDesc, this.rigidBody);
