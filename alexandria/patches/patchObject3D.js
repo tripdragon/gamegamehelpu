@@ -61,11 +61,9 @@ export function patchObject3D_CM() {
       }
 
       if (rigidBody === 'dynamic') {
-        console.log('ADDING', this);
         addComponent(ecsCore, DynamicPhysicsComponent, eid);
+        DynamicPhysicsComponent.objectId[eid] = this.id;
       }
-
-      DynamicPhysicsComponent.objectId[eid] = this.id;
 
       const rigidBodyDesc = Physics.RigidBodyDesc[rigidBody]()
         .setTranslation(...this.position);
@@ -74,12 +72,15 @@ export function patchObject3D_CM() {
 
       if (linvel) {
         if (linvel.length !== 3) {
-          throw new Error('linvel requires an array [x, y, z]')
+          throw new Error('linvel requires an array of numbers [x, y, z]');
         }
         rigidBodyDesc.setLinvel(...linvel);
       }
 
       if (angvel) {
+        if (typeof angvel !== 'number') {
+          throw new Error('angvel must be a number');
+        }
         rigidBodyDesc.setAngvel(angvel);
       }
 

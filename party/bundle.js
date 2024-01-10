@@ -10758,6 +10758,7 @@ class Level extends LevelMap {
         },
         physics: {
           rigidBody: 'dynamic',
+          collider: 'ball',
           linvel: [Math.round(randomInRange(-40, 40)), Math.round(randomInRange(-4, 40)), Math.round(randomInRange(-4, 4))]
         }
       }));
@@ -10776,9 +10777,7 @@ class Level extends LevelMap {
         },
         physics: {
           rigidBody: 'dynamic',
-          collider: {
-            type: 'sphere'
-          }
+          collider: 'ball'
         }
       }));
     }
@@ -11211,21 +11210,23 @@ function patchObject3D_CM() {
         throw new Error(`Invalid rigidBody '${rigidBody}'. Must be one of ${rigidBodyTypes}`);
       }
       if (rigidBody === 'dynamic') {
-        console.log('ADDING', this);
         addComponent(ecsCore, DynamicPhysicsComponent, eid);
+        DynamicPhysicsComponent.objectId[eid] = this.id;
       }
-      DynamicPhysicsComponent.objectId[eid] = this.id;
       const rigidBodyDesc = PI.RigidBodyDesc[rigidBody]().setTranslation(...this.position);
       // TODO really should get this rotation working
       // .setRotation(this.rotation);
 
       if (linvel) {
         if (linvel.length !== 3) {
-          throw new Error('linvel requires an array [x, y, z]');
+          throw new Error('linvel requires an array of numbers [x, y, z]');
         }
         rigidBodyDesc.setLinvel(...linvel);
       }
       if (angvel) {
+        if (typeof angvel !== 'number') {
+          throw new Error('angvel must be a number');
+        }
         rigidBodyDesc.setAngvel(angvel);
       }
       this.rigidBody = physCore.createRigidBody(rigidBodyDesc);

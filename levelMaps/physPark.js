@@ -154,6 +154,7 @@ export class Level extends LevelMap {
         },
         physics: {
           rigidBody: 'dynamic',
+          collider: 'ball',
           linvel: [
             Math.round(randomInRange(-40, 40)),
             Math.round(randomInRange(-4, 40)),
@@ -176,7 +177,7 @@ export class Level extends LevelMap {
         },
         physics: {
           rigidBody: 'dynamic',
-          collider: { type: 'sphere' }
+          collider: 'ball'
         }
       }));
     }
