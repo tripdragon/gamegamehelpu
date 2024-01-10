@@ -4350,6 +4350,7 @@ class GameGrapth {
     // Default Settings
     this.timeSystemOn = true;
     this.physicsOn = true;
+    this.outOfBoundsCheck = true;
     // Stuff
     this.camera = props.camera || null;
     this.scene = props.scene || null;
@@ -10997,7 +10998,13 @@ function physicsSystem(core) {
       delete DynamicPhysicsComponent.objectId[eid];
       SleepingPhysicsComponent.objectId[eid] = object3D.id;
       addComponent(core, SleepingPhysicsComponent, eid);
-      if (store$1.state.game) ;
+      if (Object.keys(DynamicPhysicsComponent.objectId).length === 0) {
+        store$1.setState({
+          game: {
+            physicsOn: false
+          }
+        });
+      }
       continue;
     }
     rigidBodyPos = object3D.rigidBody.translation();
@@ -11028,6 +11035,15 @@ function sleepingPhysicsSystem(core) {
       delete SleepingPhysicsComponent.objectId[eid];
       DynamicPhysicsComponent.objectId[eid] = object3D.id;
       addComponent(core, DynamicPhysicsComponent, eid);
+      // The gamePipeline watches the store.state.game.physicsOn value and adapts
+      // If physics is off and an ent wakes up, turn physics back on
+      if (!store$1.state.game.physicsOn && Object.keys(DynamicPhysicsComponent.objectId).length === 1) {
+        store$1.setState({
+          game: {
+            physicsOn: true
+          }
+        });
+      }
     }
   }
   return core;
@@ -11041,6 +11057,11 @@ function renderSystem(core) {
   return core;
 }
 
+// Interesting example here syncing some babylon stuff w/ rapier
+// https://playcode.io/1528902
+
+defineQuery([DynamicPhysicsComponent]);
+
 const internals = {};
 const sleepingPhysicsTick = 300;
 
@@ -11050,7 +11071,8 @@ function initGameLoop() {
   const sleepingPhysicsPipeline = pipe(sleepingPhysicsSystem);
   const setGamePipeline = () => {
     // Game system loop!
-    internals.gamePipeline = pipe(...[store$1.state.game.timeSystemOn && timeSystem, store$1.state.game.physicsOn && physicsSystem, renderSystem].filter(x => !!x));
+    const loop = [store$1.state.game.timeSystemOn && timeSystem, store$1.state.game.physicsOn && physicsSystem, renderSystem].filter(x => !!x);
+    internals.gamePipeline = pipe(...loop);
     clearInterval(internals.sleepingPhysicsInterval);
     if (store$1.state.game.physicsOn) {
       internals.sleepingPhysicsInterval = setInterval(() => {
@@ -11060,6 +11082,7 @@ function initGameLoop() {
     }
   };
   setGamePipeline();
+  store$1.subscribe('game.physicsOn', setGamePipeline);
 
   // Kickoff render loop
   renderLoop();

@@ -36,6 +36,11 @@ export default function sleepingPhysicsSystem(core) {
       delete SleepingPhysicsComponent.objectId[eid];
       DynamicPhysicsComponent.objectId[eid] = object3D.id;
       addComponent(core, DynamicPhysicsComponent, eid);
+      // The gamePipeline watches the store.state.game.physicsOn value and adapts
+      // If physics is off and an ent wakes up, turn physics back on
+      if (!store.state.game.physicsOn && Object.keys(DynamicPhysicsComponent.objectId).length === 1) {
+        store.setState({ game: { physicsOn: true } });
+      }
     }
   }
 

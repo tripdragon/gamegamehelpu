@@ -14,15 +14,11 @@ import {
   SleepingPhysicsComponent
 } from 'alexandria/ecs/components';
 
-export const physQuery = defineQuery([DynamicPhysicsComponent]);
-
-let rigidBodyPos;
-let colliderRotation;
+export const objQuery = defineQuery([DynamicPhysicsComponent]);
 
 export default function physicsSystem(core) {
 
-  const ents = physQuery(core);
-  // console.log('zlog PHYS ents', ents.length);
+  const ents = objQuery(core);
 
   for (let i = 0; i < ents.length; i++) {
     const eid = ents[i];
@@ -38,9 +34,10 @@ export default function physicsSystem(core) {
       delete DynamicPhysicsComponent.objectId[eid];
       SleepingPhysicsComponent.objectId[eid] = object3D.id;
       addComponent(core, SleepingPhysicsComponent, eid);
-      if (Object.keys(DynamicPhysicsComponent.objectId).length === 0) {
-        store.setState({ game: { physicsOn: false } });
-      }
+      console.log('zlog DynamicPhysicsComponent.objectId', DynamicPhysicsComponent.objectId);
+      // if (store.state.game) {
+      //   //
+      // }
       continue;
     }
 

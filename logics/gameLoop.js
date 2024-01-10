@@ -4,6 +4,7 @@ import timeSystem from 'alexandria/ecs/systems/time';
 import physicsSystem from 'alexandria/ecs/systems/physics';
 import sleepingPhysicsSystem from 'alexandria/ecs/systems/sleepingPhysics';
 import renderSystem from 'alexandria/ecs/systems/render';
+import outOfBoundsCheckSystem from 'alexandria/ecs/systems/outOfBoundsCheck';
 
 import Stats from 'three/addons/libs/stats.module.js';
 var stats = null;
@@ -33,11 +34,13 @@ export function initGameLoop() {
   const setGamePipeline = () => {
 
     // Game system loop!
-    internals.gamePipeline = pipe(...[
+    const loop = [
       store.state.game.timeSystemOn && timeSystem,
       store.state.game.physicsOn && physicsSystem,
       renderSystem
-    ].filter((x) => !!x));
+    ].filter((x) => !!x);
+
+    internals.gamePipeline = pipe(...loop);
 
     clearInterval(internals.sleepingPhysicsInterval);
 
@@ -51,6 +54,8 @@ export function initGameLoop() {
   };
 
   setGamePipeline();
+
+  store.subscribe('game.physicsOn', setGamePipeline);
 
   // Kickoff render loop
   renderLoop();

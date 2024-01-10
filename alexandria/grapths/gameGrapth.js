@@ -30,6 +30,7 @@ export class GameGrapth{
     // Default Settings
     this.timeSystemOn = true;
     this.physicsOn = true;
+    this.outOfBoundsCheck = true;
     // Stuff
     this.camera = props.camera || null;
     this.scene = props.scene || null;
