@@ -4348,8 +4348,8 @@ class GameGrapth {
   pointerDownOnTransformWidget = false;
   constructor(props) {
     // Default Settings
-    this.timeSystemOn = true;
-    this.physicsOn = true;
+    this.timeSystem = false;
+    this.physics = true;
     this.outOfBoundsCheck = true;
     // Stuff
     this.camera = props.camera || null;
@@ -10996,8 +10996,8 @@ function physicsSystem(core) {
     if (object3D.rigidBody.isSleeping()) {
       removeComponent(core, DynamicPhysicsComponent, eid);
       delete DynamicPhysicsComponent.objectId[eid];
-      addComponent(core, SleepingPhysicsComponent, eid);
       SleepingPhysicsComponent.objectId[eid] = object3D.id;
+      addComponent(core, SleepingPhysicsComponent, eid);
       continue;
     }
     rigidBodyPos = object3D.rigidBody.translation();
@@ -11027,8 +11027,8 @@ function sleepingPhysicsSystem(core) {
       // TODO figure out why we have to both addComponent / removeComponent and set the eid on .objectId
       removeComponent(core, SleepingPhysicsComponent, eid);
       delete SleepingPhysicsComponent.objectId[eid];
-      addComponent(core, DynamicPhysicsComponent, eid);
       DynamicPhysicsComponent.objectId[eid] = object3D.id;
+      addComponent(core, DynamicPhysicsComponent, eid);
     }
   }
 
@@ -11088,7 +11088,7 @@ function initGameLoop() {
   const outOfBoundsCheckPipeline = pipe(outOfBoundsCheckSystem);
   const setGamePipeline = () => {
     // Game system loop!
-    const loop = [store$1.state.game.timeSystemOn && timeSystem, store$1.state.game.physicsOn && physicsSystem, renderSystem].filter(x => !!x);
+    const loop = [store$1.state.game.timeSystem && timeSystem, store$1.state.game.physics && physicsSystem, renderSystem].filter(x => !!x);
     internals.gamePipeline = pipe(...loop);
 
     // sleepingPhysics

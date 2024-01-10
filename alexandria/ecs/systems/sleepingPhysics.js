@@ -35,8 +35,8 @@ export default function sleepingPhysicsSystem(core) {
       // TODO figure out why we have to both addComponent / removeComponent and set the eid on .objectId
       removeComponent(core, SleepingPhysicsComponent, eid);
       delete SleepingPhysicsComponent.objectId[eid];
-      addComponent(core, DynamicPhysicsComponent, eid);
       DynamicPhysicsComponent.objectId[eid] = object3D.id;
+      addComponent(core, DynamicPhysicsComponent, eid);
     }
   }
 

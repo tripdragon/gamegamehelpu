@@ -28,8 +28,8 @@ export class GameGrapth{
 
   constructor(props) {
     // Default Settings
-    this.timeSystemOn = true;
-    this.physicsOn = true;
+    this.timeSystem = false;
+    this.physics = true;
     this.outOfBoundsCheck = true;
     // Stuff
     this.camera = props.camera || null;

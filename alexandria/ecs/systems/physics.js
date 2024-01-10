@@ -36,8 +36,8 @@ export default function physicsSystem(core) {
     if (object3D.rigidBody.isSleeping()) {
       removeComponent(core, DynamicPhysicsComponent, eid);
       delete DynamicPhysicsComponent.objectId[eid];
-      addComponent(core, SleepingPhysicsComponent, eid);
       SleepingPhysicsComponent.objectId[eid] = object3D.id;
+      addComponent(core, SleepingPhysicsComponent, eid);
       continue;
     }
 

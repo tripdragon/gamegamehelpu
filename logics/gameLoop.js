@@ -41,8 +41,8 @@ export function initGameLoop() {
 
     // Game system loop!
     const loop = [
-      store.state.game.timeSystemOn && timeSystem,
-      store.state.game.physicsOn && physicsSystem,
+      store.state.game.timeSystem && timeSystem,
+      store.state.game.physics && physicsSystem,
       renderSystem
     ].filter((x) => !!x);
 
