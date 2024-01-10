@@ -62,7 +62,7 @@ export function initGameLoop() {
     // outOfBoundsCheck
     clearInterval(internals.outOfBoundsCheckInterval);
 
-    if (store.state.game.outOfBoundsCheck) {
+    if (store.state.game.outOfBounds) {
       internals.outOfBoundsCheckInterval = setInterval(() => {
 
         // If object goes out of bounds, remove it
@@ -76,7 +76,7 @@ export function initGameLoop() {
   setGamePipeline();
 
   store.subscribe('game.physicsOn', setGamePipeline);
-  store.subscribe('game.outOfBoundsCheck', setGamePipeline);
+  store.subscribe('game.outOfBounds', setGamePipeline);
 
   // Kickoff render loop
   renderLoop();

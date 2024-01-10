@@ -7,8 +7,6 @@ import { store } from 'alexandria/store';
 
 import { DynamicPhysicsComponent } from 'alexandria/ecs/components';
 
-const OUT_OF_BOUNDS = 30;
-
 const physQuery = defineQuery([DynamicPhysicsComponent]);
 
 export default function outOfBoundsCheckSystem(core) {
@@ -18,14 +16,16 @@ export default function outOfBoundsCheckSystem(core) {
   for (let i = 0; i < ents.length; i++) {
     const eid = ents[i];
 
-    const object3D = store.state.game.scene.getObjectById(
+    const st = store.state.game;
+
+    const object3D = st.scene.getObjectById(
       DynamicPhysicsComponent.objectId[eid]
     );
 
     const outOfBounds = (
-      Math.abs(object3D?.position.y) > OUT_OF_BOUNDS
-      || Math.abs(object3D?.position.x) > OUT_OF_BOUNDS
-      || Math.abs(object3D?.position.z) > OUT_OF_BOUNDS
+      Math.abs(object3D?.position.y) > st.outOfBounds
+      || Math.abs(object3D?.position.x) > st.outOfBounds
+      || Math.abs(object3D?.position.z) > st.outOfBounds
     );
 
     if (outOfBounds) {

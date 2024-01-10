@@ -4350,7 +4350,7 @@ class GameGrapth {
     // Default Game Pipeline Settings
     this.timeSystem = false;
     this.physics = true;
-    this.outOfBoundsCheck = true;
+    this.outOfBounds = 300;
     // Stuff
     this.camera = props.camera || null;
     this.scene = props.scene || null;
@@ -11047,14 +11047,14 @@ function renderSystem(core) {
 // Interesting example here syncing some babylon stuff w/ rapier
 // https://playcode.io/1528902
 
-const OUT_OF_BOUNDS = 30;
 const physQuery = defineQuery([DynamicPhysicsComponent]);
 function outOfBoundsCheckSystem(core) {
   const ents = physQuery(core);
   for (let i = 0; i < ents.length; i++) {
     const eid = ents[i];
-    const object3D = store$1.state.game.scene.getObjectById(DynamicPhysicsComponent.objectId[eid]);
-    const outOfBounds = Math.abs(object3D?.position.y) > OUT_OF_BOUNDS || Math.abs(object3D?.position.x) > OUT_OF_BOUNDS || Math.abs(object3D?.position.z) > OUT_OF_BOUNDS;
+    const st = store$1.state.game;
+    const object3D = st.scene.getObjectById(DynamicPhysicsComponent.objectId[eid]);
+    const outOfBounds = Math.abs(object3D?.position.y) > st.outOfBounds || Math.abs(object3D?.position.x) > st.outOfBounds || Math.abs(object3D?.position.z) > st.outOfBounds;
     if (outOfBounds) {
       removeComponent(core, DynamicPhysicsComponent, eid);
       delete DynamicPhysicsComponent.objectId[eid];
@@ -11101,7 +11101,7 @@ function initGameLoop() {
 
     // outOfBoundsCheck
     clearInterval(internals.outOfBoundsCheckInterval);
-    if (store$1.state.game.outOfBoundsCheck) {
+    if (store$1.state.game.outOfBounds) {
       internals.outOfBoundsCheckInterval = setInterval(() => {
         // If object goes out of bounds, remove it
         outOfBoundsCheckPipeline(store$1.state.ecs.core);
@@ -11111,7 +11111,7 @@ function initGameLoop() {
   };
   setGamePipeline();
   store$1.subscribe('game.physicsOn', setGamePipeline);
-  store$1.subscribe('game.outOfBoundsCheck', setGamePipeline);
+  store$1.subscribe('game.outOfBounds', setGamePipeline);
 
   // Kickoff render loop
   renderLoop();

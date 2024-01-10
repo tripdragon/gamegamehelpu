@@ -22,7 +22,7 @@ export class SelectableItems extends CheapPool {
 
 // #TODO: fix some of these and GameGrapth to be arrays instead
 // #code: gaaame238 #
-export class GameGrapth{
+export class GameGrapth {
   transformWidget = null;
   pointerDownOnTransformWidget = false;
 
@@ -30,7 +30,7 @@ export class GameGrapth{
     // Default Game Pipeline Settings
     this.timeSystem = false;
     this.physics = true;
-    this.outOfBoundsCheck = true;
+    this.outOfBounds = 300;
     // Stuff
     this.camera = props.camera || null;
     this.scene = props.scene || null;
