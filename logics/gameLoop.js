@@ -19,7 +19,9 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 let composer = null, renderPass, saoPass;
 var useComposer = true;
 
-const internals = {};
+const internals = {
+  extraPipelines: new Map()
+};
 
 const sleepingPhysicsTick = 300;
 const outOfBoundsCheckTick = 1000;
@@ -47,30 +49,23 @@ export function initGameLoop() {
     ].filter((x) => !!x);
 
     internals.gamePipeline = pipe(...loop);
-
-    // sleepingPhysics
-    clearInterval(internals.sleepingPhysicsInterval);
-
-    if (store.state.game.physicsOn) {
-      internals.sleepingPhysicsInterval = setInterval(() => {
-
-        // Run sleeping physics tick to check for wake
-        sleepingPhysicsPipeline(store.state.ecs.core);
-      }, sleepingPhysicsTick);
-    }
-
-    // outOfBoundsCheck
-    clearInterval(internals.outOfBoundsCheckInterval);
-
-    if (store.state.game.outOfBounds) {
-      internals.outOfBoundsCheckInterval = setInterval(() => {
-
-        // If object goes out of bounds, remove it
-        outOfBoundsCheckPipeline(store.state.ecs.core);
-      }, outOfBoundsCheckTick);
-    }
-
     console.log('gamePipeline UPDATED', loop);
+
+    // Extras (non-raf loop)
+
+    // Run sleeping physics tick to check for wake
+    internals.runPipelineOnCondition({
+      pipeline: sleepingPhysicsPipeline,
+      interval: sleepingPhysicsTick,
+      condition: store.state.game.physicsOn
+    });
+
+    // If object goes out of bounds, remove it
+    internals.runPipelineOnCondition({
+      pipeline: outOfBoundsCheckPipeline,
+      interval: outOfBoundsCheckTick,
+      condition: !!store.state.game.outOfBounds
+    });
   };
 
   setGamePipeline();
@@ -79,11 +74,11 @@ export function initGameLoop() {
   store.subscribe('game.outOfBounds', setGamePipeline);
 
   // Kickoff render loop
-  renderLoop();
+  internals.renderLoop();
 }
 
 // Function hoisting FTW
-function renderLoop(delta) {
+internals.renderLoop = (delta) => {
 
   // const st = store.getState().game; // this spams with objects
   const st = store.state.game;
@@ -107,7 +102,7 @@ function renderLoop(delta) {
   //   composer.addPass( outputPass );
   // }
 
-  requestAnimationFrame(renderLoop);
+  requestAnimationFrame(internals.renderLoop);
 
   // if(stats){
   //   stats.begin();
@@ -146,3 +141,15 @@ function renderLoop(delta) {
     pick.updateMatrix();
   }
 }
+
+internals.runPipelineOnCondition = ({ pipeline, interval, condition }) => {
+
+  clearInterval(internals.extraPipelines.get(pipeline));
+
+  if (condition) {
+    internals.extraPipelines.set(
+      pipeline,
+      setInterval(() => pipeline(store.state.ecs.core), interval)
+    );
+  }
+};

@@ -22,7 +22,6 @@ let colliderRotation;
 export default function physicsSystem(core) {
 
   const ents = physQuery(core);
-  // console.log('zlog PHYS ents', ents.length);
 
   for (let i = 0; i < ents.length; i++) {
     const eid = ents[i];
@@ -42,11 +41,9 @@ export default function physicsSystem(core) {
     }
 
     rigidBodyPos = object3D.rigidBody.translation();
-
     object3D.position.copy(rigidBodyPos);
 
     colliderRotation = object3D.collider.rotation();
-
     object3D.quaternion.copy(colliderRotation);
 
     object3D.updateMatrix();

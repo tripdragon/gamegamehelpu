@@ -91,10 +91,13 @@ export class Level extends LevelMap {
         repeat: floorSize / 3,
         colorSpace: SRGBColorSpace
       },
-      physics: { rigidBody: 'fixed' }
+      physics: {
+        rigidBody: 'fixed',
+        collider: { friction: 100 }
+      }
     }));
 
-    // Goal 1
+    // Red Goal
     this.add(MeshBuilder({
       mesh: 'rectangle',
       width: 1,
@@ -108,11 +111,11 @@ export class Level extends LevelMap {
       },
       physics: {
         rigidBody: 'fixed',
-        collider: 'cuboid'
+        collider: { type: 'cuboid' }
       }
     }));
 
-    // Goal 2
+    // Blue Goal
     this.add(MeshBuilder({
       mesh: 'rectangle',
       width: 1,
@@ -125,7 +128,8 @@ export class Level extends LevelMap {
         z: 0
       },
       physics: {
-        rigidBody: 'fixed'
+        rigidBody: 'fixed',
+        collider: { type: 'cuboid', isSensor: true }
       }
     }));
 

@@ -10702,11 +10702,14 @@ class Level extends LevelMap {
         colorSpace: SRGBColorSpace
       },
       physics: {
-        rigidBody: 'fixed'
+        rigidBody: 'fixed',
+        collider: {
+          friction: 100
+        }
       }
     }));
 
-    // Goal 1
+    // Red Goal
     this.add(MeshBuilder({
       mesh: 'rectangle',
       width: 1,
@@ -10720,11 +10723,13 @@ class Level extends LevelMap {
       },
       physics: {
         rigidBody: 'fixed',
-        collider: 'cuboid'
+        collider: {
+          type: 'cuboid'
+        }
       }
     }));
 
-    // Goal 2
+    // Blue Goal
     this.add(MeshBuilder({
       mesh: 'rectangle',
       width: 1,
@@ -10737,7 +10742,11 @@ class Level extends LevelMap {
         z: 0
       },
       physics: {
-        rigidBody: 'fixed'
+        rigidBody: 'fixed',
+        collider: {
+          type: 'cuboid',
+          isSensor: true
+        }
       }
     }));
     const items = 100;
@@ -10984,8 +10993,6 @@ let rigidBodyPos;
 let colliderRotation;
 function physicsSystem(core) {
   const ents = physQuery$1(core);
-  // console.log('zlog PHYS ents', ents.length);
-
   for (let i = 0; i < ents.length; i++) {
     const eid = ents[i];
     const object3D = store$1.state.game.scene.getObjectById(DynamicPhysicsComponent.objectId[eid]);
@@ -11074,7 +11081,9 @@ function outOfBoundsCheckSystem(core) {
   return core;
 }
 
-const internals = {};
+const internals = {
+  extraPipelines: new Map()
+};
 const sleepingPhysicsTick = 300;
 const outOfBoundsCheckTick = 1000;
 
@@ -11089,36 +11098,34 @@ function initGameLoop() {
     // Game system loop!
     const loop = [store$1.state.game.timeSystem && timeSystem, store$1.state.game.physics && physicsSystem, renderSystem].filter(x => !!x);
     internals.gamePipeline = pipe(...loop);
-
-    // sleepingPhysics
-    clearInterval(internals.sleepingPhysicsInterval);
-    if (store$1.state.game.physicsOn) {
-      internals.sleepingPhysicsInterval = setInterval(() => {
-        // Run sleeping physics tick to check for wake
-        sleepingPhysicsPipeline(store$1.state.ecs.core);
-      }, sleepingPhysicsTick);
-    }
-
-    // outOfBoundsCheck
-    clearInterval(internals.outOfBoundsCheckInterval);
-    if (store$1.state.game.outOfBounds) {
-      internals.outOfBoundsCheckInterval = setInterval(() => {
-        // If object goes out of bounds, remove it
-        outOfBoundsCheckPipeline(store$1.state.ecs.core);
-      }, outOfBoundsCheckTick);
-    }
     console.log('gamePipeline UPDATED', loop);
+
+    // Extras (non-raf loop)
+
+    // Run sleeping physics tick to check for wake
+    internals.runPipelineOnCondition({
+      pipeline: sleepingPhysicsPipeline,
+      interval: sleepingPhysicsTick,
+      condition: store$1.state.game.physicsOn
+    });
+
+    // If object goes out of bounds, remove it
+    internals.runPipelineOnCondition({
+      pipeline: outOfBoundsCheckPipeline,
+      interval: outOfBoundsCheckTick,
+      condition: !!store$1.state.game.outOfBounds
+    });
   };
   setGamePipeline();
   store$1.subscribe('game.physicsOn', setGamePipeline);
   store$1.subscribe('game.outOfBounds', setGamePipeline);
 
   // Kickoff render loop
-  renderLoop();
+  internals.renderLoop();
 }
 
 // Function hoisting FTW
-function renderLoop(delta) {
+internals.renderLoop = delta => {
   // const st = store.getState().game; // this spams with objects
   const st = store$1.state.game;
 
@@ -11136,7 +11143,7 @@ function renderLoop(delta) {
   //   composer.addPass( outputPass );
   // }
 
-  requestAnimationFrame(renderLoop);
+  requestAnimationFrame(internals.renderLoop);
 
   // if(stats){
   //   stats.begin();
@@ -11174,7 +11181,17 @@ function renderLoop(delta) {
     // #code: scene28475#
     pick.updateMatrix();
   }
-}
+};
+internals.runPipelineOnCondition = ({
+  pipeline,
+  interval,
+  condition
+}) => {
+  clearInterval(internals.extraPipelines.get(pipeline));
+  if (condition) {
+    internals.extraPipelines.set(pipeline, setInterval(() => pipeline(store$1.state.ecs.core), interval));
+  }
+};
 
 function fish() {
   console.log('tacos 2222');
@@ -11223,6 +11240,8 @@ function patchObject3D_CM() {
         }
         rigidBodyDesc.setLinvel(...linvel);
       }
+
+      // TODO angvel sorta works idk
       if (angvel) {
         if (typeof angvel !== 'number') {
           throw new Error('angvel must be a number');
@@ -11243,16 +11262,32 @@ function patchObject3D_CM() {
         };
       }
       switch (collider.type) {
-        case 'cuboid':
-          colliderDesc = PI.ColliderDesc.cuboid(...this.boundingBox);
-          break;
         case 'ball':
         case 'sphere':
           colliderDesc = PI.ColliderDesc.ball(this.boundingBox.x);
           break;
+        case 'cuboid':
         default:
-          throw new Error(`Invalid collider type '${collider.type}'`);
+          colliderDesc = PI.ColliderDesc.cuboid(...this.boundingBox);
+          break;
       }
+      const colliderSettings = ['friction',
+      // num
+      'isSensor',
+      // bool
+      'mass',
+      // num
+      'density',
+      // num
+      'rotation',
+      // quat
+      'centerOfMass' // vec3
+      ];
+
+      // Update colliderDesc for each valid collider setting provided to 'collider'
+      Object.keys(collider).filter(key => colliderSettings.includes(key)).forEach(key => {
+        colliderDesc[key] = collider[key];
+      });
       this.collider = physCore.createCollider(colliderDesc, this.rigidBody);
     }
   };

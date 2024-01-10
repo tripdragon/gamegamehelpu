@@ -77,6 +77,7 @@ export function patchObject3D_CM() {
         rigidBodyDesc.setLinvel(...linvel);
       }
 
+      // TODO angvel sorta works idk
       if (angvel) {
         if (typeof angvel !== 'number') {
           throw new Error('angvel must be a number');
@@ -99,16 +100,32 @@ export function patchObject3D_CM() {
       }
 
       switch (collider.type) {
-      case 'cuboid':
-        colliderDesc = Physics.ColliderDesc.cuboid(...this.boundingBox);
-        break;
       case 'ball':
       case 'sphere':
         colliderDesc = Physics.ColliderDesc.ball(this.boundingBox.x);
         break;
+      case 'cuboid':
       default:
-        throw new Error(`Invalid collider type '${collider.type}'`);
+        colliderDesc = Physics.ColliderDesc.cuboid(...this.boundingBox);
+        break;
       }
+
+      const colliderSettings = [
+        'friction', // num
+        'isSensor', // bool
+        'mass', // num
+        'density', // num
+        'rotation', // quat
+        'centerOfMass' // vec3
+      ];
+
+      // Update colliderDesc for each valid collider setting provided to 'collider'
+      Object.keys(collider)
+        .filter((key) => colliderSettings.includes(key))
+        .forEach((key) => {
+
+          colliderDesc[key] = collider[key];
+        });
 
       this.collider = physCore.createCollider(colliderDesc, this.rigidBody);
     }
