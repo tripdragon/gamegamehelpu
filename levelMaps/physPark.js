@@ -119,7 +119,7 @@ export class Level extends LevelMap {
         rigidBody: 'fixed',
         collider: {
           type: 'cuboid',
-          onCollisionEvent: internals.colliderHandler('bouncy'),
+          onCollisionEvent: internals.collisionHandler('bouncy'),
           onContactForceEvent: internals.defaultContactForceEvent
         }
       }
@@ -142,7 +142,7 @@ export class Level extends LevelMap {
         collider: {
           type: 'cuboid',
           // sensor: true,
-          onCollisionEvent: internals.colliderHandler('sticky'),
+          onCollisionEvent: internals.collisionHandler('sticky'),
           onContactForceEvent: internals.defaultContactForceEvent
         }
       }
@@ -165,7 +165,7 @@ export class Level extends LevelMap {
     //     collider: {
     //       type: 'cuboid',
     //       // sensor: true,
-    //       onCollisionEvent: internals.colliderHandler('sticky'),
+    //       onCollisionEvent: internals.collisionHandler('sticky'),
     //       onContactForceEvent: internals.defaultContactForceEvent
     //     }
     //   }
@@ -278,7 +278,7 @@ export class Level extends LevelMap {
 }
 
 const impulseForce = new Vector3();
-internals.colliderHandler = (type) => ({ obj1, obj2, manifold, flipped, started }) => {
+internals.collisionHandler = (type) => ({ obj1, obj2, manifold, flipped, started }) => {
 
   const contactInfo = obj1.collider.contactCollider(obj2.collider);
 
