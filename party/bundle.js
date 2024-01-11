@@ -1669,17 +1669,20 @@ makeSafe(){const EPS=0.000001;this.phi=Math.max(EPS,Math.min(Math.PI-EPS,this.ph
 
 // stooooore stuuuufff
 const listeners = [];
-const internals$5 = {};
+const internals$4 = {};
 const store$1 = window.store = window._a = {
-  state: {},
+  state: {
+    // Default state
+    camPosition: [3, 200, 200]
+  },
   setState: newState => {
     const changedSelectors = [];
 
     // Deep merge the new state
-    internals$5.deepMerge(store$1.state, newState, changedSelectors);
+    internals$4.deepMerge(store$1.state, newState, changedSelectors);
 
     // Notify listeners with changed selectors
-    internals$5.notifyListeners(changedSelectors);
+    internals$4.notifyListeners(changedSelectors);
   },
   // Returns unsubscribe func
   subscribe: function (selector, callback) {
@@ -1704,13 +1707,13 @@ const store$1 = window.store = window._a = {
     };
   }
 };
-internals$5.deepMerge = (target, source, changedSelectors, currentSelector = '') => {
+internals$4.deepMerge = (target, source, changedSelectors, currentSelector = '') => {
   for (const key in source) {
     // eslint-disable-next-line no-prototype-builtins
     if (source.hasOwnProperty(key)) {
       const propertyPath = currentSelector ? `${currentSelector}.${key}` : key;
       if (source[key] instanceof Object && key in target) {
-        internals$5.deepMerge(target[key], source[key], changedSelectors, propertyPath);
+        internals$4.deepMerge(target[key], source[key], changedSelectors, propertyPath);
       } else {
         if (target[key] !== source[key]) {
           changedSelectors.push(propertyPath);
@@ -1720,7 +1723,7 @@ internals$5.deepMerge = (target, source, changedSelectors, currentSelector = '')
     }
   }
 };
-internals$5.notifyListeners = changedSelectors => {
+internals$4.notifyListeners = changedSelectors => {
   listeners.forEach(listener => {
     const matchingSelectors = changedSelectors.filter(selector => selector === listener.selector);
 
@@ -10358,7 +10361,7 @@ this.add(CoatOfArms({
 }));
 */
 
-const internals$4 = {};
+const internals$3 = {};
 function CoatOfArms(props) {
   const {
     mesh,
@@ -10371,7 +10374,7 @@ function CoatOfArms(props) {
   } = props;
   const {
     setOrScalar
-  } = internals$4;
+  } = internals$3;
   if (!mesh) {
     throw new Error('Must provide mesh to CoatOfArms');
   }
@@ -10462,7 +10465,7 @@ function CoatOfArms(props) {
   }
   return mesh;
 }
-internals$4.setOrScalar = ({
+internals$3.setOrScalar = ({
   thing,
   prop,
   val
@@ -10564,7 +10567,7 @@ this.add(MeshBuilder({
 }));
 */
 
-const internals$3 = {};
+const internals$2 = {};
 function MeshBuilder(props) {
   const {
     mesh: _mesh,
@@ -10583,7 +10586,7 @@ function MeshBuilder(props) {
   let {
     meshProps = {}
   } = props;
-  internals$3.mergeWithObjectIfExists(meshProps, {
+  internals$2.mergeWithObjectIfExists(meshProps, {
     color,
     size,
     width,
@@ -10625,7 +10628,7 @@ function MeshBuilder(props) {
     ...coatOfArmsProps
   });
 }
-internals$3.mergeWithObjectIfExists = (obj, items) => {
+internals$2.mergeWithObjectIfExists = (obj, items) => {
   Object.entries(items).forEach(([key, val]) => {
     if (val) {
       obj[key] = val;
@@ -10633,7 +10636,6 @@ internals$3.mergeWithObjectIfExists = (obj, items) => {
   });
 };
 
-const internals$2 = {};
 class Level extends LevelMap {
   constructor() {
     super();
@@ -10686,8 +10688,11 @@ class Level extends LevelMap {
     // const hemiLight = new HemisphereLight( 0x0000ff, 0x00ff00, 0.6 );
     // this.add(hemiLight);
 
-    const floorSize = 38;
-    const goalHeight = 10;
+    const floorSize = 200;
+    const goalHeight = 100;
+    const goalThickness = 5;
+    const items = 400;
+    const maxHeight = 30;
 
     // Floor
     this.add(MeshBuilder({
@@ -10713,7 +10718,7 @@ class Level extends LevelMap {
     // Red Goal
     this.add(MeshBuilder({
       mesh: 'rectangle',
-      width: 1,
+      width: goalThickness,
       height: goalHeight,
       depth: floorSize,
       color: 0xff0000,
@@ -10725,9 +10730,9 @@ class Level extends LevelMap {
       physics: {
         rigidBody: 'fixed',
         collider: {
-          type: 'cuboid',
-          onCollisionEvent: internals$2.colliderHandler('bouncy'),
-          onContactForceEvent: internals$2.defaultContactForceEvent
+          type: 'cuboid'
+          // onCollisionEvent: internals.collisionHandler('bouncy'),
+          // onContactForceEvent: internals.defaultContactForceEvent
         }
       }
     }));
@@ -10735,7 +10740,7 @@ class Level extends LevelMap {
     // Blue Goal
     this.add(MeshBuilder({
       mesh: 'rectangle',
-      width: 1,
+      width: goalThickness,
       height: goalHeight,
       depth: floorSize,
       color: 0x0000ff,
@@ -10747,39 +10752,13 @@ class Level extends LevelMap {
       physics: {
         rigidBody: 'fixed',
         collider: {
-          type: 'cuboid',
+          type: 'cuboid'
           // sensor: true,
-          onCollisionEvent: internals$2.colliderHandler('sticky'),
-          onContactForceEvent: internals$2.defaultContactForceEvent
+          // onCollisionEvent: internals.collisionHandler('sticky'),
+          // onContactForceEvent: internals.defaultContactForceEvent
         }
       }
     }));
-
-    // Blue Goal 2
-    // this.add(MeshBuilder({
-    //   mesh: 'rectangle',
-    //   width: 1,
-    //   height: goalHeight,
-    //   depth: floorSize,
-    //   color: 0x0000ff,
-    //   position: {
-    //     x: -floorSize / 2,
-    //     y: goalHeight / 2,
-    //     z: 0
-    //   },
-    //   physics: {
-    //     rigidBody: 'fixed',
-    //     collider: {
-    //       type: 'cuboid',
-    //       // sensor: true,
-    //       onCollisionEvent: internals.colliderHandler('sticky'),
-    //       onContactForceEvent: internals.defaultContactForceEvent
-    //     }
-    //   }
-    // }));
-
-    const items = 400;
-    const maxHeight = 30;
     const blueTealMonochromaticTheme = ['#348888', '#22BABB', '#9EF8EE', '#FA7F08', '#F24405'];
     const color = blueTealMonochromaticTheme;
 
@@ -10787,19 +10766,20 @@ class Level extends LevelMap {
     for (let i = 0; i < items; ++i) {
       this.add(MeshBuilder({
         mesh: 'cube',
-        size: 1,
+        size: randomInRange(2, 4),
         color: randomFromArr(color),
         position: {
-          x: randomInRange(-5, 5),
+          x: randomInRange(-50, 50),
           y: randomInRange(maxHeight, 1),
-          z: randomInRange(-4, 4)
+          z: randomInRange(-40, 40)
         },
         physics: {
           rigidBody: 'dynamic',
+          gravityScale: 0,
           collider: {
             type: 'cuboid'
           },
-          linvel: [Math.round(randomInRange(-40, 40)), Math.round(randomInRange(-4, 40)), Math.round(randomInRange(-4, 4))]
+          linvel: [Math.round(randomInRange(-180, 180)), Math.round(randomInRange(-4, 40)), Math.round(randomInRange(-4, 4))]
         }
       }));
     }
@@ -10808,15 +10788,17 @@ class Level extends LevelMap {
     for (let i = 0; i < items; ++i) {
       this.add(MeshBuilder({
         mesh: 'sphere',
-        radius: 0.5,
+        radius: randomInRange(2, 4),
         color: randomFromArr(color),
         position: {
-          x: randomInRange(-4, 4),
+          x: randomInRange(-50, 50),
           y: randomInRange(maxHeight, 1),
-          z: randomInRange(-4, 4)
+          z: randomInRange(-50, 50)
         },
         physics: {
           rigidBody: 'dynamic',
+          gravityScale: 2,
+          linvel: [Math.round(randomInRange(-180, 180)), Math.round(randomInRange(-4, 40)), Math.round(randomInRange(-4, 4))],
           collider: {
             type: 'ball'
           }
@@ -10872,64 +10854,9 @@ class Level extends LevelMap {
     //     }
   }
 }
-const impulseForce = new Vector3$2();
-internals$2.colliderHandler = type => ({
-  obj1,
-  obj2,
-  manifold,
-  flipped,
-  started
-}) => {
-  const contactInfo = obj1.collider.contactCollider(obj2.collider);
-
-  // console.log('contactInfo', contactInfo);
-
-  if (contactInfo) {
-    // Calculate average normal and average contact point
-    const averageNormal = [(contactInfo.normal1.x + contactInfo.normal2.x) / 2, (contactInfo.normal1.y + contactInfo.normal2.y) / 2, (contactInfo.normal1.z + contactInfo.normal2.z) / 2];
-    const averagePoint = {
-      x: (contactInfo.point1.x + contactInfo.point2.x) / 2,
-      y: (contactInfo.point1.y + contactInfo.point2.y) / 2,
-      z: (contactInfo.point1.z + contactInfo.point2.z) / 2
-    };
-
-    // Calculate impulse force
-    const forceMultiplier = -40000000000;
-    impulseForce.copy({
-      x: forceMultiplier * averageNormal[0],
-      y: forceMultiplier * averageNormal[1],
-      z: forceMultiplier * averageNormal[2]
-    });
-
-    // obj2.rigidBody.applyImpulseAtPoint(impulseForce, averagePoint);
-
-    switch (type) {
-      case 'sticky':
-        obj2.rigidBody.addForce(averagePoint);
-        break;
-      case 'bouncy':
-        {
-          const negImpulseForce = impulseForce.multiplyScalar(-1);
-          obj2.rigidBody.addForce(negImpulseForce);
-          obj2.rigidBody.addTorque(negImpulseForce);
-        }
-        break;
-    }
-  }
-};
-internals$2.defaultContactForceEvent = ({
-  obj1,
-  obj2,
-  manifold,
-  flipped,
-  started
-}) => {
-  if (started) {
-    console.log('onContactForceEvent, started, manifold, flipped', started, manifold, flipped);
-  } else {
-    console.log('onContactForceEvent, obj1, obj2, started', obj1, obj2, started);
-  }
-};
+new Vector3$2();
+new Vector3$2();
+new Vector3$2();
 
 var threeStart_CM = (() => {
   const scene = new Scene();
@@ -10941,7 +10868,7 @@ var threeStart_CM = (() => {
   helpersGroup.matrixAutoUpdate = false;
   const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.05, 1000);
   // camera.position.z = 5;
-  camera.position.fromArray([3, 14, 15]);
+  camera.position.fromArray(store$1.state.camPosition || [3, 14, 15]);
   camera.lookAt(new Vector3$2());
   const renderer = new WebGLRenderer({
     antialias: true
@@ -11546,7 +11473,7 @@ function mergeVertices(geometry, tolerance = 1e-4) {
 
 function patchObject3D_CM() {
   const rigidBodyTypes = ['dynamic', 'fixed', 'kinematicPositionBased', 'kinematicVelocityBased'];
-  const physicsKeys = ['rigidBody', 'collider', 'linvel', 'angvel'];
+  const physicsKeys = ['rigidBody', 'collider', 'linvel', 'angvel', 'gravityScale'];
   Object3D.prototype.computeBoundingBox = function () {
     const bounding = new Box3$1().setFromObject(this);
     this.boundingBox = bounding.getSize(new Vector3$2()).multiplyScalar(0.5);
@@ -11562,6 +11489,36 @@ function patchObject3D_CM() {
         type: 'cuboid'
       }
     } = physConfig;
+    const rigidBodySettings = ['gravityScale' // float
+    ];
+    const colliderDescSettings = ['centerOfMass',
+    // vec3
+    'enabled' // bool
+    ];
+    const colliderSettings = ['sensor',
+    // bool
+    'collisionGroups',
+    // num
+    'solverGroups',
+    // num
+    'friction',
+    // num
+    'frictionCombineRule',
+    // Physics.CoefficientCombineRule.*
+    'restitution',
+    // num
+    'restitutionCombineRule',
+    // Physics.CoefficientCombineRule.*
+    'density',
+    // num
+    'mass',
+    // num
+    'massProperties',
+    // { mass: num, centerOfMass: vec3, principalAngularInertia: vec3, angularInertiaLocalFrame: quat }
+    'rotation',
+    // quat,
+    'translation' // vec3
+    ];
     const ecsCore = store$1.state.ecs.core;
     const eid = addEntity(ecsCore);
     this.eid = eid;
@@ -11593,6 +11550,13 @@ function patchObject3D_CM() {
         rigidBodyDesc.setAngvel(angvel);
       }
       this.rigidBody = physCore.createRigidBody(rigidBodyDesc);
+
+      // Update rigidBody for each valid key
+      Object.keys(physConfig).filter(key => rigidBodySettings.includes(key)).forEach(key => {
+        const rigidBodyFunc = `set${key.slice(0, 1).toUpperCase() + key.slice(1)}`;
+        console.log('rigidBodyFunc', rigidBodyFunc);
+        this.rigidBody[rigidBodyFunc](physConfig[key]);
+      });
 
       // TODO support more collider types
       // See docs https://rapier.rs/docs/api/javascript/JavaScript3D
@@ -11748,7 +11712,6 @@ function patchObject3D_CM() {
       if (collider.isSensor) {
         colliderDesc.isSensor = true;
       }
-      const colliderDescSettings = ['centerOfMass', 'enabled'];
 
       // Update collider for each valid key, copied most ideas from
       // https://github.com/pmndrs/react-three-rapier/blob/main/packages/react-three-rapier/src/utils/utils-collider.ts
@@ -11772,31 +11735,9 @@ function patchObject3D_CM() {
         addComponent(ecsCore, DynamicPhysicsComponent, eid);
         DynamicPhysicsComponent.objectId[eid] = this.id;
       }
+
+      // Add collider handle for lookup during collision time
       DynamicPhysicsComponent.objForColliderHandle[this.collider.handle] = this;
-      const colliderSettings = ['sensor',
-      // bool
-      'collisionGroups',
-      // num
-      'solverGroups',
-      // num
-      'friction',
-      // num
-      'frictionCombineRule',
-      // Physics.CoefficientCombineRule.*
-      'restitution',
-      // num
-      'restitutionCombineRule',
-      // Physics.CoefficientCombineRule.*
-      'density',
-      // num
-      'mass',
-      // num
-      'massProperties',
-      // { mass: num, centerOfMass: vec3, principalAngularInertia: vec3, angularInertiaLocalFrame: quat }
-      'rotation',
-      // quat,
-      'translation' // vec3
-      ];
       if (collider.density && (collider.mass || collider.massProperties)) {
         throw new Error('Can\'t set both density and mass on collider');
       }

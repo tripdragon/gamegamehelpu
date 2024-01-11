@@ -5,22 +5,10 @@ import { store } from 'alexandria/store';
 import {
   DirectionalLight,
   AmbientLight,
-  BoxGeometry,
-  MeshBasicMaterial,
-  Mesh,
-  MeshStandardMaterial,
-  PlaneGeometry,
-  DoubleSide,
-  AxesHelper,
-  TextureLoader,
   RepeatWrapping,
   SRGBColorSpace,
-  CameraHelper,
-  HemisphereLight,
   Vector3
 } from 'three';
-
-import { Entities, Enty, Move, Spin, KeyWalk, Meep } from '../entities/basicEntites';
 
 import { MeshBuilder } from 'alexandria/tools/meshBuilder';
 import { randomInRange, randomFromArr } from 'alexandria/math/mathMore';
@@ -79,8 +67,11 @@ export class Level extends LevelMap {
     // const hemiLight = new HemisphereLight( 0x0000ff, 0x00ff00, 0.6 );
     // this.add(hemiLight);
 
-    const floorSize = 38;
-    const goalHeight = 10;
+    const floorSize = 200;
+    const goalHeight = 100;
+    const goalThickness = 5;
+    const items = 400;
+    const maxHeight = 30;
 
     // Floor
     this.add(MeshBuilder({
@@ -106,7 +97,7 @@ export class Level extends LevelMap {
     // Red Goal
     this.add(MeshBuilder({
       mesh: 'rectangle',
-      width: 1,
+      width: goalThickness,
       height: goalHeight,
       depth: floorSize,
       color: 0xff0000,
@@ -119,8 +110,8 @@ export class Level extends LevelMap {
         rigidBody: 'fixed',
         collider: {
           type: 'cuboid',
-          onCollisionEvent: internals.collisionHandler('bouncy'),
-          onContactForceEvent: internals.defaultContactForceEvent
+          // onCollisionEvent: internals.collisionHandler('bouncy'),
+          // onContactForceEvent: internals.defaultContactForceEvent
         }
       }
     }));
@@ -128,7 +119,7 @@ export class Level extends LevelMap {
     // Blue Goal
     this.add(MeshBuilder({
       mesh: 'rectangle',
-      width: 1,
+      width: goalThickness,
       height: goalHeight,
       depth: floorSize,
       color: 0x0000ff,
@@ -142,8 +133,8 @@ export class Level extends LevelMap {
         collider: {
           type: 'cuboid',
           // sensor: true,
-          onCollisionEvent: internals.collisionHandler('sticky'),
-          onContactForceEvent: internals.defaultContactForceEvent
+          // onCollisionEvent: internals.collisionHandler('sticky'),
+          // onContactForceEvent: internals.defaultContactForceEvent
         }
       }
     }));
@@ -171,9 +162,6 @@ export class Level extends LevelMap {
     //   }
     // }));
 
-    const items = 400;
-    const maxHeight = 30;
-
     const colorTheme = ['#FF5733', '#3498db', '#2ecc71', '#e74c3c', '#9b59b6', '#f39c12', '#1abc9c', '#d35400', '#c0392b', '#2980b9'];
     const warmColorTheme1 = ['#FF5733', '#FFC300', '#FF5733', '#C70039', '#900C3F'];
     const lightColorTheme1 = ['#FAD02E', '#FFEB3B', '#C5E1A5', '#81C784', '#4DB6AC'];
@@ -187,20 +175,21 @@ export class Level extends LevelMap {
     for (let i = 0; i < items; ++i) {
       this.add(MeshBuilder({
         mesh: 'cube',
-        size: 1,
+        size: randomInRange(2, 4),
         color: randomFromArr(color),
         position: {
-          x: randomInRange(-5, 5),
+          x: randomInRange(-50, 50),
           y: randomInRange(maxHeight, 1),
-          z: randomInRange(-4, 4)
+          z: randomInRange(-40, 40)
         },
         physics: {
           rigidBody: 'dynamic',
+          gravityScale: 0,
           collider: {
             type: 'cuboid'
           },
           linvel: [
-            Math.round(randomInRange(-40, 40)),
+            Math.round(randomInRange(-180, 180)),
             Math.round(randomInRange(-4, 40)),
             Math.round(randomInRange(-4, 4))
           ]
@@ -212,15 +201,21 @@ export class Level extends LevelMap {
     for (let i = 0; i < items; ++i) {
       this.add(MeshBuilder({
         mesh: 'sphere',
-        radius: 0.5,
+        radius: randomInRange(2, 4),
         color: randomFromArr(color),
         position: {
-          x: randomInRange(-4, 4),
+          x: randomInRange(-50, 50),
           y: randomInRange(maxHeight, 1),
-          z: randomInRange(-4, 4)
+          z: randomInRange(-50, 50)
         },
         physics: {
           rigidBody: 'dynamic',
+          gravityScale: 2,
+          linvel: [
+            Math.round(randomInRange(-180, 180)),
+            Math.round(randomInRange(-4, 40)),
+            Math.round(randomInRange(-4, 4))
+          ],
           collider: {
             type: 'ball'
           }
@@ -277,8 +272,12 @@ export class Level extends LevelMap {
   }
 }
 
+const avgPoint = new Vector3();
+const avgNormal = new Vector3();
 const impulseForce = new Vector3();
-internals.collisionHandler = (type) => ({ obj1, obj2, manifold, flipped, started }) => {
+internals.collisionHandler = (type, forceMultiplier = -40000000000) => (props) => {
+
+  const { obj1, obj2, manifold, flipped, started } = props;
 
   const contactInfo = obj1.collider.contactCollider(obj2.collider);
 
@@ -286,36 +285,52 @@ internals.collisionHandler = (type) => ({ obj1, obj2, manifold, flipped, started
 
   if (contactInfo) {
     // Calculate average normal and average contact point
-    const averageNormal = [
-      (contactInfo.normal1.x + contactInfo.normal2.x) / 2,
-      (contactInfo.normal1.y + contactInfo.normal2.y) / 2,
-      (contactInfo.normal1.z + contactInfo.normal2.z) / 2,
-    ];
+    avgNormal.copy({
+      x: (contactInfo.normal1.x + contactInfo.normal2.x) / 2,
+      y: (contactInfo.normal1.y + contactInfo.normal2.y) / 2,
+      z: (contactInfo.normal1.z + contactInfo.normal2.z) / 2,
+    });
 
-    const averagePoint = {
+    avgPoint.copy({
       x: (contactInfo.point1.x + contactInfo.point2.x) / 2,
       y: (contactInfo.point1.y + contactInfo.point2.y) / 2,
       z: (contactInfo.point1.z + contactInfo.point2.z) / 2,
-    };
-
-    // Calculate impulse force
-    const forceMultiplier = -40000000000;
-    impulseForce.copy({
-      x: forceMultiplier * averageNormal[0],
-      y: forceMultiplier * averageNormal[1],
-      z: forceMultiplier * averageNormal[2],
     });
 
-    // obj2.rigidBody.applyImpulseAtPoint(impulseForce, averagePoint);
+    // Calculate impulse force
+    impulseForce.copy({
+      x: forceMultiplier * avgNormal.x,
+      y: forceMultiplier * avgNormal.y,
+      z: forceMultiplier * avgNormal.z,
+    });
+
+    // DOCS on RigidBody
+    // https://rapier.rs/javascript3d/classes/RigidBody.html
+
+    // Funcs available on obj2.rigidBody
+    // resetForces(true); // Reset the forces to zero.
+    // resetTorques(true); // Reset the torques to zero.
+    // addForce(force: vec3, wake: bool);
+    // addTorque(torque: vec3, wake: bool);
+    // addForceAtPoint(force: vec3, point: vec3, wake: bool);
+    // applyImpulse(impulse: vec3, wake: bool);
+    // applyTorqueImpulse(torqueImpulse: vec3, wake: bool);
+    // applyImpulseAtPoint(impulse: vec3, point: vec3, wake: bool);
+    // And many more like
+    // setLinvel(vel: vec3, wake: bool)
+    // setGravityScale(factor: number, wake: bool)
 
     switch (type) {
-    case 'sticky':
-      obj2.rigidBody.addForce(averagePoint);
+    case 'sticky': {
+      // I only sorta know why this works but it's cool anyways
+      obj2.rigidBody.addForce(avgPoint);
+    }
       break;
     case 'bouncy': {
-      const negImpulseForce = impulseForce.multiplyScalar(-1);
-      obj2.rigidBody.addForce(negImpulseForce);
-      obj2.rigidBody.addTorque(negImpulseForce);
+      obj2.rigidBody.addForce(impulseForce.multiplyScalar(-1));
+      // obj2.rigidBody.impulseForce(impulseForce.multiplyScalar(-1));
+      obj2.rigidBody.addTorque(impulseForce.multiplyScalar(-1));
+      obj2.rigidBody.applyTorqueImpulse(impulseForce.multiplyScalar(-1));
     }
       break;
     }

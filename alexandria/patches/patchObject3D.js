@@ -37,7 +37,7 @@ export function patchObject3D_CM() {
   const _sphereHitAt = /*@__PURE__*/ new Vector3();
 
   const rigidBodyTypes = ['dynamic', 'fixed', 'kinematicPositionBased', 'kinematicVelocityBased'];
-  const physicsKeys = ['rigidBody', 'collider', 'linvel', 'angvel'];
+  const physicsKeys = ['rigidBody', 'collider', 'linvel', 'angvel', 'gravityScale'];
 
   Object3D.prototype.computeBoundingBox = function() {
 
@@ -49,6 +49,28 @@ export function patchObject3D_CM() {
 
     const { rigidBody, linvel, angvel } = physConfig;
     let { collider = { type: 'cuboid' } } = physConfig;
+
+    const rigidBodySettings = [
+      'gravityScale' // float
+    ];
+    const colliderDescSettings = [
+      'centerOfMass', // vec3
+      'enabled' // bool
+    ];
+    const colliderSettings = [
+      'sensor', // bool
+      'collisionGroups', // num
+      'solverGroups', // num
+      'friction', // num
+      'frictionCombineRule', // Physics.CoefficientCombineRule.*
+      'restitution', // num
+      'restitutionCombineRule', // Physics.CoefficientCombineRule.*
+      'density', // num
+      'mass', // num
+      'massProperties', // { mass: num, centerOfMass: vec3, principalAngularInertia: vec3, angularInertiaLocalFrame: quat }
+      'rotation', // quat,
+      'translation' // vec3
+    ];
 
     const ecsCore = store.state.ecs.core;
     const eid = addEntity(ecsCore, Object3DComponent);
@@ -88,6 +110,17 @@ export function patchObject3D_CM() {
       }
 
       this.rigidBody = physCore.createRigidBody(rigidBodyDesc);
+
+      // Update rigidBody for each valid key
+      Object.keys(physConfig)
+        .filter((key) => rigidBodySettings.includes(key))
+        .forEach((key) => {
+
+          const rigidBodyFunc = `set${key.slice(0, 1).toUpperCase() + key.slice(1)}`;
+          console.log('rigidBodyFunc', rigidBodyFunc);
+
+          this.rigidBody[rigidBodyFunc](physConfig[key]);
+        });
 
       // TODO support more collider types
       // See docs https://rapier.rs/docs/api/javascript/JavaScript3D
@@ -252,11 +285,6 @@ export function patchObject3D_CM() {
         colliderDesc.isSensor = true;
       }
 
-      const colliderDescSettings = [
-        'centerOfMass',
-        'enabled'
-      ];
-
       // Update collider for each valid key, copied most ideas from
       // https://github.com/pmndrs/react-three-rapier/blob/main/packages/react-three-rapier/src/utils/utils-collider.ts
       Object.keys(collider)
@@ -296,22 +324,8 @@ export function patchObject3D_CM() {
         DynamicPhysicsComponent.objectId[eid] = this.id;
       }
 
+      // Add collider handle for lookup during collision time
       DynamicPhysicsComponent.objForColliderHandle[this.collider.handle] = this;
-
-      const colliderSettings = [
-        'sensor', // bool
-        'collisionGroups', // num
-        'solverGroups', // num
-        'friction', // num
-        'frictionCombineRule', // Physics.CoefficientCombineRule.*
-        'restitution', // num
-        'restitutionCombineRule', // Physics.CoefficientCombineRule.*
-        'density', // num
-        'mass', // num
-        'massProperties', // { mass: num, centerOfMass: vec3, principalAngularInertia: vec3, angularInertiaLocalFrame: quat }
-        'rotation', // quat,
-        'translation' // vec3
-      ];
 
       if (collider.density && (collider.mass || collider.massProperties)) {
         throw new Error('Can\'t set both density and mass on collider');
