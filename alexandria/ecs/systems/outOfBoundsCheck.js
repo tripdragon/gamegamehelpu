@@ -31,12 +31,6 @@ export default function outOfBoundsCheckSystem(core) {
     if (outOfBounds) {
       removeComponent(core, DynamicPhysicsComponent, eid);
       delete DynamicPhysicsComponent.objectId[eid];
-      // Turn off physics if all dynamic objects are asleep
-      const _ents = physQuery(core);
-      if (_ents.length === 0) {
-        console.log('zlog TURNING OFF PHYSICS');
-        store.setState({ game: { physicsOn: false } });
-      }
       object3D.parent.remove(object3D);
     }
   }

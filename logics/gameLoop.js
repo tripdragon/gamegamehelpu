@@ -77,7 +77,6 @@ export function initGameLoop() {
   internals.renderLoop();
 }
 
-// Function hoisting FTW
 internals.renderLoop = (delta) => {
 
   // const st = store.getState().game; // this spams with objects

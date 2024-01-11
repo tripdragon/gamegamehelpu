@@ -13,6 +13,7 @@ import {
   Ray,
   Matrix4
 } from 'three';
+import { mergeVertices } from "three-stdlib";
 
 import Physics from '@dimforge/rapier3d-compat';
 
@@ -38,6 +39,12 @@ export function patchObject3D_CM() {
   const rigidBodyTypes = ['dynamic', 'fixed', 'kinematicPositionBased', 'kinematicVelocityBased'];
   const physicsKeys = ['rigidBody', 'collider', 'linvel', 'angvel'];
 
+  Object3D.prototype.computeBoundingBox = function() {
+
+    const bounding = new Box3().setFromObject(this);
+    this.boundingBox = bounding.getSize(new Vector3()).multiplyScalar(0.5);
+  };
+
   Object3D.prototype.initPhysics = function(physConfig) {
 
     const { rigidBody, linvel, angvel } = physConfig;
@@ -58,11 +65,6 @@ export function patchObject3D_CM() {
     if (rigidBody) {
       if (!rigidBodyTypes.includes(rigidBody)) {
         throw new Error(`Invalid rigidBody '${rigidBody}'. Must be one of ${rigidBodyTypes}`);
-      }
-
-      if (rigidBody === 'dynamic' || collider.isSensor) {
-        addComponent(ecsCore, DynamicPhysicsComponent, eid);
-        DynamicPhysicsComponent.objectId[eid] = this.id;
       }
 
       const rigidBodyDesc = Physics.RigidBodyDesc[rigidBody]()
@@ -92,8 +94,7 @@ export function patchObject3D_CM() {
 
       let colliderDesc;
 
-      const bounding = new Box3().setFromObject(this);
-      this.boundingBox = bounding.getSize(new Vector3()).multiplyScalar(0.5);
+      this.computeBoundingBox();
 
       if (typeof collider === 'string') {
         collider = { type: collider };
@@ -102,53 +103,241 @@ export function patchObject3D_CM() {
       switch (collider.type) {
       case 'ball':
       case 'sphere':
-        colliderDesc = Physics.ColliderDesc.ball(this.boundingBox.x);
+        this.geometry.computeBoundingSphere();
+        colliderDesc = Physics.ColliderDesc.ball(
+          this.geometry.boundingSphere.radius // number
+        );
+        break;
+      case 'capsule':
+        colliderDesc = Physics.ColliderDesc.capsule(
+          collider.halfHeight, // number
+          collider.radius // number
+        );
+        break;
+      case 'trimesh': {
+        const geomClone = this.geometry.index
+          ? this.geometry.clone()
+          : mergeVertices(this.geometry);
+
+        colliderDesc = Physics.ColliderDesc.trimesh(
+          geomClone.attributes.position.array, // vertices Float32Array
+          geomClone.index?.array // indices Uint32Array
+        );
+      }
+        break;
+      case 'convexHull':
+      case 'hull': {
+        const geomClone = this.geometry.clone();
+
+        colliderDesc = Physics.ColliderDesc.convexHull(
+          geomClone.attributes.position.array // points Float32Array
+        );
+      }
+        break;
+      case 'roundConvexHull':
+      case 'roundHull': {
+        const geomClone = this.geometry.clone();
+
+        colliderDesc = Physics.ColliderDesc.roundConvexHull(
+          geomClone.attributes.position.array, // points Float32Array
+          collider.borderRadius // number
+        );
+      }
+        break;
+      case 'convexMesh':
+      case 'mesh': {
+        const geomClone = this.geometry.index
+          ? this.geometry.clone()
+          : mergeVertices(this.geometry);
+
+        colliderDesc = Physics.ColliderDesc.convexMesh(
+          geomClone.attributes.position.array, // vertices Float32Array
+          geomClone.index?.array // indices Uint32Array
+        );
+      }
+        break;
+      case 'roundConvexMesh':
+      case 'roundMesh': {
+        const geomClone = this.geometry.index
+          ? this.geometry.clone()
+          : mergeVertices(this.geometry);
+
+        colliderDesc = Physics.ColliderDesc.roundConvexMesh(
+          geomClone.attributes.position.array, // vertices Float32Array
+          geomClone.index?.array, // indices Uint32Array
+          collider.borderRadius // number
+        );
+      }
+        break;
+      case 'cylinder':
+        colliderDesc = Physics.ColliderDesc.cylinder(
+          collider.halfHeight, // number
+          collider.radius // number
+        );
+        break;
+      case 'roundCylinder':
+        colliderDesc = Physics.ColliderDesc.roundCylinder(
+          collider.halfHeight, // number
+          collider.radius, // number
+          collider.borderRadius // number
+        );
+        break;
+      case 'cone':
+        colliderDesc = Physics.ColliderDesc.cone(
+          collider.halfHeight, // number
+          collider.radius // number
+        );
+        break;
+      case 'roundCone':
+        colliderDesc = Physics.ColliderDesc.roundCone(
+          collider.halfHeight, // number
+          collider.radius, // number
+          collider.borderRadius // number
+        );
+        break;
+      case 'triangle':
+        colliderDesc = Physics.ColliderDesc.triangle(
+          collider.a, // vec3
+          collider.b, // vec3
+          collider.c // vec3
+        );
+        break;
+      case 'roundTriangle':
+        colliderDesc = Physics.ColliderDesc.roundTriangle(
+          collider.a, // vec3
+          collider.b, // vec3
+          collider.c, // vec3
+          collider.borderRadius // number
+        );
+        break;
+      case 'segment':
+        colliderDesc = Physics.ColliderDesc.segment(
+          collider.a, // vec3
+          collider.b // vec3
+        );
+        break;
+      case 'polyline': {
+        const geomClone = this.geometry.index
+          ? this.geometry.clone()
+          : mergeVertices(this.geometry);
+
+        colliderDesc = Physics.ColliderDesc.polyline(
+          geomClone.attributes.position.array, // vertices Float32Array
+          geomClone.index?.array // indices Uint32Array
+        );
+      }
+        break;
+      case 'heightfield':
+        colliderDesc = Physics.ColliderDesc.heightfield(
+          collider.rows, // number
+          collider.cols, // number
+          collider.heights, // Float32Array The heights of the heightfield along its local y axis, provided as a matrix stored in column-major order.
+          collider.scale // vec3
+        );
         break;
       case 'cuboid':
-      default:
-        colliderDesc = Physics.ColliderDesc.cuboid(...this.boundingBox);
+        colliderDesc = Physics.ColliderDesc.cuboid(
+          ...this.boundingBox
+        );
+        break;
+      case 'roundCuboid':
+        colliderDesc = Physics.ColliderDesc.roundCuboid(
+          ...this.boundingBox,
+          collider.borderRadius // number
+        );
         break;
       }
 
-      const colliderSettings = [
-        'friction', // num
-        'isSensor', // bool
-        'mass', // num
-        'density', // num
-        'rotation', // quat
-        'centerOfMass' // vec3
+      if (collider.isSensor) {
+        colliderDesc.isSensor = true;
+      }
+
+      const colliderDescSettings = [
+        'centerOfMass',
+        'enabled'
       ];
 
-      // Update colliderDesc for each valid collider setting provided to 'collider'
+      // Update collider for each valid key, copied most ideas from
+      // https://github.com/pmndrs/react-three-rapier/blob/main/packages/react-three-rapier/src/utils/utils-collider.ts
+      Object.keys(collider)
+        .filter((key) => colliderDescSettings.includes(key))
+        .forEach((key) => {
+
+          const colliderDescVal = `set${key.slice(0, 1).toUpperCase() + key.slice(1)}`;
+
+          colliderDesc[colliderDescVal] = collider[key];
+        });
+
+      if (collider.onCollisionEvent && collider.onForceEvent) {
+        colliderDesc.setActiveEvents(
+          Physics.ActiveEvents.COLLISION_EVENTS
+          | Physics.ActiveEvents.CONTACT_FORCE_EVENTS
+        );
+        this.onCollisionEvent = collider.onCollisionEvent;
+        this.onContactForceEvent = collider.onContactForceEvent;
+      }
+      else if (collider.onCollisionEvent) {
+        colliderDesc.setActiveEvents(
+          Physics.ActiveEvents.COLLISION_EVENTS
+        );
+        this.onCollisionEvent = collider.onCollisionEvent;
+      }
+      else if (collider.onContactForceEvent) {
+        colliderDesc.setActiveEvents(
+          Physics.ActiveEvents.CONTACT_FORCE_EVENTS
+        );
+        this.onContactForceEvent = collider.onContactForceEvent;
+      }
+
+      this.collider = physCore.createCollider(colliderDesc, this.rigidBody);
+
+      if (rigidBody === 'dynamic' || collider.isSensor) {
+        addComponent(ecsCore, DynamicPhysicsComponent, eid);
+        DynamicPhysicsComponent.objectId[eid] = this.id;
+      }
+
+      DynamicPhysicsComponent.objForColliderHandle[this.collider.handle] = this;
+
+      const colliderSettings = [
+        'sensor', // bool
+        'collisionGroups', // num
+        'solverGroups', // num
+        'friction', // num
+        'frictionCombineRule', // Physics.CoefficientCombineRule.*
+        'restitution', // num
+        'restitutionCombineRule', // Physics.CoefficientCombineRule.*
+        'density', // num
+        'mass', // num
+        'massProperties', // { mass: num, centerOfMass: vec3, principalAngularInertia: vec3, angularInertiaLocalFrame: quat }
+        'rotation', // quat,
+        'translation' // vec3
+      ];
+
+      if (collider.density && (collider.mass || collider.massProperties)) {
+        throw new Error('Can\'t set both density and mass on collider');
+      }
+
+      // Update collider for each valid key, copied most ideas from
+      // https://github.com/pmndrs/react-three-rapier/blob/main/packages/react-three-rapier/src/utils/utils-collider.ts
       Object.keys(collider)
         .filter((key) => colliderSettings.includes(key))
         .forEach((key) => {
 
-          colliderDesc[key] = collider[key];
+          const colliderFunc = `set${key.slice(0, 1).toUpperCase() + key.slice(1)}`;
+
+          if (key === 'massProperties') {
+            const val = collider[key];
+            this.collider[colliderFunc](
+              val.mass,
+              val.centerOfMass,
+              val.principalAngularInertia,
+              val.angularInertiaLocalFrame
+            );
+          }
+          else {
+            this.collider[colliderFunc](collider[key]);
+          }
         });
-
-      this.collider = physCore.createCollider(colliderDesc, this.rigidBody);
-
-      if (collider.onEvent) {
-        console.log('collider.onEvent', collider.onEvent);
-
-        if (rigidBody === 'fixed') {
-          this.collider.setActiveCollisionTypes(
-            // Physics.ActiveCollisionTypes.DYNAMIC_FIXED
-            Physics.ActiveCollisionTypes.DYNAMIC_FIXED
-          );
-        }
-        else {
-          this.collider.setActiveCollisionTypes(
-            Physics.ActiveCollisionTypes.DYNAMIC_DYNAMIC,
-            Physics.ActiveCollisionTypes.DYNAMIC_FIXED
-          );
-        }
-
-        console.log('this.collider.activeEvents', this.collider.activeEvents());
-        this.onColliderEvent = collider.onEvent;
-        this.previousColliderEvents = [];
-      }
     }
   }
 

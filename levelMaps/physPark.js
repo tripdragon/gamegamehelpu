@@ -16,13 +16,16 @@ import {
   RepeatWrapping,
   SRGBColorSpace,
   CameraHelper,
-  HemisphereLight
+  HemisphereLight,
+  Vector3
 } from 'three';
 
 import { Entities, Enty, Move, Spin, KeyWalk, Meep } from '../entities/basicEntites';
 
 import { MeshBuilder } from 'alexandria/tools/meshBuilder';
 import { randomInRange, randomFromArr } from 'alexandria/math/mathMore';
+
+const internals = {};
 
 export class Level extends LevelMap {
 
@@ -95,8 +98,7 @@ export class Level extends LevelMap {
         rigidBody: 'fixed',
         collider: {
           type: 'cuboid',
-          // TODO friction doesn't seem to be working
-          friction: 1000
+          friction: 10
         }
       }
     }));
@@ -117,8 +119,8 @@ export class Level extends LevelMap {
         rigidBody: 'fixed',
         collider: {
           type: 'cuboid',
-          // TODO friction doesn't seem to be working
-          friction: 1000
+          onCollisionEvent: internals.colliderHandler('bouncy'),
+          onContactForceEvent: internals.defaultContactForceEvent
         }
       }
     }));
@@ -139,14 +141,37 @@ export class Level extends LevelMap {
         rigidBody: 'fixed',
         collider: {
           type: 'cuboid',
-          isSensor: true,
-          // TODO onEvent isn't working
-          onEvent: (stuff) => console.log('ON COLLISION stuff', stuff)
+          // sensor: true,
+          onCollisionEvent: internals.colliderHandler('sticky'),
+          onContactForceEvent: internals.defaultContactForceEvent
         }
       }
     }));
 
-    const items = 100;
+    // Blue Goal 2
+    // this.add(MeshBuilder({
+    //   mesh: 'rectangle',
+    //   width: 1,
+    //   height: goalHeight,
+    //   depth: floorSize,
+    //   color: 0x0000ff,
+    //   position: {
+    //     x: -floorSize / 2,
+    //     y: goalHeight / 2,
+    //     z: 0
+    //   },
+    //   physics: {
+    //     rigidBody: 'fixed',
+    //     collider: {
+    //       type: 'cuboid',
+    //       // sensor: true,
+    //       onCollisionEvent: internals.colliderHandler('sticky'),
+    //       onContactForceEvent: internals.defaultContactForceEvent
+    //     }
+    //   }
+    // }));
+
+    const items = 400;
     const maxHeight = 30;
 
     const colorTheme = ['#FF5733', '#3498db', '#2ecc71', '#e74c3c', '#9b59b6', '#f39c12', '#1abc9c', '#d35400', '#c0392b', '#2980b9'];
@@ -165,13 +190,15 @@ export class Level extends LevelMap {
         size: 1,
         color: randomFromArr(color),
         position: {
-          x: randomInRange(-4, 4),
+          x: randomInRange(-5, 5),
           y: randomInRange(maxHeight, 1),
           z: randomInRange(-4, 4)
         },
         physics: {
           rigidBody: 'dynamic',
-          collider: 'ball',
+          collider: {
+            type: 'cuboid'
+          },
           linvel: [
             Math.round(randomInRange(-40, 40)),
             Math.round(randomInRange(-4, 40)),
@@ -194,7 +221,9 @@ export class Level extends LevelMap {
         },
         physics: {
           rigidBody: 'dynamic',
-          collider: 'ball'
+          collider: {
+            type: 'ball'
+          }
         }
       }));
     }
@@ -247,3 +276,59 @@ export class Level extends LevelMap {
     //     }
   }
 }
+
+const impulseForce = new Vector3();
+internals.colliderHandler = (type) => ({ obj1, obj2, manifold, flipped, started }) => {
+
+  const contactInfo = obj1.collider.contactCollider(obj2.collider);
+
+  // console.log('contactInfo', contactInfo);
+
+  if (contactInfo) {
+    // Calculate average normal and average contact point
+    const averageNormal = [
+      (contactInfo.normal1.x + contactInfo.normal2.x) / 2,
+      (contactInfo.normal1.y + contactInfo.normal2.y) / 2,
+      (contactInfo.normal1.z + contactInfo.normal2.z) / 2,
+    ];
+
+    const averagePoint = {
+      x: (contactInfo.point1.x + contactInfo.point2.x) / 2,
+      y: (contactInfo.point1.y + contactInfo.point2.y) / 2,
+      z: (contactInfo.point1.z + contactInfo.point2.z) / 2,
+    };
+
+    // Calculate impulse force
+    const forceMultiplier = -40000000000;
+    impulseForce.copy({
+      x: forceMultiplier * averageNormal[0],
+      y: forceMultiplier * averageNormal[1],
+      z: forceMultiplier * averageNormal[2],
+    });
+
+    // obj2.rigidBody.applyImpulseAtPoint(impulseForce, averagePoint);
+
+    switch (type) {
+    case 'sticky':
+      obj2.rigidBody.addForce(averagePoint);
+      break;
+    case 'bouncy': {
+      const negImpulseForce = impulseForce.multiplyScalar(-1);
+      obj2.rigidBody.addForce(negImpulseForce);
+      obj2.rigidBody.addTorque(negImpulseForce);
+    }
+      break;
+    }
+
+  }
+};
+
+internals.defaultContactForceEvent = ({ obj1, obj2, manifold, flipped, started }) => {
+
+  if (started) {
+    console.log('onContactForceEvent, started, manifold, flipped', started, manifold, flipped);
+  }
+  else {
+    console.log('onContactForceEvent, obj1, obj2, started', obj1, obj2, started);
+  }
+};

@@ -20,14 +20,20 @@ import {
 } from 'alexandria/ecs/components';
 
 const physQuery = defineQuery([DynamicPhysicsComponent]);
-// const eventQueue = new Physics.EventQueue(true);
 
 let rigidBodyPos;
 let colliderRotation;
 
+const internals = {};
+
+// Reusable stuff
+// let
+
 export default function physicsSystem(core) {
 
   const ents = physQuery(core);
+
+  internals.eventQueue = internals.eventQueue || new Physics.EventQueue(false);
 
   for (let i = 0; i < ents.length; i++) {
     const eid = ents[i];
@@ -76,20 +82,86 @@ export default function physicsSystem(core) {
 
   // Step the simulation forward
   // TODO supposedly supposed to pass an EventQueue here but it's not working
-  store.state.physics.core.step();
-  // store.state.physics.core.step(eventQueue);
+  // store.state.physics.core.step();
+  store.state.physics.core.step(internals.eventQueue);
 
-  // eventQueue.drainCollisionEvents((handle1, handle2, started) => {
-  //   /* Handle the contact event. */
-  //   console.log(handle1, handle2, started);
-  // });
+  // console.log('zlog internals.eventQueue', internals.eventQueue);
 
-  // eventQueue.drainContactEvents((handle1, handle2, contactStarted) => {
-  //   events.push({ type: "contact", handle1, handle2, contactStarted });
-  // });
-  // eventQueue.drainIntersectionEvents((handle1, handle2, intersecting) => {
-  //   events.push({ type: "intersection", handle1, handle2, intersecting });
-  // });
+  internals.eventQueue.drainCollisionEvents((handle1, handle2, started) => {
+    /* Handle the collision event. */
+    const obj1 = DynamicPhysicsComponent.objForColliderHandle[handle1];
+    const obj2 = DynamicPhysicsComponent.objForColliderHandle[handle2];
+
+    const contactInfo = obj1.collider.contactCollider(obj2.collider);
+
+    const baseEvtProps = {
+      obj1,
+      obj2,
+      contactInfo,
+      started
+    };
+
+    if (started) {
+      store.state.physics.core.contactPair(
+        obj1.collider.object,
+        obj2.collider.object,
+        (manifold, flipped) => {
+
+          obj1?.onCollisionEvent({ ...baseEvtProps, manifold, flipped });
+          obj2?.onCollisionEvent({ ...baseEvtProps, manifold, flipped });
+        }
+      );
+    }
+    else {
+      obj1?.onCollisionEvent(baseEvtProps);
+      obj2?.onCollisionEvent(baseEvtProps);
+    }
+  });
+
+  internals.eventQueue.drainContactForceEvents((handle1, handle2, started) => {
+    /* Handle the contact force event. */
+    const obj1 = DynamicPhysicsComponent.objForColliderHandle[handle1];
+    const obj2 = DynamicPhysicsComponent.objForColliderHandle[handle2];
+
+    const baseEvtProps = {
+      obj1,
+      obj2,
+      started
+    };
+
+    if (started) {
+      store.state.physics.core.contactPair(
+        obj1.collider.object,
+        obj2.collider.object,
+        (manifold, flipped) => {
+
+          obj1?.onContactForceEvent({ ...baseEvtProps, manifold, flipped });
+          obj2?.onContactForceEvent({ ...baseEvtProps, manifold, flipped });
+        }
+      );
+    }
+    else {
+      obj1?.onContactForceEvent(baseEvtProps);
+      obj2?.onContactForceEvent(baseEvtProps);
+    }
+  });
 
   return core;
 }
+
+internals.parseSourceEvents = (core, collider) => {
+
+  const rigidBodyHandle = collider?.parent()?.handle;
+
+  const rigidBody =
+    rigidBodyHandle !== undefined
+      ? core.getRigidBody(rigidBodyHandle)
+      : undefined;
+
+  const source = {
+    collider,
+    rigidBody
+  };
+
+  return source;
+};
