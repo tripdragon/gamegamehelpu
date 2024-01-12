@@ -120,6 +120,8 @@ Can register methods on gameGrapth to be called before THREE renders by running 
     - `type`: See ##Physics below for Collider types
     - Additional properties associated w/ the specified `type`, e.g. `borderRadius`
     - `friction`: num
+    - `onCollisionEvent`: Collision callback with signature `({ obj1, obj2, manifold, flipped, started }) => ...`
+    - `onContactForceEvent`: Contact force callback with signature `({ obj1, obj2, manifold, flipped, started }) => ...`
     - `sensor`: bool
     - `collisionGroups`: num
     - `solverGroups`: num
