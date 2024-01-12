@@ -182,30 +182,30 @@ this.add(MeshBuilder({
     - `halfHeight`: num
     - `radius`: num
     - `borderRadius`: num
-    - `cone`
-      - `halfHeight`: num
-      - `radius`: num
-    - `roundCone`
-      - `halfHeight`: num
-      - `radius`: num
-      - `borderRadius`: num
-    - `triangle`: Creates shape from 3 points a, b, and c
-      - `a`: vec3
-      - `b`: vec3
-      - `c`: vec3
-    - `roundTriangle`: Creates shape from 3 points a, b, c, then applies borderRadius
-      - `a`: vec3
-      - `b`: vec3
-      - `c`: vec3
-      - `borderRadius`: num
-    - `segment`: Creates shape from 2 points a, b
-      - `a`: vec3
-      - `b`: vec3
-    - `polyline`: Computes points and indices and uses them
-    - `heightfield`: Creates shape from array of heights
-      - `rows`: num
-      - `cols`: num
-      - `heights`: Float32Array The heights of the heightfield along its local y axis, provided as a matrix stored in column-major order.
-      - `scale`: vec3
+  - `cone`
+    - `halfHeight`: num
+    - `radius`: num
+  - `roundCone`
+    - `halfHeight`: num
+    - `radius`: num
+    - `borderRadius`: num
+  - `triangle`: Creates shape from 3 points a, b, and c
+    - `a`: vec3
+    - `b`: vec3
+    - `c`: vec3
+  - `roundTriangle`: Creates shape from 3 points a, b, c, then applies borderRadius
+    - `a`: vec3
+    - `b`: vec3
+    - `c`: vec3
+    - `borderRadius`: num
+  - `segment`: Creates shape from 2 points a, b
+    - `a`: vec3
+    - `b`: vec3
+  - `polyline`: Computes points and indices and uses them
+  - `heightfield`: Creates shape from array of heights
+    - `rows`: num
+    - `cols`: num
+    - `heights`: Float32Array The heights of the heightfield along its local y axis, provided as a matrix stored in column-major order.
+    - `scale`: vec3
 
 
