@@ -134,6 +134,31 @@ Can register methods on gameGrapth to be called before THREE renders by running 
     - `centerOfMass`: vec3
     - `enabled`: bool
 
+### Example
+```
+// Floor
+this.add(MeshBuilder({
+  mesh: 'plane',
+  color: 0x4fff0f,
+  scale: floorSize,
+  shadow: 'receive',
+  texture: {
+    path: './textures/myrthe-van-tol-grass-texture.jpeg',
+    wrapping: RepeatWrapping,
+    repeat: floorSize / 3,
+    colorSpace: SRGBColorSpace
+  },
+  physics: {
+    rigidBody: 'fixed',
+    collider: {
+      type: 'cuboid',
+      friction: 10
+    }
+  }
+}));
+```
+    
+
 ## Physics
 - Using https://rapier.rs via `@dimforge/rapier3d-compat`
 - Collider types
