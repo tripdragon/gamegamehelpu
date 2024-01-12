@@ -98,9 +98,90 @@ So it seems to be obvious the top level should handle rigidbody physics, like ha
 - Also sets up listeners on the store for `game.physics` and `game.outOfBounds` to toggle those pipeline systems dynamically.
   - e.g. `store.subscribe('game.physics', setGamePipeline);`
 
-### Rendering
+## Rendering
 The THREE renderer, main scene, and camera are on `gameGrapth`, avail at `store.state.game`
 Can register methods on gameGrapth to be called before THREE renders by running `store.state.game.registerRenderCallback(func)`
 
-# Physics
+## MeshBuilder
+- `mesh`: One of our primitives. Needs to be maintained as we add primitives. ex: `mesh: 'plane'`
+- `color`: Color
+- `scale`: num
+- `shadow`: 'receive' or 'cast'
+- `texture`: Obj with keys to configure texture
+  - `path`: Path to texture
+  - `wrapping`: Input from THREE, ex: `RepeatWrapping`
+  - `repeat`: num
+  - `colorSpace`: Input from THREE, ex: `SRGBColorSpace`
+- `physics`: Configure physics for obj
+  - `rigidBody`: 'fixed' or 'dynamic'
+  - `gravityScale`: num – Multiplier for how configured gravity effects this object. 0 for 0 grav.
+  - `linvel`: [x, y, z] – init linear velocity
+  - `collider`:
+    - `type`: See ##Physics below for Collider types
+    - Additional properties associated w/ the specified `type`, e.g. `borderRadius`
+    - `friction`: num
+    - `sensor`: bool
+    - `collisionGroups`: num
+    - `solverGroups`: num
+    - `frictionCombineRule`: Physics.CoefficientCombineRule.*
+    - `restitution`: num
+    - `restitutionCombineRule`: Physics.CoefficientCombineRule.*
+    - `density`: num
+    - `mass`: num
+    - `massProperties`: { mass: num, centerOfMass: vec3, principalAngularInertia: vec3, angularInertiaLocalFrame: quat }
+    - `rotation`: quat
+    - `translation`: vec3
+    - `centerOfMass`: vec3
+    - `enabled`: bool
+
+## Physics
+- Using https://rapier.rs via `@dimforge/rapier3d-compat`
+- Collider types
+  - `cuboid`: Computes bounding box and uses it
+  - `roundCuboid`: Computes bounding box and uses it
+    - `borderRadius` num
+  - `ball`/`sphere` Computes bounding sphere and uses it
+  - `capsule`
+    - `halfHeight`: num
+    - `radius`: num
+  - `trimesh`: Computes points and indices and uses them
+  - `convexHull`/`hull`: Clones geometry and computes from points
+  - `roundConvexHull`/`roundHull`: Clones geometry and computes from points
+    - `borderRadius`: num
+  - `convexMesh`/`mesh`: Computes points and indices and uses them
+  - `roundConvexMesh`/`roundMesh`: Computes points and indices and uses them
+    - `borderRadius`: num
+  - `cylinder`:
+    - `halfHeight`: num
+    - `radius`: num
+  - `roundCylinder`
+    - `halfHeight`: num
+    - `radius`: num
+    - `borderRadius`: num
+    - `cone`
+      - `halfHeight`: num
+      - `radius`: num
+    - `roundCone`
+      - `halfHeight`: num
+      - `radius`: num
+      - `borderRadius`: num
+    - `triangle`: Creates shape from 3 points a, b, and c
+      - `a`: vec3
+      - `b`: vec3
+      - `c`: vec3
+    - `roundTriangle`: Creates shape from 3 points a, b, c, then applies borderRadius
+      - `a`: vec3
+      - `b`: vec3
+      - `c`: vec3
+      - `borderRadius`: num
+    - `segment`: Creates shape from 2 points a, b
+      - `a`: vec3
+      - `b`: vec3
+    - `polyline`: Computes points and indices and uses them
+    - `heightfield`: Creates shape from array of heights
+      - `rows`: num
+      - `cols`: num
+      - `heights`: Float32Array The heights of the heightfield along its local y axis, provided as a matrix stored in column-major order.
+      - `scale`: vec3
+
 
