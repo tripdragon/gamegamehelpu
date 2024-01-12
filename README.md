@@ -135,7 +135,7 @@ Can register methods on gameGrapth to be called before THREE renders by running 
     - `enabled`: bool
 
 ### Example
-```
+```js
 // Floor
 this.add(MeshBuilder({
   mesh: 'plane',
@@ -157,7 +157,6 @@ this.add(MeshBuilder({
   }
 }));
 ```
-    
 
 ## Physics
 - Using https://rapier.rs via `@dimforge/rapier3d-compat`
