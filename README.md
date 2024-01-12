@@ -18,7 +18,7 @@ game help u
 + access global enough object grapth
 # ```_a.state.game.scene``` 
 also 
-# ```store.getState().game```
+# ```store.state.game```
 
 # codes
 when something is super related in source there are codes like so
@@ -45,6 +45,18 @@ Overall back to THREE but thus far it does remain in node.js. There is some adde
 a KEY feature of nested js imports is not yet supported properly in vite.js or rollup.js. We had to use babel plugins BUT it works!!
 edit ```.babelrc```
 
+## Settings
+- Main settings in `alexandria/store` in the default `state` object.
+- Pipeline settings in `GameGrapth` constructor, like `timeSystem`, `physics`, and `outOfBounds`.
+
+## Store
+- `state`: Main state object. Can access via `store.state` or `store.getState()` for a clone of state.
+- `setState`: Use to set state and run any matching listeners. Deeply merges into state.
+  - Ex: `store.setState({ physics: true })`
+- `subscribe`: Register a callback to run when a piece of state changes.
+  - Ex: `store.subscribe('game.physics', setGamePipeline);`
+- `getState`: Returns clone of state object, don't see much use for it.
+
 ## ECS's
 The latest hotness
 Ideally you can add a behavior/trait to an object and it just does it or does not
@@ -56,6 +68,39 @@ pidgeon
 Should be that simple...
 There are plugins, oh joy. But the core concept is simple. Store arrays of functions in a cache and run in the gameloop
 
+All ECS component types used are in `alexandria/ecs/components`.
+There are a number of systems in `alexandria/ecs/systems`.
+- `movement`: For tracking position, rotation, and velocity vectors, for movement outside the physics system.
+`outOfBoundsCheck`: Runs on a slower tick, queries DynamicPhysicsComponent and deletes objects if their x, y, or z is further away than `store.state.game.outOfBounds`.
+- `physics`:
+  - Syncs object3D position, rotation w/ rigidBody/collider.
+  - Responds to collisionEvents and contactForce events and runs callbacks.
+  - Checks every frame if the rigidBody is asleep and removes the entity from `DynamicPhysicsComponent`, moves it onto `SleepingPhysicsComponent`.
+  - Runs physics step to move phys simulation fwd.
+- `sleepingPhysics`: 
+- `render`:
+  - Runs render loop callbacks stored in gameGrapth's `renderPool`. Register methods to run here via `store.state.game.registerRenderCallback(func)`.
+  - After those callbacks run, the THREE scene is rendered using the `scene` and `camera` attached to `store.state.game`.
+- `time`:
+  - Timekeeping util to manage delta to be shared w/ all other systems in the same pipeline.
+
 ## Object3D + Physics
 Object3D is a top level class in threejs, so then EVERYTHING in 3D is that. Mesh, Group, Loader gltf models, etc...
 So it seems to be obvious the top level should handle rigidbody physics, like having a bounds and force. But by default Object3D does not have concept of geometry or force. We could make an external object and matrix match them like physics engines. And that is still totes a real plan, but for the most basic things like small pool collisions and selecting and force we might as well just force stuff into Object3D.prototype before anything loads~!!!
+- Run `obj3D.initPhysics({...})` to configure and initialize physics for an obj3D.
+
+## Game Loop
+`logics/gameLoop`
+- `initGameLoop()` configures ECS pipelines and kicks off the main RAF loop.
+- Main RAF loop runs the ECS gamePipeline every frame.
+- There are slower ticks for things that don't need to run every frame.
+  - These include the sleepingPhysicsPipeline and outOfBoundsCheckPipeline.
+- Also sets up listeners on the store for `game.physics` and `game.outOfBounds` to toggle those pipeline systems dynamically.
+  - e.g. `store.subscribe('game.physics', setGamePipeline);`
+
+### Rendering
+The THREE renderer, main scene, and camera are on `gameGrapth`, avail at `store.state.game`
+Can register methods on gameGrapth to be called before THREE renders by running `store.state.game.registerRenderCallback(func)`
+
+# Physics
+
