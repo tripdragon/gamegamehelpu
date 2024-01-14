@@ -17,7 +17,7 @@ export const Object3DComponent = defineComponent();
 
 export const DynamicPhysicsComponent = defineComponent({
   objectId: [Types.ui32],
-  objForColliderHandle: [Types.f64]
+  objIdForColliderHandle: [Types.f64]
 });
 
 export const SleepingPhysicsComponent = defineComponent({

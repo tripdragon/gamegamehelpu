@@ -308,7 +308,7 @@ export const initPhysics = (obj, physConfig) => {
     }
 
     // Add collider handle for lookup during collision time
-    DynamicPhysicsComponent.objForColliderHandle[obj.collider.handle] = obj.id;
+    DynamicPhysicsComponent.objIdForColliderHandle[obj.collider.handle] = obj.id;
 
     if (collider.density && (collider.mass || collider.massProperties)) {
       throw new Error('Can\'t set both density and mass on collider');

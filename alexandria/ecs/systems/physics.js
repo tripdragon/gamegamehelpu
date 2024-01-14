@@ -87,8 +87,8 @@ export default function physicsSystem(core) {
 
   internals.eventQueue.drainCollisionEvents((handle1, handle2, started) => {
     /* Handle the collision event. */
-    const obj1 = store.state.game.scene.getObjectById(DynamicPhysicsComponent.objForColliderHandle[handle1]);
-    const obj2 = store.state.game.scene.getObjectById(DynamicPhysicsComponent.objForColliderHandle[handle2]);
+    const obj1 = store.state.game.scene.getObjectById(DynamicPhysicsComponent.objIdForColliderHandle[handle1]);
+    const obj2 = store.state.game.scene.getObjectById(DynamicPhysicsComponent.objIdForColliderHandle[handle2]);
 
     const contactInfo = obj1.collider.contactCollider(obj2.collider);
 
@@ -118,8 +118,8 @@ export default function physicsSystem(core) {
 
   internals.eventQueue.drainContactForceEvents((handle1, handle2, started) => {
     /* Handle the contact force event. */
-    const obj1 = DynamicPhysicsComponent.objForColliderHandle[handle1];
-    const obj2 = DynamicPhysicsComponent.objForColliderHandle[handle2];
+    const obj1 = DynamicPhysicsComponent.objIdForColliderHandle[handle1];
+    const obj2 = DynamicPhysicsComponent.objIdForColliderHandle[handle2];
 
     const baseEvtProps = {
       obj1,
