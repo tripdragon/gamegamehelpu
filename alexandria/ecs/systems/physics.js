@@ -26,16 +26,13 @@ let colliderRotation;
 
 const internals = {};
 
-// Reusable stuff
-// let
-
 export default function physicsSystem(core) {
 
   const ents = physQuery(core);
 
   internals.eventQueue = internals.eventQueue || new Physics.EventQueue(false);
 
-  for (let i = 0; i < ents.length; i++) {
+  for (let i = 0; i < ents.length; ++i) {
     const eid = ents[i];
 
     const object3D = store.state.game.scene.getObjectById(
@@ -52,11 +49,9 @@ export default function physicsSystem(core) {
       continue;
     }
 
-    rigidBodyPos = object3D.rigidBody.translation();
-    object3D.position.copy(rigidBodyPos);
+    object3D.position.copy(object3D.rigidBody.translation());
 
-    colliderRotation = object3D.collider.rotation();
-    object3D.quaternion.copy(colliderRotation);
+    object3D.quaternion.copy(object3D.collider.rotation());
 
     object3D.updateMatrix();
 
@@ -146,20 +141,3 @@ export default function physicsSystem(core) {
 
   return core;
 }
-
-internals.parseSourceEvents = (core, collider) => {
-
-  const rigidBodyHandle = collider?.parent()?.handle;
-
-  const rigidBody =
-    rigidBodyHandle !== undefined
-      ? core.getRigidBody(rigidBodyHandle)
-      : undefined;
-
-  const source = {
-    collider,
-    rigidBody
-  };
-
-  return source;
-};

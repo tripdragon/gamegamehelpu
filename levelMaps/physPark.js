@@ -1,7 +1,5 @@
 import LevelMap from './levelMap';
 
-import { store } from 'alexandria/store';
-
 import {
   DirectionalLight,
   AmbientLight,
@@ -9,6 +7,8 @@ import {
   SRGBColorSpace,
   Vector3
 } from 'three';
+
+import * as Themes from 'alexandria/modules/colorThemes';
 
 import { MeshBuilder } from 'alexandria/tools/meshBuilder';
 import { randomInRange, randomFromArr } from 'alexandria/math/mathMore';
@@ -23,9 +23,6 @@ export class Level extends LevelMap {
   }
 
   async init() {
-
-    const st = store.state.game;
-    // debugger
 
     const ambientLight = new AmbientLight();
     ambientLight.intensity = 2.01;
@@ -60,7 +57,7 @@ export class Level extends LevelMap {
     sunLight.shadow.camera.right = -side;
 
     // var shadowHelper = new CameraHelper( sunLight.shadow.camera );
-    // this.add( shadowHelper );
+    // this.add(shadowHelper);
 
     this.sunLight = sunLight;
 
@@ -147,44 +144,14 @@ export class Level extends LevelMap {
       }
     }));
 
-    // Blue Goal 2
-    // this.add(MeshBuilder({
-    //   mesh: 'rectangle',
-    //   width: 1,
-    //   height: goalHeight,
-    //   depth: floorSize,
-    //   color: 0x0000ff,
-    //   position: {
-    //     x: -floorSize / 2,
-    //     y: goalHeight / 2,
-    //     z: 0
-    //   },
-    //   physics: {
-    //     rigidBody: 'fixed',
-    //     collider: {
-    //       type: 'cuboid',
-    //       // sensor: true,
-    //       onCollision: internals.collisionHandler('sticky'),
-    //       onContactForce: internals.defaultContactForceEvent
-    //     }
-    //   }
-    // }));
-
-    const colorTheme = ['#FF5733', '#3498db', '#2ecc71', '#e74c3c', '#9b59b6', '#f39c12', '#1abc9c', '#d35400', '#c0392b', '#2980b9'];
-    const warmColorTheme1 = ['#FF5733', '#FFC300', '#FF5733', '#C70039', '#900C3F'];
-    const lightColorTheme1 = ['#FAD02E', '#FFEB3B', '#C5E1A5', '#81C784', '#4DB6AC'];
-    // https://color.adobe.com/s://adobe.ly/3ofZBcp
-    const rockOnColorTheme = ['#010221', '#0A7373', '#B7BF99', '#EDAA25', '#C43302'];
-    const blueTealMonochromaticTheme = ['#348888', '#22BABB', '#9EF8EE', '#FA7F08', '#F24405'];
-
-    const color = blueTealMonochromaticTheme;
+    const colorTheme = Themes.blueTealMonochromaticTheme;
 
     // Cubes
     for (let i = 0; i < items; ++i) {
       this.add(MeshBuilder({
         mesh: 'cube',
         size: randomInRange(2, 4),
-        color: randomFromArr(color),
+        color: randomFromArr(colorTheme),
         position: {
           x: randomInRange(-50, 50),
           y: randomInRange(maxHeight, 1),
@@ -214,7 +181,7 @@ export class Level extends LevelMap {
       this.add(MeshBuilder({
         mesh: 'sphere',
         radius: randomInRange(2, 4),
-        color: randomFromArr(color),
+        color: randomFromArr(colorTheme),
         position: {
           x: randomInRange(-50, 50),
           y: randomInRange(maxHeight, 1),
@@ -238,53 +205,6 @@ export class Level extends LevelMap {
         }
       }));
     }
-
-    // return
-
-    //     const cube = new Cube({size: 0.2,debug: true, color:0xffffff});
-    //     cube.position.y = 1;
-
-    //     // cube.update = function(){
-    //     //   // debugger
-    //     //   this.position.x += 0.01;
-    //     //   console.log(this.name);
-    //     // }
-
-    //     this.add( cube );
-    //     cube.name = 'sldkfndsf';
-
-    //     st.animationPool.add(cube);
-    //     cube.entities = new Entities(cube);
-
-    //     cube.entities.add(new Spin(cube));
-
-    //     // cube.entities.add(new Move());
-    //     // now just some arbitary builder
-    //     // cube.entities.add( Meep( 'moop', function(){ this.position.z += 0.01 } ) );
-
-    //     cube.entities.add(new KeyWalk(cube, 0.01, 0.01));
-
-    //     for (var i = 0; i < 22; i++) {
-
-    //       const cube = new Cube({size: 0.2,debug: true, color:Math.random()* 0xffffff});
-
-    //       this.add( cube );
-    //       cube.name = 'sldkfndsf' + i;
-
-    //       st.animationPool.add(cube);
-    //       cube.entities = new Entities(cube);
-
-    //       cube.entities.add(new Spin(cube));
-
-    //       cube.position.set(randomInRange(4, -4), 1, randomInRange(4, -4))
-    //       cube.rotation.y = Math.random() * Math.PI * 2;
-
-    //       // cube.entities.add(new Move());
-    //       // now just some arbitary builder
-    //       // cube.entities.add( Meep( 'moop', function(){ this.position.z += 0.01 } ) );
-
-    //       cube.entities.add(new KeyWalk(cube, 0.01, 0.01));
-    //     }
   }
 }
 

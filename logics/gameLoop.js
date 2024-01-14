@@ -73,6 +73,11 @@ export function initGameLoop() {
   store.subscribe('game.physics', setGamePipeline);
   store.subscribe('game.outOfBounds', setGamePipeline);
 
+  if (useStats) {
+    internals.stats = new Stats();
+    document.body.appendChild(internals.stats.dom);
+  }
+
   // Kickoff render loop
   internals.renderLoop();
 }
@@ -81,11 +86,6 @@ internals.renderLoop = () => {
 
   // const st = store.getState().game; // this spams with objects
   const st = store.state.game;
-
-  if (useStats && stats === null) {
-    stats = new Stats();
-    document.body.appendChild(stats.dom);
-  }
 
   // OY
   // if(useComposer && composer === null){
@@ -103,10 +103,10 @@ internals.renderLoop = () => {
 
   requestAnimationFrame(internals.renderLoop);
 
-  // if(stats){
-  //   stats.begin();
-  //   st.renderer.render( st.scene, st.camera );
-  //   stats.end();
+  // if(internals.stats) {
+  //   internals.stats.begin();
+  //   st.renderer.render(st.scene, st.camera);
+  //   internals.stats.end();
   // }
   // else {
   //   if (useComposer && composer) {

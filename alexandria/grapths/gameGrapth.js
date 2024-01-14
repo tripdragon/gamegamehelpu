@@ -1,3 +1,5 @@
+// TODO need to implement a scene transition func to change levels that fades out everything
+// currently in the scene, clear()s the scene, then initiates the new level stuff.
 
 import { Group } from 'three';
 import { CheapPool } from 'alexandria/utils/cheapPool.js';
@@ -6,7 +8,6 @@ import { AnimationPool } from './animationPool.js';
 import { SceneGrapth } from './sceneGrapth.js';
 import { PlanningBoard } from './planningBoard.js';
 import { Levels } from './levels.js';
-
 
 import { TransformControls } from 'three/addons/controls/TransformControls.js';
 

@@ -4337,6 +4337,9 @@ class OrbitControls extends EventDispatcher {
   }
 }
 
+// TODO need to implement a scene transition func to change levels that fades out everything
+// currently in the scene, clear()s the scene, then initiates the new level stuff.
+
 class SelectableItems extends CheapPool {
   constructor() {
     super();
@@ -10340,6 +10343,8 @@ async function loadereee3894() {
   // piece3.moreBuild_CM({targetGroup:store.state.game.helpersGroup});
 }
 
+const blueTealMonochromaticTheme = ['#348888', '#22BABB', '#9EF8EE', '#FA7F08', '#F24405'];
+
 /*
 Example usage
 this.add(CoatOfArms({
@@ -10642,9 +10647,6 @@ class Level extends LevelMap {
     this.init();
   }
   async init() {
-    store$1.state.game;
-    // debugger
-
     const ambientLight = new AmbientLight();
     ambientLight.intensity = 2.01;
     this.lights.add(ambientLight);
@@ -10681,7 +10683,7 @@ class Level extends LevelMap {
     sunLight.shadow.camera.right = -side;
 
     // var shadowHelper = new CameraHelper( sunLight.shadow.camera );
-    // this.add( shadowHelper );
+    // this.add(shadowHelper);
 
     this.sunLight = sunLight;
 
@@ -10767,15 +10769,14 @@ class Level extends LevelMap {
         }
       }
     }));
-    const blueTealMonochromaticTheme = ['#348888', '#22BABB', '#9EF8EE', '#FA7F08', '#F24405'];
-    const color = blueTealMonochromaticTheme;
+    const colorTheme = blueTealMonochromaticTheme;
 
     // Cubes
     for (let i = 0; i < items; ++i) {
       this.add(MeshBuilder({
         mesh: 'cube',
         size: randomInRange(2, 4),
-        color: randomFromArr(color),
+        color: randomFromArr(colorTheme),
         position: {
           x: randomInRange(-50, 50),
           y: randomInRange(maxHeight, 1),
@@ -10801,7 +10802,7 @@ class Level extends LevelMap {
       this.add(MeshBuilder({
         mesh: 'sphere',
         radius: randomInRange(2, 4),
-        color: randomFromArr(color),
+        color: randomFromArr(colorTheme),
         position: {
           x: randomInRange(-50, 50),
           y: randomInRange(maxHeight, 1),
@@ -10821,53 +10822,6 @@ class Level extends LevelMap {
         }
       }));
     }
-
-    // return
-
-    //     const cube = new Cube({size: 0.2,debug: true, color:0xffffff});
-    //     cube.position.y = 1;
-
-    //     // cube.update = function(){
-    //     //   // debugger
-    //     //   this.position.x += 0.01;
-    //     //   console.log(this.name);
-    //     // }
-
-    //     this.add( cube );
-    //     cube.name = 'sldkfndsf';
-
-    //     st.animationPool.add(cube);
-    //     cube.entities = new Entities(cube);
-
-    //     cube.entities.add(new Spin(cube));
-
-    //     // cube.entities.add(new Move());
-    //     // now just some arbitary builder
-    //     // cube.entities.add( Meep( 'moop', function(){ this.position.z += 0.01 } ) );
-
-    //     cube.entities.add(new KeyWalk(cube, 0.01, 0.01));
-
-    //     for (var i = 0; i < 22; i++) {
-
-    //       const cube = new Cube({size: 0.2,debug: true, color:Math.random()* 0xffffff});
-
-    //       this.add( cube );
-    //       cube.name = 'sldkfndsf' + i;
-
-    //       st.animationPool.add(cube);
-    //       cube.entities = new Entities(cube);
-
-    //       cube.entities.add(new Spin(cube));
-
-    //       cube.position.set(randomInRange(4, -4), 1, randomInRange(4, -4))
-    //       cube.rotation.y = Math.random() * Math.PI * 2;
-
-    //       // cube.entities.add(new Move());
-    //       // now just some arbitary builder
-    //       // cube.entities.add( Meep( 'moop', function(){ this.position.z += 0.01 } ) );
-
-    //       cube.entities.add(new KeyWalk(cube, 0.01, 0.01));
-    //     }
   }
 }
 new Vector3$2();
@@ -11115,17 +11069,11 @@ const SleepingPhysicsComponent = defineComponent({
 // https://playcode.io/1528902
 
 const physQuery$1 = defineQuery([DynamicPhysicsComponent]);
-let rigidBodyPos;
-let colliderRotation;
 const internals$1 = {};
-
-// Reusable stuff
-// let
-
 function physicsSystem(core) {
   const ents = physQuery$1(core);
   internals$1.eventQueue = internals$1.eventQueue || new PI.EventQueue(false);
-  for (let i = 0; i < ents.length; i++) {
+  for (let i = 0; i < ents.length; ++i) {
     const eid = ents[i];
     const object3D = store$1.state.game.scene.getObjectById(DynamicPhysicsComponent.objectId[eid]);
 
@@ -11138,10 +11086,8 @@ function physicsSystem(core) {
       addComponent(core, SleepingPhysicsComponent, eid);
       continue;
     }
-    rigidBodyPos = object3D.rigidBody.translation();
-    object3D.position.copy(rigidBodyPos);
-    colliderRotation = object3D.collider.rotation();
-    object3D.quaternion.copy(colliderRotation);
+    object3D.position.copy(object3D.rigidBody.translation());
+    object3D.quaternion.copy(object3D.collider.rotation());
     object3D.updateMatrix();
 
     // Some code in the docs about character collision system
@@ -11226,15 +11172,6 @@ function physicsSystem(core) {
   });
   return core;
 }
-internals$1.parseSourceEvents = (core, collider) => {
-  const rigidBodyHandle = collider?.parent()?.handle;
-  const rigidBody = rigidBodyHandle !== undefined ? core.getRigidBody(rigidBodyHandle) : undefined;
-  const source = {
-    collider,
-    rigidBody
-  };
-  return source;
-};
 
 // Interesting example here syncing some babylon stuff w/ rapier
 // https://playcode.io/1528902
@@ -11351,10 +11288,10 @@ internals.renderLoop = () => {
 
   requestAnimationFrame(internals.renderLoop);
 
-  // if(stats){
-  //   stats.begin();
-  //   st.renderer.render( st.scene, st.camera );
-  //   stats.end();
+  // if(internals.stats) {
+  //   internals.stats.begin();
+  //   st.renderer.render(st.scene, st.camera);
+  //   internals.stats.end();
   // }
   // else {
   //   if (useComposer && composer) {
@@ -11794,24 +11731,6 @@ function patchObject3D_CM() {
     const bounding = new Box3$1().setFromObject(this);
     this.boundingBox = bounding.getSize(new Vector3$2()).multiplyScalar(0.5);
   };
-  Object3D.prototype.superDelete = function () {
-    if (this.eid) {
-      removeEntity(store$1.state.ecs.core, this.eid);
-    }
-    if (this.rigidBody) {
-      // Also removes collider
-      store$1.state.physics.core.removeRigidBody(this.rigidBody);
-    } else if (this.collider) {
-      store$1.state.physics.core.removeCollider(this.rigidBody);
-    }
-    if (this.vehicleController) {
-      store$1.state.physics.core.removeVehicleController(this.vehicleController);
-    }
-    if (this.characterController) {
-      store$1.state.physics.core.removeCharacterController(this.characterController);
-    }
-    this.parent.remove(this);
-  };
   Object3D.prototype.initECS = function () {
     initECS(this);
   };
@@ -12000,6 +11919,24 @@ function patchObject3D_CM() {
     this.computeBoundingBox();
     var helper = new Box3Helper(this.boundingBox, 0x0000ff);
     store$1.state.game.scene.add(helper);
+  };
+  Object3D.prototype.superDelete = function () {
+    if (this.eid) {
+      removeEntity(store$1.state.ecs.core, this.eid);
+    }
+    if (this.rigidBody) {
+      // Also removes collider
+      store$1.state.physics.core.removeRigidBody(this.rigidBody);
+    } else if (this.collider) {
+      store$1.state.physics.core.removeCollider(this.rigidBody);
+    }
+    if (this.vehicleController) {
+      store$1.state.physics.core.removeVehicleController(this.vehicleController);
+    }
+    if (this.characterController) {
+      store$1.state.physics.core.removeCharacterController(this.characterController);
+    }
+    this.parent.remove(this);
   };
 
   // Object3D.prototype.refreshBoxHelper = function(){
