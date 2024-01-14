@@ -108,10 +108,10 @@ export class Level extends LevelMap {
       },
       physics: {
         rigidBody: 'fixed',
+        // onCollision: internals.collisionHandler('bouncy'),
+        // onContactForce: internals.defaultContactForceEvent,
         collider: {
-          type: 'cuboid',
-          // onCollision: internals.collisionHandler('bouncy'),
-          // onContactForce: internals.defaultContactForceEvent
+          type: 'cuboid'
         }
       }
     }));
@@ -193,12 +193,12 @@ export class Level extends LevelMap {
         physics: {
           rigidBody: 'dynamic',
           gravityScale: 0,
-          collider: {
-            type: 'cuboid',
-            onCollision: (stuff) => {
+          onCollision: (stuff) => {
 
-              console.log('CUBE onCollision stuff', stuff);
-            }
+            console.log('CUBE onCollision stuff', stuff);
+          },
+          collider: {
+            type: 'cuboid'
           },
           linvel: [
             Math.round(randomInRange(-180, 180)),

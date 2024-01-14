@@ -95,7 +95,7 @@ export const initPhysics = (obj, physConfig) => {
       });
 
     // TODO support more collider types
-    // See docs https://rapier.rs/docs/api/javascript/JavaScript3D
+    // See Docs https://rapier.rs/docs/api/javascript/JavaScript3D
 
     let colliderDesc;
 
