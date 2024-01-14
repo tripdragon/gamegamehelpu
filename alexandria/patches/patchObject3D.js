@@ -40,14 +40,7 @@ export function patchObject3D_CM() {
     this.boundingBox = bounding.getSize(new Vector3()).multiplyScalar(0.5);
   }
 
-  Object3D.prototype.initECS = function() {
-
-    initECS(this);
-  }
-
-  const origRemove = Object3D.prototype.remove;
-
-  Object3D.prototype.remove = function(child) {
+  Object3D.prototype.superDelete = function() {
 
     if (this.eid) {
       removeEntity(store.state.ecs.core, this.eid);
@@ -69,7 +62,12 @@ export function patchObject3D_CM() {
       store.state.physics.core.removeCharacterController(this.characterController);
     }
 
-    origRemove.bind(this)(child);
+    this.parent.remove(this);
+  }
+
+  Object3D.prototype.initECS = function() {
+
+    initECS(this);
   }
 
   Object3D.prototype.initPhysics = function(physConfig) {

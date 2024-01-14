@@ -11283,7 +11283,7 @@ function outOfBoundsCheckSystem(core) {
     if (outOfBounds) {
       removeComponent(core, DynamicPhysicsComponent, eid);
       delete DynamicPhysicsComponent.objectId[eid];
-      object3D.parent.remove(object3D);
+      object3D.superDelete();
     }
   }
   return core;
@@ -11794,11 +11794,7 @@ function patchObject3D_CM() {
     const bounding = new Box3$1().setFromObject(this);
     this.boundingBox = bounding.getSize(new Vector3$2()).multiplyScalar(0.5);
   };
-  Object3D.prototype.initECS = function () {
-    initECS(this);
-  };
-  const origRemove = Object3D.prototype.remove;
-  Object3D.prototype.remove = function (child) {
+  Object3D.prototype.superDelete = function () {
     if (this.eid) {
       removeEntity(store$1.state.ecs.core, this.eid);
     }
@@ -11814,9 +11810,10 @@ function patchObject3D_CM() {
     if (this.characterController) {
       store$1.state.physics.core.removeCharacterController(this.characterController);
     }
-
-    // Delet
-    origRemove.bind(this)(child);
+    this.parent.remove(this);
+  };
+  Object3D.prototype.initECS = function () {
+    initECS(this);
   };
   Object3D.prototype.initPhysics = function (physConfig) {
     this.initECS();
