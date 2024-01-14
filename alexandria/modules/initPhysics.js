@@ -89,7 +89,6 @@ export const initPhysics = (obj, physConfig) => {
       .forEach((key) => {
 
         const rigidBodyFunc = `set${key.slice(0, 1).toUpperCase() + key.slice(1)}`;
-        console.log('rigidBodyFunc', rigidBodyFunc);
 
         obj.rigidBody[rigidBodyFunc](physConfig[key]);
       });

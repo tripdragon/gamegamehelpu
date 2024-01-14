@@ -130,14 +130,14 @@ export class Level extends LevelMap {
       },
       physics: {
         rigidBody: 'fixed',
-        onCollision: (stuff) => {
+        // onCollision: (stuff) => {
 
-          console.log('BLUE GOAL onCollision stuff', stuff);
-        },
-        onContactForce: (stuff) => {
+        //   console.log('BLUE GOAL onCollision stuff', stuff);
+        // },
+        // onContactForce: (stuff) => {
 
-          console.log('onContactForce stuff', stuff);
-        },
+        //   console.log('onContactForce stuff', stuff);
+        // },
         // onCollision: internals.collisionHandler('sticky'),
         // onContactForce: internals.defaultContactForceEvent
         collider: {
@@ -193,10 +193,10 @@ export class Level extends LevelMap {
         physics: {
           rigidBody: 'dynamic',
           gravityScale: 0,
-          onCollision: (stuff) => {
+          // onCollision: (stuff) => {
 
-            console.log('CUBE onCollision stuff', stuff);
-          },
+          //   console.log('CUBE onCollision stuff', stuff);
+          // },
           collider: {
             type: 'cuboid'
           },
@@ -228,10 +228,10 @@ export class Level extends LevelMap {
             Math.round(randomInRange(-4, 40)),
             Math.round(randomInRange(-4, 4))
           ],
-          onCollision: (stuff) => {
+          // onCollision: (stuff) => {
 
-            console.log('Sphere onCollision stuff', stuff);
-          },
+          //   console.log('Sphere onCollision stuff', stuff);
+          // },
           collider: {
             type: 'ball'
           }
@@ -348,7 +348,6 @@ internals.collisionHandler = (type, forceMultiplier = -40000000000) => (props) =
     }
       break;
     }
-
   }
 };
 

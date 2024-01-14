@@ -13,6 +13,8 @@ import {
   Matrix4
 } from 'three';
 
+import { removeEntity } from 'bitecs';
+
 import { store } from 'alexandria/store';
 
 import { initPhysics } from 'alexandria/modules/initPhysics';
@@ -36,11 +38,37 @@ export function patchObject3D_CM() {
 
     const bounding = new Box3().setFromObject(this);
     this.boundingBox = bounding.getSize(new Vector3()).multiplyScalar(0.5);
-  };
+  }
 
   Object3D.prototype.initECS = function() {
 
     initECS(this);
+  }
+
+  Object3D.prototype.destroy = function() {
+
+    if (this.eid) {
+      removeEntity(store.state.ecs.core, this.eid);
+    }
+
+    if (this.rigidBody) {
+      // Also removes collider
+      store.state.physics.core.removeRigidBody(this.rigidBody);
+    }
+    else if (this.collider) {
+      store.state.physics.core.removeCollider(this.rigidBody);
+    }
+
+    if (this.vehicleController) {
+      store.state.physics.core.removeVehicleController(this.vehicleController);
+    }
+
+    if (this.characterController) {
+      store.state.physics.core.removeCharacterController(this.characterController);
+    }
+
+    // Delet
+    this.parent.remove(this);
   }
 
   Object3D.prototype.initPhysics = function(physConfig) {

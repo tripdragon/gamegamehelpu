@@ -10709,9 +10709,8 @@ class Level extends LevelMap {
       physics: {
         rigidBody: 'fixed',
         collider: {
-          type: 'roundCuboid',
-          friction: 10,
-          borderRadius: 10
+          type: 'cuboid',
+          friction: 10
         }
       }
     }));
@@ -10730,10 +10729,10 @@ class Level extends LevelMap {
       },
       physics: {
         rigidBody: 'fixed',
+        // onCollision: internals.collisionHandler('bouncy'),
+        // onContactForce: internals.defaultContactForceEvent,
         collider: {
           type: 'cuboid'
-          // onCollision: internals.collisionHandler('bouncy'),
-          // onContactForce: internals.defaultContactForceEvent
         }
       }
     }));
@@ -10752,12 +10751,14 @@ class Level extends LevelMap {
       },
       physics: {
         rigidBody: 'fixed',
-        onCollision: stuff => {
-          console.log('BLUE GOAL onCollision stuff', stuff);
-        },
-        onContactForce: stuff => {
-          console.log('onContactForce stuff', stuff);
-        },
+        // onCollision: (stuff) => {
+
+        //   console.log('BLUE GOAL onCollision stuff', stuff);
+        // },
+        // onContactForce: (stuff) => {
+
+        //   console.log('onContactForce stuff', stuff);
+        // },
         // onCollision: internals.collisionHandler('sticky'),
         // onContactForce: internals.defaultContactForceEvent
         collider: {
@@ -10783,11 +10784,12 @@ class Level extends LevelMap {
         physics: {
           rigidBody: 'dynamic',
           gravityScale: 0,
+          // onCollision: (stuff) => {
+
+          //   console.log('CUBE onCollision stuff', stuff);
+          // },
           collider: {
-            type: 'cuboid',
-            onCollision: stuff => {
-              console.log('CUBE onCollision stuff', stuff);
-            }
+            type: 'cuboid'
           },
           linvel: [Math.round(randomInRange(-180, 180)), Math.round(randomInRange(-4, 40)), Math.round(randomInRange(-4, 4))]
         }
@@ -10809,9 +10811,10 @@ class Level extends LevelMap {
           rigidBody: 'dynamic',
           gravityScale: 2,
           linvel: [Math.round(randomInRange(-180, 180)), Math.round(randomInRange(-4, 40)), Math.round(randomInRange(-4, 4))],
-          onCollision: stuff => {
-            console.log('Sphere onCollision stuff', stuff);
-          },
+          // onCollision: (stuff) => {
+
+          //   console.log('Sphere onCollision stuff', stuff);
+          // },
           collider: {
             type: 'ball'
           }
@@ -11102,7 +11105,7 @@ defineComponent(Vector3$1);
 defineComponent();
 const DynamicPhysicsComponent = defineComponent({
   objectId: [Types.ui32],
-  objForColliderHandle: [Types.f64]
+  objIdForColliderHandle: [Types.f64]
 });
 const SleepingPhysicsComponent = defineComponent({
   objectId: [Types.ui32]
@@ -11167,8 +11170,8 @@ function physicsSystem(core) {
   store$1.state.physics.core.step(internals$1.eventQueue);
   internals$1.eventQueue.drainCollisionEvents((handle1, handle2, started) => {
     /* Handle the collision event. */
-    const obj1 = store$1.state.game.scene.getObjectById(DynamicPhysicsComponent.objForColliderHandle[handle1]);
-    const obj2 = store$1.state.game.scene.getObjectById(DynamicPhysicsComponent.objForColliderHandle[handle2]);
+    const obj1 = store$1.state.game.scene.getObjectById(DynamicPhysicsComponent.objIdForColliderHandle[handle1]);
+    const obj2 = store$1.state.game.scene.getObjectById(DynamicPhysicsComponent.objIdForColliderHandle[handle2]);
     const contactInfo = obj1.collider.contactCollider(obj2.collider);
     const baseEvtProps = {
       obj1,
@@ -11196,8 +11199,8 @@ function physicsSystem(core) {
   });
   internals$1.eventQueue.drainContactForceEvents((handle1, handle2, started) => {
     /* Handle the contact force event. */
-    const obj1 = DynamicPhysicsComponent.objForColliderHandle[handle1];
-    const obj2 = DynamicPhysicsComponent.objForColliderHandle[handle2];
+    const obj1 = DynamicPhysicsComponent.objIdForColliderHandle[handle1];
+    const obj2 = DynamicPhysicsComponent.objIdForColliderHandle[handle2];
     const baseEvtProps = {
       obj1,
       obj2,
@@ -11280,7 +11283,7 @@ function outOfBoundsCheckSystem(core) {
     if (outOfBounds) {
       removeComponent(core, DynamicPhysicsComponent, eid);
       delete DynamicPhysicsComponent.objectId[eid];
-      object3D.parent.remove(object3D);
+      object3D.destroy();
     }
   }
   return core;
@@ -11564,12 +11567,11 @@ const initPhysics = (obj, physConfig) => {
     // Update rigidBody for each valid key
     Object.keys(physConfig).filter(key => rigidBodySettings.includes(key)).forEach(key => {
       const rigidBodyFunc = `set${key.slice(0, 1).toUpperCase() + key.slice(1)}`;
-      console.log('rigidBodyFunc', rigidBodyFunc);
       obj.rigidBody[rigidBodyFunc](physConfig[key]);
     });
 
     // TODO support more collider types
-    // See docs https://rapier.rs/docs/api/javascript/JavaScript3D
+    // See Docs https://rapier.rs/docs/api/javascript/JavaScript3D
 
     let colliderDesc;
     obj.computeBoundingBox();
@@ -11756,7 +11758,7 @@ const initPhysics = (obj, physConfig) => {
     }
 
     // Add collider handle for lookup during collision time
-    DynamicPhysicsComponent.objForColliderHandle[obj.collider.handle] = obj.id;
+    DynamicPhysicsComponent.objIdForColliderHandle[obj.collider.handle] = obj.id;
     if (collider.density && (collider.mass || collider.massProperties)) {
       throw new Error('Can\'t set both density and mass on collider');
     }
@@ -11776,12 +11778,12 @@ const initPhysics = (obj, physConfig) => {
 
 const initECS = obj => {
   if (obj.eid) {
-    return obj;
+    return;
   }
   const ecsCore = store$1.state.ecs.core;
   const eid = addEntity(ecsCore);
   obj.eid = eid;
-  return obj;
+  return;
 };
 
 // we need a core patch of object3D to have interfaces
@@ -11794,6 +11796,26 @@ function patchObject3D_CM() {
   };
   Object3D.prototype.initECS = function () {
     initECS(this);
+  };
+  Object3D.prototype.destroy = function () {
+    if (this.eid) {
+      removeEntity(store$1.state.ecs.core, this.eid);
+    }
+    if (this.rigidBody) {
+      // Also removes collider
+      store$1.state.physics.core.removeRigidBody(this.rigidBody);
+    } else if (this.collider) {
+      store$1.state.physics.core.removeCollider(this.rigidBody);
+    }
+    if (this.vehicleController) {
+      store$1.state.physics.core.removeVehicleController(this.vehicleController);
+    }
+    if (this.characterController) {
+      store$1.state.physics.core.removeCharacterController(this.characterController);
+    }
+
+    // Delet
+    this.parent.remove(this);
   };
   Object3D.prototype.initPhysics = function (physConfig) {
     this.initECS();
