@@ -57,7 +57,7 @@ export function initGameLoop() {
     internals.runPipelineOnCondition({
       pipeline: sleepingPhysicsPipeline,
       interval: sleepingPhysicsTick,
-      condition: store.state.game.physicsOn
+      condition: store.state.game.physics
     });
 
     // If object goes out of bounds, remove it
@@ -70,14 +70,14 @@ export function initGameLoop() {
 
   setGamePipeline();
 
-  store.subscribe('game.physicsOn', setGamePipeline);
+  store.subscribe('game.physics', setGamePipeline);
   store.subscribe('game.outOfBounds', setGamePipeline);
 
   // Kickoff render loop
   internals.renderLoop();
 }
 
-internals.renderLoop = (delta) => {
+internals.renderLoop = () => {
 
   // const st = store.getState().game; // this spams with objects
   const st = store.state.game;

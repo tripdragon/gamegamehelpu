@@ -7458,9 +7458,9 @@ class ImportedModel extends Group {
   // boundingBox = null;
   // boundingSphere = null;
 
-  // // 
-  // // 
-  // // 
+  // //
+  // //
+  // //
   // // #BUG we need precise to fix lota internal things
   // // from setting the box settings to Infinity as defaults
   // Object3D.prototype.computeBoundingBox = function(precise=true) {
@@ -7478,85 +7478,85 @@ class ImportedModel extends Group {
   //   }
   //   this.boundingBox.getBoundingSphere(this.boundingSphere);
   // }
-  // 
-  // 
-  // 
+  //
+  //
+  //
   // Object3D.prototype.raycast = function( raycaster, intersects ) {
-  // 
+  //
   // 	const matrixWorld = this.matrixWorld;
-  // 
+  //
   // 	// test with bounding sphere in world space
-  // 
+  //
   // 	if ( this.boundingSphere === null ) this.computeBoundingSphere();
-  // 
+  //
   // 	_sphere.copy( this.boundingSphere );
   // 	_sphere.applyMatrix4( matrixWorld );
-  // 
+  //
   // 	// check distance from ray origin to bounding sphere
   // // debugger
   // 	// _ray.copy( raycaster.ray ).recast( raycaster.near );
   // 	_ray.copy( raycaster.ray ).recast( raycaster.near );
-  // 
+  //
   // 	// if ( _sphere.containsPoint( _ray.origin ) === false ) {
-  //   // 
+  //   //
   // 	// 	if ( _ray.intersectSphere( _sphere, _sphereHitAt ) === null ) return;
-  //   // 
+  //   //
   // 	// 	if ( _ray.origin.distanceToSquared( _sphereHitAt ) > ( raycaster.far - raycaster.near ) ** 2 ) return;
-  //   // 
+  //   //
   // 	// }
   // // debugger
   // 	// convert ray to local space of mesh
-  // 
+  //
   // 	// _inverseMatrix.copy( matrixWorld ).invert();
   // 	// _ray.copy( raycaster.ray ).applyMatrix4( _inverseMatrix );
-  // 
+  //
   // 	// test with bounding box in local space
-  // 
-  //   // 
+  //
+  //   //
   //   // start here for new routines
-  //   // 
-  // 
+  //   //
+  //
   //   // if ( this.boundingSphere === null ) this.computeBoundingBox();
   //   if ( this.boundingBox === null ) {
   //     this.computeBoundingBox();
   //   }
   //   // if ( this.boundingBox === null ) return;
   //   debugger
-  // 
+  //
   // 	if ( _ray.intersectBox( this.boundingBox, _intersectionPointWorld ) === null ) return;
   // 	// if ( _ray.intersectBox( this.boundingBox, this._intersectionPointWorld ) === false ) return;
   // 	// if ( ! _ray.intersectBox( this.boundingBox, this._intersectionPointWorld ) ) return;
-  // 
+  //
   // debugger
-  // 
+  //
   //   // _intersectionPointWorld.copy( point );
   //   // _intersectionPointWorld.applyMatrix4( object.matrixWorld );
-  // 
-  // 
+  //
+  //
   //   _point.copy( _intersectionPointWorld );
   //   _point.applyMatrix4( this.matrixWorld );
-  // 
+  //
   //   const distance = raycaster.ray.origin.distanceTo( _point );
   //   console.log("distance", distance);
-  // 
+  //
   //   if ( distance < raycaster.near || distance > raycaster.far ) return null;
-  // 
+  //
   // // debugger
-  // 
+  //
   //   const intersection = {
   //     distance: distance,
   //     point: _intersectionPointWorld.clone(),
   //     object: this
   //   };
-  // 
+  //
   //   intersects.push( intersection );
-  // 
+  //
   //   intersects.sort( ascSort );
-  // 
+  //
   //   return intersects;
   // }
-  // 
-  // 
+  //
+  //
 }
 
 // note you are calling a function that needs to start with async
@@ -11301,7 +11301,7 @@ function initGameLoop() {
     internals.runPipelineOnCondition({
       pipeline: sleepingPhysicsPipeline,
       interval: sleepingPhysicsTick,
-      condition: store$1.state.game.physicsOn
+      condition: store$1.state.game.physics
     });
 
     // If object goes out of bounds, remove it
@@ -11312,13 +11312,13 @@ function initGameLoop() {
     });
   };
   setGamePipeline();
-  store$1.subscribe('game.physicsOn', setGamePipeline);
+  store$1.subscribe('game.physics', setGamePipeline);
   store$1.subscribe('game.outOfBounds', setGamePipeline);
 
   // Kickoff render loop
   internals.renderLoop();
 }
-internals.renderLoop = delta => {
+internals.renderLoop = () => {
   // const st = store.getState().game; // this spams with objects
   const st = store$1.state.game;
 
@@ -11468,292 +11468,316 @@ function mergeVertices(geometry, tolerance = 1e-4) {
   return result;
 }
 
+// Documentation
+// https://rapier.rs/docs/api/javascript/JavaScript3D
+
+
+// Need to create a module initECS that initializes an obj to ECS
+// It can check if the obj already has obj.ecsId or something and return if it does
+
+// Move initPhysics to its own module and pass in the object to place
+// in the physics system
+const initPhysics = (obj, physConfig) => {
+  const {
+    rigidBody,
+    linvel,
+    angvel
+  } = physConfig;
+  let {
+    collider = {
+      type: 'cuboid'
+    }
+  } = physConfig;
+  const rigidBodyTypes = ['dynamic', 'fixed', 'kinematicPositionBased', 'kinematicVelocityBased'];
+  const physicsKeys = ['rigidBody', 'collider', 'linvel', 'angvel', 'gravityScale'];
+  const rigidBodySettings = ['gravityScale' // float
+  ];
+  const colliderDescSettings = ['centerOfMass',
+  // vec3
+  'enabled' // bool
+  ];
+  const colliderSettings = ['sensor',
+  // bool
+  'collisionGroups',
+  // num
+  'solverGroups',
+  // num
+  'friction',
+  // num
+  'frictionCombineRule',
+  // Physics.CoefficientCombineRule.*
+  'restitution',
+  // num
+  'restitutionCombineRule',
+  // Physics.CoefficientCombineRule.*
+  'density',
+  // num
+  'mass',
+  // num
+  'massProperties',
+  // { mass: num, centerOfMass: vec3, principalAngularInertia: vec3, angularInertiaLocalFrame: quat }
+  'rotation',
+  // quat,
+  'translation' // vec3
+  ];
+  const physCore = store$1.state.physics.core;
+  const invalidKeys = Object.keys(physConfig).filter(key => !physicsKeys.includes(key));
+  if (invalidKeys.length) {
+    throw new Error(`Invalid keys passed to object3D.initPhysics: '${invalidKeys}'`);
+  }
+  if (rigidBody) {
+    if (!rigidBodyTypes.includes(rigidBody)) {
+      throw new Error(`Invalid rigidBody '${rigidBody}'. Must be one of ${rigidBodyTypes}`);
+    }
+    const rigidBodyDesc = PI.RigidBodyDesc[rigidBody]().setTranslation(...obj.position);
+    // TODO really should get this rotation working
+    // .setRotation(obj.rotation);
+
+    if (linvel) {
+      if (linvel.length !== 3) {
+        throw new Error('linvel requires an array of numbers [x, y, z]');
+      }
+      rigidBodyDesc.setLinvel(...linvel);
+    }
+
+    // TODO angvel sorta works idk
+    if (angvel) {
+      if (typeof angvel !== 'number') {
+        throw new Error('angvel must be a number');
+      }
+      rigidBodyDesc.setAngvel(angvel);
+    }
+    obj.rigidBody = physCore.createRigidBody(rigidBodyDesc);
+
+    // Update rigidBody for each valid key
+    Object.keys(physConfig).filter(key => rigidBodySettings.includes(key)).forEach(key => {
+      const rigidBodyFunc = `set${key.slice(0, 1).toUpperCase() + key.slice(1)}`;
+      console.log('rigidBodyFunc', rigidBodyFunc);
+      obj.rigidBody[rigidBodyFunc](physConfig[key]);
+    });
+
+    // TODO support more collider types
+    // See docs https://rapier.rs/docs/api/javascript/JavaScript3D
+
+    let colliderDesc;
+    obj.computeBoundingBox();
+    if (typeof collider === 'string') {
+      collider = {
+        type: collider
+      };
+    }
+    switch (collider.type) {
+      case 'cuboid':
+        colliderDesc = PI.ColliderDesc.cuboid(...obj.boundingBox);
+        break;
+      case 'roundCuboid':
+        colliderDesc = PI.ColliderDesc.roundCuboid(...obj.boundingBox, collider.borderRadius // number
+        );
+        break;
+      case 'ball':
+      case 'sphere':
+        obj.geometry.computeBoundingSphere();
+        colliderDesc = PI.ColliderDesc.ball(obj.geometry.boundingSphere.radius // number
+        );
+        break;
+      case 'capsule':
+        colliderDesc = PI.ColliderDesc.capsule(collider.halfHeight,
+        // number
+        collider.radius // number
+        );
+        break;
+      case 'trimesh':
+        {
+          const geomClone = obj.geometry.index ? obj.geometry.clone() : mergeVertices(obj.geometry);
+          colliderDesc = PI.ColliderDesc.trimesh(geomClone.attributes.position.array,
+          // vertices Float32Array
+          geomClone.index?.array // indices Uint32Array
+          );
+        }
+        break;
+      case 'convexHull':
+      case 'hull':
+        {
+          const geomClone = obj.geometry.clone();
+          colliderDesc = PI.ColliderDesc.convexHull(geomClone.attributes.position.array // points Float32Array
+          );
+        }
+        break;
+      case 'roundConvexHull':
+      case 'roundHull':
+        {
+          const geomClone = obj.geometry.clone();
+          colliderDesc = PI.ColliderDesc.roundConvexHull(geomClone.attributes.position.array,
+          // points Float32Array
+          collider.borderRadius // number
+          );
+        }
+        break;
+      case 'convexMesh':
+      case 'mesh':
+        {
+          const geomClone = obj.geometry.index ? obj.geometry.clone() : mergeVertices(obj.geometry);
+          colliderDesc = PI.ColliderDesc.convexMesh(geomClone.attributes.position.array,
+          // vertices Float32Array
+          geomClone.index?.array // indices Uint32Array
+          );
+        }
+        break;
+      case 'roundConvexMesh':
+      case 'roundMesh':
+        {
+          const geomClone = obj.geometry.index ? obj.geometry.clone() : mergeVertices(obj.geometry);
+          colliderDesc = PI.ColliderDesc.roundConvexMesh(geomClone.attributes.position.array,
+          // vertices Float32Array
+          geomClone.index?.array,
+          // indices Uint32Array
+          collider.borderRadius // number
+          );
+        }
+        break;
+      case 'cylinder':
+        colliderDesc = PI.ColliderDesc.cylinder(collider.halfHeight,
+        // number
+        collider.radius // number
+        );
+        break;
+      case 'roundCylinder':
+        colliderDesc = PI.ColliderDesc.roundCylinder(collider.halfHeight,
+        // number
+        collider.radius,
+        // number
+        collider.borderRadius // number
+        );
+        break;
+      case 'cone':
+        colliderDesc = PI.ColliderDesc.cone(collider.halfHeight,
+        // number
+        collider.radius // number
+        );
+        break;
+      case 'roundCone':
+        colliderDesc = PI.ColliderDesc.roundCone(collider.halfHeight,
+        // number
+        collider.radius,
+        // number
+        collider.borderRadius // number
+        );
+        break;
+      case 'triangle':
+        colliderDesc = PI.ColliderDesc.triangle(collider.a,
+        // vec3
+        collider.b,
+        // vec3
+        collider.c // vec3
+        );
+        break;
+      case 'roundTriangle':
+        colliderDesc = PI.ColliderDesc.roundTriangle(collider.a,
+        // vec3
+        collider.b,
+        // vec3
+        collider.c,
+        // vec3
+        collider.borderRadius // number
+        );
+        break;
+      case 'segment':
+        colliderDesc = PI.ColliderDesc.segment(collider.a,
+        // vec3
+        collider.b // vec3
+        );
+        break;
+      case 'polyline':
+        {
+          const geomClone = obj.geometry.index ? obj.geometry.clone() : mergeVertices(obj.geometry);
+          colliderDesc = PI.ColliderDesc.polyline(geomClone.attributes.position.array,
+          // vertices Float32Array
+          geomClone.index?.array // indices Uint32Array
+          );
+        }
+        break;
+      case 'heightfield':
+        colliderDesc = PI.ColliderDesc.heightfield(collider.rows,
+        // number
+        collider.cols,
+        // number
+        collider.heights,
+        // Float32Array The heights of the heightfield along its local y axis, provided as a matrix stored in column-major order.
+        collider.scale // vec3
+        );
+        break;
+    }
+    if (collider.sensor) {
+      colliderDesc.sensor = true;
+    }
+
+    // Update collider for each valid key, copied most ideas from
+    // https://github.com/pmndrs/react-three-rapier/blob/main/packages/react-three-rapier/src/utils/utils-collider.ts
+    Object.keys(collider).filter(key => colliderDescSettings.includes(key)).forEach(key => {
+      const colliderDescVal = `set${key.slice(0, 1).toUpperCase() + key.slice(1)}`;
+      colliderDesc[colliderDescVal] = collider[key];
+    });
+    if (collider.onCollisionEvent && collider.onForceEvent) {
+      colliderDesc.setActiveEvents(PI.ActiveEvents.COLLISION_EVENTS | PI.ActiveEvents.CONTACT_FORCE_EVENTS);
+      obj.onCollisionEvent = collider.onCollisionEvent;
+      obj.onContactForceEvent = collider.onContactForceEvent;
+    } else if (collider.onCollisionEvent) {
+      colliderDesc.setActiveEvents(PI.ActiveEvents.COLLISION_EVENTS);
+      obj.onCollisionEvent = collider.onCollisionEvent;
+    } else if (collider.onContactForceEvent) {
+      colliderDesc.setActiveEvents(PI.ActiveEvents.CONTACT_FORCE_EVENTS);
+      obj.onContactForceEvent = collider.onContactForceEvent;
+    }
+    obj.collider = physCore.createCollider(colliderDesc, obj.rigidBody);
+    const ecsCore = store$1.state.ecs.core;
+    if (rigidBody === 'dynamic' || collider.sensor) {
+      addComponent(ecsCore, DynamicPhysicsComponent, obj.eid);
+      DynamicPhysicsComponent.objectId[obj.eid] = obj.id;
+    }
+
+    // Add collider handle for lookup during collision time
+    DynamicPhysicsComponent.objForColliderHandle[obj.collider.handle] = undefined;
+    if (collider.density && (collider.mass || collider.massProperties)) {
+      throw new Error('Can\'t set both density and mass on collider');
+    }
+
+    // Update collider for each valid key
+    Object.keys(collider).filter(key => colliderSettings.includes(key)).forEach(key => {
+      const colliderFunc = `set${key.slice(0, 1).toUpperCase() + key.slice(1)}`;
+      if (key === 'massProperties') {
+        const val = collider[key];
+        obj.collider[colliderFunc](val.mass, val.centerOfMass, val.principalAngularInertia, val.angularInertiaLocalFrame);
+      } else {
+        obj.collider[colliderFunc](collider[key]);
+      }
+    });
+  }
+};
+
+const initECS = obj => {
+  if (obj.eid) {
+    return obj;
+  }
+  const ecsCore = store$1.state.ecs.core;
+  const eid = addEntity(ecsCore);
+  obj.eid = eid;
+  return obj;
+};
+
 // we need a core patch of object3D to have interfaces
 // so this is the simpliest route
 
 function patchObject3D_CM() {
-  const rigidBodyTypes = ['dynamic', 'fixed', 'kinematicPositionBased', 'kinematicVelocityBased'];
-  const physicsKeys = ['rigidBody', 'collider', 'linvel', 'angvel', 'gravityScale'];
   Object3D.prototype.computeBoundingBox = function () {
     const bounding = new Box3$1().setFromObject(this);
     this.boundingBox = bounding.getSize(new Vector3$2()).multiplyScalar(0.5);
   };
+  Object3D.prototype.initECS = function () {
+    initECS(this);
+  };
   Object3D.prototype.initPhysics = function (physConfig) {
-    const {
-      rigidBody,
-      linvel,
-      angvel
-    } = physConfig;
-    let {
-      collider = {
-        type: 'cuboid'
-      }
-    } = physConfig;
-    const rigidBodySettings = ['gravityScale' // float
-    ];
-    const colliderDescSettings = ['centerOfMass',
-    // vec3
-    'enabled' // bool
-    ];
-    const colliderSettings = ['sensor',
-    // bool
-    'collisionGroups',
-    // num
-    'solverGroups',
-    // num
-    'friction',
-    // num
-    'frictionCombineRule',
-    // Physics.CoefficientCombineRule.*
-    'restitution',
-    // num
-    'restitutionCombineRule',
-    // Physics.CoefficientCombineRule.*
-    'density',
-    // num
-    'mass',
-    // num
-    'massProperties',
-    // { mass: num, centerOfMass: vec3, principalAngularInertia: vec3, angularInertiaLocalFrame: quat }
-    'rotation',
-    // quat,
-    'translation' // vec3
-    ];
-    const ecsCore = store$1.state.ecs.core;
-    const eid = addEntity(ecsCore);
-    this.eid = eid;
-    const physCore = store$1.state.physics.core;
-    const invalidKeys = Object.keys(physConfig).filter(key => !physicsKeys.includes(key));
-    if (invalidKeys.length) {
-      throw new Error(`Invalid keys passed to object3D.initPhysics: '${invalidKeys}'`);
-    }
-    if (rigidBody) {
-      if (!rigidBodyTypes.includes(rigidBody)) {
-        throw new Error(`Invalid rigidBody '${rigidBody}'. Must be one of ${rigidBodyTypes}`);
-      }
-      const rigidBodyDesc = PI.RigidBodyDesc[rigidBody]().setTranslation(...this.position);
-      // TODO really should get this rotation working
-      // .setRotation(this.rotation);
-
-      if (linvel) {
-        if (linvel.length !== 3) {
-          throw new Error('linvel requires an array of numbers [x, y, z]');
-        }
-        rigidBodyDesc.setLinvel(...linvel);
-      }
-
-      // TODO angvel sorta works idk
-      if (angvel) {
-        if (typeof angvel !== 'number') {
-          throw new Error('angvel must be a number');
-        }
-        rigidBodyDesc.setAngvel(angvel);
-      }
-      this.rigidBody = physCore.createRigidBody(rigidBodyDesc);
-
-      // Update rigidBody for each valid key
-      Object.keys(physConfig).filter(key => rigidBodySettings.includes(key)).forEach(key => {
-        const rigidBodyFunc = `set${key.slice(0, 1).toUpperCase() + key.slice(1)}`;
-        console.log('rigidBodyFunc', rigidBodyFunc);
-        this.rigidBody[rigidBodyFunc](physConfig[key]);
-      });
-
-      // TODO support more collider types
-      // See docs https://rapier.rs/docs/api/javascript/JavaScript3D
-
-      let colliderDesc;
-      this.computeBoundingBox();
-      if (typeof collider === 'string') {
-        collider = {
-          type: collider
-        };
-      }
-      switch (collider.type) {
-        case 'ball':
-        case 'sphere':
-          this.geometry.computeBoundingSphere();
-          colliderDesc = PI.ColliderDesc.ball(this.geometry.boundingSphere.radius // number
-          );
-          break;
-        case 'capsule':
-          colliderDesc = PI.ColliderDesc.capsule(collider.halfHeight,
-          // number
-          collider.radius // number
-          );
-          break;
-        case 'trimesh':
-          {
-            const geomClone = this.geometry.index ? this.geometry.clone() : mergeVertices(this.geometry);
-            colliderDesc = PI.ColliderDesc.trimesh(geomClone.attributes.position.array,
-            // vertices Float32Array
-            geomClone.index?.array // indices Uint32Array
-            );
-          }
-          break;
-        case 'convexHull':
-        case 'hull':
-          {
-            const geomClone = this.geometry.clone();
-            colliderDesc = PI.ColliderDesc.convexHull(geomClone.attributes.position.array // points Float32Array
-            );
-          }
-          break;
-        case 'roundConvexHull':
-        case 'roundHull':
-          {
-            const geomClone = this.geometry.clone();
-            colliderDesc = PI.ColliderDesc.roundConvexHull(geomClone.attributes.position.array,
-            // points Float32Array
-            collider.borderRadius // number
-            );
-          }
-          break;
-        case 'convexMesh':
-        case 'mesh':
-          {
-            const geomClone = this.geometry.index ? this.geometry.clone() : mergeVertices(this.geometry);
-            colliderDesc = PI.ColliderDesc.convexMesh(geomClone.attributes.position.array,
-            // vertices Float32Array
-            geomClone.index?.array // indices Uint32Array
-            );
-          }
-          break;
-        case 'roundConvexMesh':
-        case 'roundMesh':
-          {
-            const geomClone = this.geometry.index ? this.geometry.clone() : mergeVertices(this.geometry);
-            colliderDesc = PI.ColliderDesc.roundConvexMesh(geomClone.attributes.position.array,
-            // vertices Float32Array
-            geomClone.index?.array,
-            // indices Uint32Array
-            collider.borderRadius // number
-            );
-          }
-          break;
-        case 'cylinder':
-          colliderDesc = PI.ColliderDesc.cylinder(collider.halfHeight,
-          // number
-          collider.radius // number
-          );
-          break;
-        case 'roundCylinder':
-          colliderDesc = PI.ColliderDesc.roundCylinder(collider.halfHeight,
-          // number
-          collider.radius,
-          // number
-          collider.borderRadius // number
-          );
-          break;
-        case 'cone':
-          colliderDesc = PI.ColliderDesc.cone(collider.halfHeight,
-          // number
-          collider.radius // number
-          );
-          break;
-        case 'roundCone':
-          colliderDesc = PI.ColliderDesc.roundCone(collider.halfHeight,
-          // number
-          collider.radius,
-          // number
-          collider.borderRadius // number
-          );
-          break;
-        case 'triangle':
-          colliderDesc = PI.ColliderDesc.triangle(collider.a,
-          // vec3
-          collider.b,
-          // vec3
-          collider.c // vec3
-          );
-          break;
-        case 'roundTriangle':
-          colliderDesc = PI.ColliderDesc.roundTriangle(collider.a,
-          // vec3
-          collider.b,
-          // vec3
-          collider.c,
-          // vec3
-          collider.borderRadius // number
-          );
-          break;
-        case 'segment':
-          colliderDesc = PI.ColliderDesc.segment(collider.a,
-          // vec3
-          collider.b // vec3
-          );
-          break;
-        case 'polyline':
-          {
-            const geomClone = this.geometry.index ? this.geometry.clone() : mergeVertices(this.geometry);
-            colliderDesc = PI.ColliderDesc.polyline(geomClone.attributes.position.array,
-            // vertices Float32Array
-            geomClone.index?.array // indices Uint32Array
-            );
-          }
-          break;
-        case 'heightfield':
-          colliderDesc = PI.ColliderDesc.heightfield(collider.rows,
-          // number
-          collider.cols,
-          // number
-          collider.heights,
-          // Float32Array The heights of the heightfield along its local y axis, provided as a matrix stored in column-major order.
-          collider.scale // vec3
-          );
-          break;
-        case 'cuboid':
-          colliderDesc = PI.ColliderDesc.cuboid(...this.boundingBox);
-          break;
-        case 'roundCuboid':
-          colliderDesc = PI.ColliderDesc.roundCuboid(...this.boundingBox, collider.borderRadius // number
-          );
-          break;
-      }
-      if (collider.isSensor) {
-        colliderDesc.isSensor = true;
-      }
-
-      // Update collider for each valid key, copied most ideas from
-      // https://github.com/pmndrs/react-three-rapier/blob/main/packages/react-three-rapier/src/utils/utils-collider.ts
-      Object.keys(collider).filter(key => colliderDescSettings.includes(key)).forEach(key => {
-        const colliderDescVal = `set${key.slice(0, 1).toUpperCase() + key.slice(1)}`;
-        colliderDesc[colliderDescVal] = collider[key];
-      });
-      if (collider.onCollisionEvent && collider.onForceEvent) {
-        colliderDesc.setActiveEvents(PI.ActiveEvents.COLLISION_EVENTS | PI.ActiveEvents.CONTACT_FORCE_EVENTS);
-        this.onCollisionEvent = collider.onCollisionEvent;
-        this.onContactForceEvent = collider.onContactForceEvent;
-      } else if (collider.onCollisionEvent) {
-        colliderDesc.setActiveEvents(PI.ActiveEvents.COLLISION_EVENTS);
-        this.onCollisionEvent = collider.onCollisionEvent;
-      } else if (collider.onContactForceEvent) {
-        colliderDesc.setActiveEvents(PI.ActiveEvents.CONTACT_FORCE_EVENTS);
-        this.onContactForceEvent = collider.onContactForceEvent;
-      }
-      this.collider = physCore.createCollider(colliderDesc, this.rigidBody);
-      if (rigidBody === 'dynamic' || collider.isSensor) {
-        addComponent(ecsCore, DynamicPhysicsComponent, eid);
-        DynamicPhysicsComponent.objectId[eid] = this.id;
-      }
-
-      // Add collider handle for lookup during collision time
-      DynamicPhysicsComponent.objForColliderHandle[this.collider.handle] = this;
-      if (collider.density && (collider.mass || collider.massProperties)) {
-        throw new Error('Can\'t set both density and mass on collider');
-      }
-
-      // Update collider for each valid key, copied most ideas from
-      // https://github.com/pmndrs/react-three-rapier/blob/main/packages/react-three-rapier/src/utils/utils-collider.ts
-      Object.keys(collider).filter(key => colliderSettings.includes(key)).forEach(key => {
-        const colliderFunc = `set${key.slice(0, 1).toUpperCase() + key.slice(1)}`;
-        if (key === 'massProperties') {
-          const val = collider[key];
-          this.collider[colliderFunc](val.mass, val.centerOfMass, val.principalAngularInertia, val.angularInertiaLocalFrame);
-        } else {
-          this.collider[colliderFunc](collider[key]);
-        }
-      });
-    }
+    this.initECS();
+    initPhysics(this, physConfig);
   };
   Object3D.prototype.fish = 'neat!!';
   Object3D.prototype.entities = {};
