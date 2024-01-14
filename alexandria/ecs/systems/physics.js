@@ -85,12 +85,10 @@ export default function physicsSystem(core) {
   // store.state.physics.core.step();
   store.state.physics.core.step(internals.eventQueue);
 
-  // console.log('zlog internals.eventQueue', internals.eventQueue);
-
   internals.eventQueue.drainCollisionEvents((handle1, handle2, started) => {
     /* Handle the collision event. */
-    const obj1 = DynamicPhysicsComponent.objForColliderHandle[handle1];
-    const obj2 = DynamicPhysicsComponent.objForColliderHandle[handle2];
+    const obj1 = store.state.game.scene.getObjectById(DynamicPhysicsComponent.objForColliderHandle[handle1]);
+    const obj2 = store.state.game.scene.getObjectById(DynamicPhysicsComponent.objForColliderHandle[handle2]);
 
     const contactInfo = obj1.collider.contactCollider(obj2.collider);
 
@@ -107,14 +105,14 @@ export default function physicsSystem(core) {
         obj2.collider.object,
         (manifold, flipped) => {
 
-          obj1?.onCollisionEvent({ ...baseEvtProps, manifold, flipped });
-          obj2?.onCollisionEvent({ ...baseEvtProps, manifold, flipped });
+          obj1?.onCollision({ ...baseEvtProps, manifold, flipped });
+          obj2?.onCollision({ ...baseEvtProps, manifold, flipped });
         }
       );
     }
     else {
-      obj1?.onCollisionEvent(baseEvtProps);
-      obj2?.onCollisionEvent(baseEvtProps);
+      obj1?.onCollision(baseEvtProps);
+      obj2?.onCollision(baseEvtProps);
     }
   });
 
@@ -135,14 +133,14 @@ export default function physicsSystem(core) {
         obj2.collider.object,
         (manifold, flipped) => {
 
-          obj1?.onContactForceEvent({ ...baseEvtProps, manifold, flipped });
-          obj2?.onContactForceEvent({ ...baseEvtProps, manifold, flipped });
+          obj1?.onContactForce({ ...baseEvtProps, manifold, flipped });
+          obj2?.onContactForce({ ...baseEvtProps, manifold, flipped });
         }
       );
     }
     else {
-      obj1?.onContactForceEvent(baseEvtProps);
-      obj2?.onContactForceEvent(baseEvtProps);
+      obj1?.onContactForce(baseEvtProps);
+      obj2?.onContactForce(baseEvtProps);
     }
   });
 

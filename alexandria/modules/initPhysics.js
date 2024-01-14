@@ -22,7 +22,7 @@ export const initPhysics = (obj, physConfig) => {
   let { collider = { type: 'cuboid' } } = physConfig;
 
   const rigidBodyTypes = ['dynamic', 'fixed', 'kinematicPositionBased', 'kinematicVelocityBased'];
-  const physicsKeys = ['rigidBody', 'collider', 'linvel', 'angvel', 'gravityScale'];
+  const physicsKeys = ['rigidBody', 'collider', 'linvel', 'angvel', 'gravityScale', 'onCollision'];
 
   const rigidBodySettings = [
     'gravityScale' // float
@@ -51,12 +51,14 @@ export const initPhysics = (obj, physConfig) => {
   const invalidKeys = Object.keys(physConfig).filter((key) => !physicsKeys.includes(key));
 
   if (invalidKeys.length) {
-    throw new Error(`Invalid keys passed to object3D.initPhysics: '${invalidKeys}'`)
+    console.warn(`Invalid keys passed to object3D.initPhysics: '${invalidKeys}'`)
+    return;
   }
 
   if (rigidBody) {
     if (!rigidBodyTypes.includes(rigidBody)) {
-      throw new Error(`Invalid rigidBody '${rigidBody}'. Must be one of ${rigidBodyTypes}`);
+      console.warn(`Invalid rigidBody '${rigidBody}'. Must be one of ${rigidBodyTypes}`);
+      return;
     }
 
     const rigidBodyDesc = Physics.RigidBodyDesc[rigidBody]()
@@ -266,25 +268,34 @@ export const initPhysics = (obj, physConfig) => {
         colliderDesc[colliderDescVal] = collider[key];
       });
 
-    if (collider.onCollisionEvent && collider.onForceEvent) {
+    // Allow setting these events without putting the keys directly in 'collider'
+    if (!collider.onCollision && physConfig.onCollision) {
+      collider.onCollision = physConfig.onCollision;
+    }
+
+    if (!collider.onContactForce && physConfig.onContactForce) {
+      collider.onContactForce = physConfig.onContactForce;
+    }
+
+    if (collider.onCollision && collider.onContactForce) {
       colliderDesc.setActiveEvents(
         Physics.ActiveEvents.COLLISION_EVENTS
         | Physics.ActiveEvents.CONTACT_FORCE_EVENTS
       );
-      obj.onCollisionEvent = collider.onCollisionEvent;
-      obj.onContactForceEvent = collider.onContactForceEvent;
+      obj.onCollision = collider.onCollision;
+      obj.onContactForce = collider.onContactForce;
     }
-    else if (collider.onCollisionEvent) {
+    else if (collider.onCollision) {
       colliderDesc.setActiveEvents(
         Physics.ActiveEvents.COLLISION_EVENTS
       );
-      obj.onCollisionEvent = collider.onCollisionEvent;
+      obj.onCollision = collider.onCollision;
     }
-    else if (collider.onContactForceEvent) {
+    else if (collider.onContactForce) {
       colliderDesc.setActiveEvents(
         Physics.ActiveEvents.CONTACT_FORCE_EVENTS
       );
-      obj.onContactForceEvent = collider.onContactForceEvent;
+      obj.onContactForce = collider.onContactForce;
     }
 
     obj.collider = physCore.createCollider(colliderDesc, obj.rigidBody);
@@ -297,7 +308,7 @@ export const initPhysics = (obj, physConfig) => {
     }
 
     // Add collider handle for lookup during collision time
-    DynamicPhysicsComponent.objForColliderHandle[obj.collider.handle] = this;
+    DynamicPhysicsComponent.objForColliderHandle[obj.collider.handle] = obj.id;
 
     if (collider.density && (collider.mass || collider.massProperties)) {
       throw new Error('Can\'t set both density and mass on collider');

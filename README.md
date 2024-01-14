@@ -16,8 +16,8 @@ game help u
 + Initializers /alexandria/initializers/index.js holds stuff that loads for async. You have to duplicate one of them to get a template
 
 + access global enough object grapth
-# ```_a.state.game.scene``` 
-also 
+# ```_a.state.game.scene```
+also
 # ```store.state.game```
 
 # codes
@@ -77,7 +77,7 @@ There are a number of systems in `alexandria/ecs/systems`.
   - Responds to collisionEvents and contactForce events and runs callbacks.
   - Checks every frame if the rigidBody is asleep and removes the entity from `DynamicPhysicsComponent`, moves it onto `SleepingPhysicsComponent`.
   - Runs physics step to move phys simulation fwd.
-- `sleepingPhysics`: 
+- `sleepingPhysics`:
 - `render`:
   - Runs render loop callbacks stored in gameGrapth's `renderPool`. Register methods to run here via `store.state.game.registerRenderCallback(func)`.
   - After those callbacks run, the THREE scene is rendered using the `scene` and `camera` attached to `store.state.game`.
@@ -116,12 +116,15 @@ Can register methods on gameGrapth to be called before THREE renders by running 
   - `rigidBody`: 'fixed' or 'dynamic'
   - `gravityScale`: num – Multiplier for how configured gravity effects this object. 0 for 0 grav.
   - `linvel`: [x, y, z] – init linear velocity
+  - These next 2 `onCollision/onContactForce` are for convenience to specify either on root physicsConfig or on `collider`
+  - `onCollision`: Collision callback with signature `({ obj1, obj2, manifold, flipped, started }) => ...`
+  - `onContactForce`: Contact force callback with signature `({ obj1, obj2, manifold, flipped, started }) => ...`
   - `collider`:
     - `type`: See ##Physics below for Collider types
     - Additional properties associated w/ the specified `type`, e.g. `borderRadius`
     - `friction`: num
-    - `onCollisionEvent`: Collision callback with signature `({ obj1, obj2, manifold, flipped, started }) => ...`
-    - `onContactForceEvent`: Contact force callback with signature `({ obj1, obj2, manifold, flipped, started }) => ...`
+    - `onCollision`: Collision callback with signature `({ obj1, obj2, manifold, flipped, started }) => ...`
+    - `onContactForce`: Contact force callback with signature `({ obj1, obj2, manifold, flipped, started }) => ...`
     - `sensor`: bool
     - `collisionGroups`: num
     - `solverGroups`: num

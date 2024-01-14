@@ -10731,8 +10731,8 @@ class Level extends LevelMap {
         rigidBody: 'fixed',
         collider: {
           type: 'cuboid'
-          // onCollisionEvent: internals.collisionHandler('bouncy'),
-          // onContactForceEvent: internals.defaultContactForceEvent
+          // onCollision: internals.collisionHandler('bouncy'),
+          // onContactForce: internals.defaultContactForceEvent
         }
       }
     }));
@@ -10751,11 +10751,17 @@ class Level extends LevelMap {
       },
       physics: {
         rigidBody: 'fixed',
+        onCollision: stuff => {
+          console.log('BLUE GOAL onCollision stuff', stuff);
+        },
+        onContactForce: stuff => {
+          console.log('onContactForce stuff', stuff);
+        },
+        // onCollision: internals.collisionHandler('sticky'),
+        // onContactForce: internals.defaultContactForceEvent
         collider: {
           type: 'cuboid'
-          // sensor: true,
-          // onCollisionEvent: internals.collisionHandler('sticky'),
-          // onContactForceEvent: internals.defaultContactForceEvent
+          // sensor: true
         }
       }
     }));
@@ -10777,7 +10783,10 @@ class Level extends LevelMap {
           rigidBody: 'dynamic',
           gravityScale: 0,
           collider: {
-            type: 'cuboid'
+            type: 'cuboid',
+            onCollision: stuff => {
+              console.log('CUBE onCollision stuff', stuff);
+            }
           },
           linvel: [Math.round(randomInRange(-180, 180)), Math.round(randomInRange(-4, 40)), Math.round(randomInRange(-4, 4))]
         }
@@ -10799,6 +10808,9 @@ class Level extends LevelMap {
           rigidBody: 'dynamic',
           gravityScale: 2,
           linvel: [Math.round(randomInRange(-180, 180)), Math.round(randomInRange(-4, 40)), Math.round(randomInRange(-4, 4))],
+          onCollision: stuff => {
+            console.log('Sphere onCollision stuff', stuff);
+          },
           collider: {
             type: 'ball'
           }
@@ -11152,13 +11164,10 @@ function physicsSystem(core) {
   // TODO supposedly supposed to pass an EventQueue here but it's not working
   // store.state.physics.core.step();
   store$1.state.physics.core.step(internals$1.eventQueue);
-
-  // console.log('zlog internals.eventQueue', internals.eventQueue);
-
   internals$1.eventQueue.drainCollisionEvents((handle1, handle2, started) => {
     /* Handle the collision event. */
-    const obj1 = DynamicPhysicsComponent.objForColliderHandle[handle1];
-    const obj2 = DynamicPhysicsComponent.objForColliderHandle[handle2];
+    const obj1 = store$1.state.game.scene.getObjectById(DynamicPhysicsComponent.objForColliderHandle[handle1]);
+    const obj2 = store$1.state.game.scene.getObjectById(DynamicPhysicsComponent.objForColliderHandle[handle2]);
     const contactInfo = obj1.collider.contactCollider(obj2.collider);
     const baseEvtProps = {
       obj1,
@@ -11168,20 +11177,20 @@ function physicsSystem(core) {
     };
     if (started) {
       store$1.state.physics.core.contactPair(obj1.collider.object, obj2.collider.object, (manifold, flipped) => {
-        obj1?.onCollisionEvent({
+        obj1?.onCollision({
           ...baseEvtProps,
           manifold,
           flipped
         });
-        obj2?.onCollisionEvent({
+        obj2?.onCollision({
           ...baseEvtProps,
           manifold,
           flipped
         });
       });
     } else {
-      obj1?.onCollisionEvent(baseEvtProps);
-      obj2?.onCollisionEvent(baseEvtProps);
+      obj1?.onCollision(baseEvtProps);
+      obj2?.onCollision(baseEvtProps);
     }
   });
   internals$1.eventQueue.drainContactForceEvents((handle1, handle2, started) => {
@@ -11195,20 +11204,20 @@ function physicsSystem(core) {
     };
     if (started) {
       store$1.state.physics.core.contactPair(obj1.collider.object, obj2.collider.object, (manifold, flipped) => {
-        obj1?.onContactForceEvent({
+        obj1?.onContactForce({
           ...baseEvtProps,
           manifold,
           flipped
         });
-        obj2?.onContactForceEvent({
+        obj2?.onContactForce({
           ...baseEvtProps,
           manifold,
           flipped
         });
       });
     } else {
-      obj1?.onContactForceEvent(baseEvtProps);
-      obj2?.onContactForceEvent(baseEvtProps);
+      obj1?.onContactForce(baseEvtProps);
+      obj2?.onContactForce(baseEvtProps);
     }
   });
   return core;
@@ -11489,7 +11498,7 @@ const initPhysics = (obj, physConfig) => {
     }
   } = physConfig;
   const rigidBodyTypes = ['dynamic', 'fixed', 'kinematicPositionBased', 'kinematicVelocityBased'];
-  const physicsKeys = ['rigidBody', 'collider', 'linvel', 'angvel', 'gravityScale'];
+  const physicsKeys = ['rigidBody', 'collider', 'linvel', 'angvel', 'gravityScale', 'onCollision'];
   const rigidBodySettings = ['gravityScale' // float
   ];
   const colliderDescSettings = ['centerOfMass',
@@ -11523,11 +11532,13 @@ const initPhysics = (obj, physConfig) => {
   const physCore = store$1.state.physics.core;
   const invalidKeys = Object.keys(physConfig).filter(key => !physicsKeys.includes(key));
   if (invalidKeys.length) {
-    throw new Error(`Invalid keys passed to object3D.initPhysics: '${invalidKeys}'`);
+    console.warn(`Invalid keys passed to object3D.initPhysics: '${invalidKeys}'`);
+    return;
   }
   if (rigidBody) {
     if (!rigidBodyTypes.includes(rigidBody)) {
-      throw new Error(`Invalid rigidBody '${rigidBody}'. Must be one of ${rigidBodyTypes}`);
+      console.warn(`Invalid rigidBody '${rigidBody}'. Must be one of ${rigidBodyTypes}`);
+      return;
     }
     const rigidBodyDesc = PI.RigidBodyDesc[rigidBody]().setTranslation(...obj.position);
     // TODO really should get this rotation working
@@ -11717,16 +11728,24 @@ const initPhysics = (obj, physConfig) => {
       const colliderDescVal = `set${key.slice(0, 1).toUpperCase() + key.slice(1)}`;
       colliderDesc[colliderDescVal] = collider[key];
     });
-    if (collider.onCollisionEvent && collider.onForceEvent) {
+
+    // Allow setting these events without putting the keys directly in 'collider'
+    if (!collider.onCollision && physConfig.onCollision) {
+      collider.onCollision = physConfig.onCollision;
+    }
+    if (!collider.onContactForce && physConfig.onContactForce) {
+      collider.onContactForce = physConfig.onContactForce;
+    }
+    if (collider.onCollision && collider.onContactForce) {
       colliderDesc.setActiveEvents(PI.ActiveEvents.COLLISION_EVENTS | PI.ActiveEvents.CONTACT_FORCE_EVENTS);
-      obj.onCollisionEvent = collider.onCollisionEvent;
-      obj.onContactForceEvent = collider.onContactForceEvent;
-    } else if (collider.onCollisionEvent) {
+      obj.onCollision = collider.onCollision;
+      obj.onContactForce = collider.onContactForce;
+    } else if (collider.onCollision) {
       colliderDesc.setActiveEvents(PI.ActiveEvents.COLLISION_EVENTS);
-      obj.onCollisionEvent = collider.onCollisionEvent;
-    } else if (collider.onContactForceEvent) {
+      obj.onCollision = collider.onCollision;
+    } else if (collider.onContactForce) {
       colliderDesc.setActiveEvents(PI.ActiveEvents.CONTACT_FORCE_EVENTS);
-      obj.onContactForceEvent = collider.onContactForceEvent;
+      obj.onContactForce = collider.onContactForce;
     }
     obj.collider = physCore.createCollider(colliderDesc, obj.rigidBody);
     const ecsCore = store$1.state.ecs.core;
@@ -11736,7 +11755,7 @@ const initPhysics = (obj, physConfig) => {
     }
 
     // Add collider handle for lookup during collision time
-    DynamicPhysicsComponent.objForColliderHandle[obj.collider.handle] = undefined;
+    DynamicPhysicsComponent.objForColliderHandle[obj.collider.handle] = obj.id;
     if (collider.density && (collider.mass || collider.massProperties)) {
       throw new Error('Can\'t set both density and mass on collider');
     }

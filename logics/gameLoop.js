@@ -84,7 +84,7 @@ internals.renderLoop = () => {
 
   if (useStats && stats === null) {
     stats = new Stats();
-    document.body.appendChild( stats.dom );
+    document.body.appendChild(stats.dom);
   }
 
   // OY
