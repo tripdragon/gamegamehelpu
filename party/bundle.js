@@ -10709,8 +10709,9 @@ class Level extends LevelMap {
       physics: {
         rigidBody: 'fixed',
         collider: {
-          type: 'cuboid',
-          friction: 10
+          type: 'roundCuboid',
+          friction: 10,
+          borderRadius: 10
         }
       }
     }));
@@ -11498,7 +11499,7 @@ const initPhysics = (obj, physConfig) => {
     }
   } = physConfig;
   const rigidBodyTypes = ['dynamic', 'fixed', 'kinematicPositionBased', 'kinematicVelocityBased'];
-  const physicsKeys = ['rigidBody', 'collider', 'linvel', 'angvel', 'gravityScale', 'onCollision'];
+  const physicsKeys = ['rigidBody', 'collider', 'linvel', 'angvel', 'gravityScale', 'onCollision', 'onContactForce'];
   const rigidBodySettings = ['gravityScale' // float
   ];
   const colliderDescSettings = ['centerOfMass',

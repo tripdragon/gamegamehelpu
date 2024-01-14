@@ -22,7 +22,7 @@ export const initPhysics = (obj, physConfig) => {
   let { collider = { type: 'cuboid' } } = physConfig;
 
   const rigidBodyTypes = ['dynamic', 'fixed', 'kinematicPositionBased', 'kinematicVelocityBased'];
-  const physicsKeys = ['rigidBody', 'collider', 'linvel', 'angvel', 'gravityScale', 'onCollision'];
+  const physicsKeys = ['rigidBody', 'collider', 'linvel', 'angvel', 'gravityScale', 'onCollision', 'onContactForce'];
 
   const rigidBodySettings = [
     'gravityScale' // float

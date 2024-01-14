@@ -139,7 +139,7 @@ Can register methods on gameGrapth to be called before THREE renders by running 
     - `centerOfMass`: vec3
     - `enabled`: bool
 
-### Example
+## MeshBuilder Example
 ```js
 // Floor
 this.add(MeshBuilder({
@@ -153,11 +153,16 @@ this.add(MeshBuilder({
     repeat: floorSize / 3,
     colorSpace: SRGBColorSpace
   },
+  onCollision: (stuff) => {
+
+    console.log('FLOOR onCollision stuff', stuff);
+  },
   physics: {
     rigidBody: 'fixed',
     collider: {
-      type: 'cuboid',
-      friction: 10
+      type: 'roundCuboid',
+      friction: 10,
+      borderRadius: 10
     }
   }
 }));
@@ -213,5 +218,3 @@ this.add(MeshBuilder({
     - `cols`: num
     - `heights`: Float32Array The heights of the heightfield along its local y axis, provided as a matrix stored in column-major order.
     - `scale`: vec3
-
-
