@@ -45,7 +45,9 @@ export function patchObject3D_CM() {
     initECS(this);
   }
 
-  Object3D.prototype.destroy = function() {
+  const origRemove = Object3D.prototype.remove;
+
+  Object3D.prototype.remove = function(child) {
 
     if (this.eid) {
       removeEntity(store.state.ecs.core, this.eid);
@@ -67,8 +69,7 @@ export function patchObject3D_CM() {
       store.state.physics.core.removeCharacterController(this.characterController);
     }
 
-    // Delet
-    this.parent.remove(this);
+    origRemove.bind(this)(child);
   }
 
   Object3D.prototype.initPhysics = function(physConfig) {

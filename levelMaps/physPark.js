@@ -293,22 +293,29 @@ const avgNormal = new Vector3();
 const impulseForce = new Vector3();
 internals.collisionHandler = (type, forceMultiplier = -40000000000) => (props) => {
 
-  const { obj1, obj2, contactInfo, manifold, flipped, started } = props;
+  const {
+    obj1,
+    obj2,
+    collisionInfo,
+    manifold,
+    flipped,
+    started
+  } = props;
 
-  // console.log('contactInfo', contactInfo);
+  // console.log('collisionInfo', collisionInfo);
 
-  if (contactInfo) {
+  if (collisionInfo) {
     // Calculate average normal and average contact point
     avgNormal.copy({
-      x: (contactInfo.normal1.x + contactInfo.normal2.x) / 2,
-      y: (contactInfo.normal1.y + contactInfo.normal2.y) / 2,
-      z: (contactInfo.normal1.z + contactInfo.normal2.z) / 2,
+      x: (collisionInfo.normal1.x + collisionInfo.normal2.x) / 2,
+      y: (collisionInfo.normal1.y + collisionInfo.normal2.y) / 2,
+      z: (collisionInfo.normal1.z + collisionInfo.normal2.z) / 2,
     });
 
     avgPoint.copy({
-      x: (contactInfo.point1.x + contactInfo.point2.x) / 2,
-      y: (contactInfo.point1.y + contactInfo.point2.y) / 2,
-      z: (contactInfo.point1.z + contactInfo.point2.z) / 2,
+      x: (collisionInfo.point1.x + collisionInfo.point2.x) / 2,
+      y: (collisionInfo.point1.y + collisionInfo.point2.y) / 2,
+      z: (collisionInfo.point1.z + collisionInfo.point2.z) / 2,
     });
 
     // Calculate impulse force
@@ -351,12 +358,21 @@ internals.collisionHandler = (type, forceMultiplier = -40000000000) => (props) =
   }
 };
 
-internals.defaultContactForceEvent = ({ obj1, obj2, manifold, flipped, started }) => {
+internals.defaultContactForceEvent = (props) => {
+
+  const {
+    collisionInfo,
+    obj1,
+    obj2,
+    manifold,
+    flipped,
+    started
+  } = props;
 
   if (started) {
-    console.log('onContactForce, started, manifold, flipped', started, manifold, flipped);
+    console.log('onContactForce, collisionInfo, started, manifold, flipped', collisionInfo, started, manifold, flipped);
   }
   else {
-    console.log('onContactForce, obj1, obj2, started', obj1, obj2, started);
+    console.log('onContactForce, collisionInfo, obj1, obj2, started', collisionInfo, obj1, obj2, started);
   }
 };

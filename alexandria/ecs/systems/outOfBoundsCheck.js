@@ -31,7 +31,7 @@ export default function outOfBoundsCheckSystem(core) {
     if (outOfBounds) {
       removeComponent(core, DynamicPhysicsComponent, eid);
       delete DynamicPhysicsComponent.objectId[eid];
-      object3D.destroy();
+      object3D.parent.remove(object3D);
     }
   }
 

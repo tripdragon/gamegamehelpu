@@ -11172,11 +11172,11 @@ function physicsSystem(core) {
     /* Handle the collision event. */
     const obj1 = store$1.state.game.scene.getObjectById(DynamicPhysicsComponent.objIdForColliderHandle[handle1]);
     const obj2 = store$1.state.game.scene.getObjectById(DynamicPhysicsComponent.objIdForColliderHandle[handle2]);
-    const contactInfo = obj1.collider.contactCollider(obj2.collider);
+    const collisionInfo = obj1.collider.contactCollider(obj2.collider);
     const baseEvtProps = {
       obj1,
       obj2,
-      contactInfo,
+      collisionInfo,
       started
     };
     if (started) {
@@ -11283,7 +11283,7 @@ function outOfBoundsCheckSystem(core) {
     if (outOfBounds) {
       removeComponent(core, DynamicPhysicsComponent, eid);
       delete DynamicPhysicsComponent.objectId[eid];
-      object3D.destroy();
+      object3D.parent.remove(object3D);
     }
   }
   return core;
@@ -11797,7 +11797,8 @@ function patchObject3D_CM() {
   Object3D.prototype.initECS = function () {
     initECS(this);
   };
-  Object3D.prototype.destroy = function () {
+  const origRemove = Object3D.prototype.remove;
+  Object3D.prototype.remove = function (child) {
     if (this.eid) {
       removeEntity(store$1.state.ecs.core, this.eid);
     }
@@ -11815,7 +11816,7 @@ function patchObject3D_CM() {
     }
 
     // Delet
-    this.parent.remove(this);
+    origRemove.bind(this)(child);
   };
   Object3D.prototype.initPhysics = function (physConfig) {
     this.initECS();

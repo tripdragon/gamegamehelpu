@@ -90,12 +90,12 @@ export default function physicsSystem(core) {
     const obj1 = store.state.game.scene.getObjectById(DynamicPhysicsComponent.objIdForColliderHandle[handle1]);
     const obj2 = store.state.game.scene.getObjectById(DynamicPhysicsComponent.objIdForColliderHandle[handle2]);
 
-    const contactInfo = obj1.collider.contactCollider(obj2.collider);
+    const collisionInfo = obj1.collider.contactCollider(obj2.collider);
 
     const baseEvtProps = {
       obj1,
       obj2,
-      contactInfo,
+      collisionInfo,
       started
     };
 
