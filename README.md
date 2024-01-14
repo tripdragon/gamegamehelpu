@@ -165,6 +165,7 @@ this.add(MeshBuilder({
 
 ## Physics
 - Using https://rapier.rs via `@dimforge/rapier3d-compat`
+- DOCS https://rapier.rs/docs/api/javascript/JavaScript3D
 - Collider types
   - `cuboid`: Computes bounding box and uses it
   - `roundCuboid`: Computes bounding box and uses it
