@@ -171,7 +171,36 @@ this.add(MeshBuilder({
 ## Physics
 - Using https://rapier.rs via `@dimforge/rapier3d-compat`
 - DOCS https://rapier.rs/javascript3d
+- RigidBody
+  - DOCS https://rapier.rs/javascript3d/classes/RigidBody.html
+  - `addForce(force: vec3, wake: bool)`
+  - `addForceAtPoint(force: vec3, point: vec3, wake: bool)`
+  - `addTorque(torque: vec3, wake: bool)`
+  - `angvel()`: getter
+  - `applyImpulse(impulse: vec3, wake: bool)`
+  - `applyImpulseAtPoint(impulse: vec3, point: vec3, wake: bool)`
+  - `applyTorqueImpulse(torqueImpulse: vec3, wake: bool)`
+  - `enableCcd(enabled: bool)`: Enable/disable CCD (Continuous Collision Detection) for this rigid-body.
+  - `isMoving()`: getter
+  - `isSleeping()`: getter
+  - `linvel()`: getter
+  - `resetTorques(wake: bool)`
+  - `setEnabledRotations(x: bool, y: bool, z: bool, wake: bool)`
+  - `setEnabledTranslations(x: bool, y: bool, z: bool, wake: bool)`
+  - `setAngularDamping(factor: num)`
+  - `setAngvel(vel: vec3, wake: bool)`
+  - `setEnabled(enabled: bool)`
+  - `setGravityScale(factor: num, wake: bool)`
+  - `setLinearDamping(factor: num)`
+  - `setLinvel(vel: vec3, wake: bool)`
+  - `setRotation(rot: quat, wake: bool)`
+  - `setTranslation(tra: vec3, wake: bool)`
+  - `sleep()`: Goto sleep
+  - `wakeUp()`: Wake up
+  - `localCom()`: Local-space center of mass
+  - `worldCom()`: Get world-space center of mass
 - Collider types
+  - DOCS https://rapier.rs/javascript3d/classes/Collider.html
   - `cuboid`: Computes bounding box and uses it
   - `roundCuboid`: Computes bounding box and uses it
     - `borderRadius` num
