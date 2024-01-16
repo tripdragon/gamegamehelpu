@@ -89,6 +89,8 @@ export default () => {
 
   // lights moved into levels
 
+  // #TODO: move level swapper out
+  console.warn("move level swapper out");
   // temporary level swapper, need something more complex so we can load multi on start
   const queryLvl = window.location.search
     .replace('?', '')
