@@ -2,10 +2,10 @@ import {Group} from 'three';
 
 import { CheapPool } from 'alexandria/utils/cheapPool.js';
 
-import { CubeMesh } from 'alexandria/primitves/cubeMesh.js';
-import { PlaneMesh } from 'alexandria/primitves/planeMesh.js';
-import { SphereMesh } from 'alexandria/primitves/sphereMesh.js';
-import { RectangularPrismMesh } from 'alexandria/primitves/rectangularPrismMesh.js';
+import { CubeMesh } from 'alexandria/primitives/cubeMesh.js';
+import { PlaneMesh } from 'alexandria/primitives/planeMesh.js';
+import { SphereMesh } from 'alexandria/primitives/sphereMesh.js';
+import { RectangularPrismMesh } from 'alexandria/primitives/rectangularPrismMesh.js';
 
 
 
@@ -25,10 +25,10 @@ export default class LevelMap extends Group {
   
   // the initial here are primitives
   sources = {
-    cubeMesh : new CubeMesh({size:0.1}),
+    cubeMesh : new CubeMesh({size:1}),
     planeMesh : new PlaneMesh(),
     rectangularPrismMesh : new RectangularPrismMesh(),
-    sphereMesh : new SphereMesh({radius:0.2})
+    sphereMesh : new SphereMesh({radius:1})
   }
   
   
@@ -48,20 +48,30 @@ export default class LevelMap extends Group {
   loadFromData(data){
     const gg = new Group();
     gg.name = data.name;
-    debugger
+    this.add(gg);
+    this.loadedGroups.add(gg);
     
     for (var i = 0; i < data.objects.length; i++) {
       const pick = data.objects[i];
       const mm = this.fetchObject(pick.sourceName);
       if(mm){
-        mm.position.copy(pick.position);
-        mm.scale.copy(pick.scale);
-        mm.rotation.copy(pick.rotation);
+        mm.position.fromArray(pick.position);
+        mm.scale.fromArray(pick.scale);
+        mm.rotation.fromArray(pick.rotation);
         mm.name = pick.name;
+        if(mm.material && pick.material && pick.material.clone){
+          mm.material = mm.material.clone();
+        }
+        if(mm.material && pick.material && pick.material.color){
+          mm.material.color.setHex(pick.material.color);
+          mm.material.needsUpdate = true;
+        }
         gg.add(mm);
         mm.updateMatrix();
       }
     }
+    
+    gg.updateWorldMatrix();
     
   }
   

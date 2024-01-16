@@ -34,8 +34,15 @@ export class Park1 extends LevelMap{
 
     const st = store.state.game;
     // debugger
-
+    // 
     
+    this.assignCamera({
+      position: [2,2,2],
+      rotation: [0,0,0],
+      lookAt: [0,0,0],
+      controlType : "orbit",
+      // fov , zoom, etc
+    })
     
     
     // uniqueness and overlap of names will be a rolling issue
@@ -49,21 +56,30 @@ export class Park1 extends LevelMap{
           name:"cube like",
           sourceName:"cubeMesh", // tree1, gate1, 
           modelSourceGUID:"",
-          position: [0,1,2],
+          position: [0,1,1],
           rotation: [0,0.1,0],
-          scale:[1,1,1],
+          scale:[0.5,0.5,0.5],
+          material:{
+            clone: true,
+            color:0x00ff00
+          },
+          parent:''
+        },
+        {
+          name:"cube like sdfsdf",
+          sourceName:"cubeMesh", // tree1, gate1, 
+          modelSourceGUID:"",
+          position: [0,2,1],
+          rotation: [0,0.1,0],
+          scale:[0.5,0.5,0.5],
+          material:{
+            clone: true,
+            color:0x0000ff
+          },
           parent:''
         }
       ]
     })
-
-
-
-
-
-
-
-
 
 
 

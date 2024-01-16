@@ -10,7 +10,7 @@ const internals = {};
 export const store = window.store = window._a = {
   state: {
     // Default state
-    camPosition: [3, 200, 200]
+    // camPosition: [3, 200, 200]
   },
   setState: (newState) => {
     const changedSelectors = [];
