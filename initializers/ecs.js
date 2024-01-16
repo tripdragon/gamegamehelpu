@@ -1,4 +1,4 @@
-import initECS from '../ecs/init';
+import initECS from 'alexandria/ecs/init';
 
 export default () => {
 

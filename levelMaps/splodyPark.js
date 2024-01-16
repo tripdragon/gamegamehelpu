@@ -10,7 +10,7 @@ import {
 
 import * as Themes from 'alexandria/modules/colorThemes';
 
-import { MeshBuilder } from 'alexandria/tools/meshBuilder';
+import { MeshBuilder } from 'alexandria/meshBuilder';
 import { randomInRange, randomFromArr } from 'alexandria/math/mathMore';
 
 const internals = {};

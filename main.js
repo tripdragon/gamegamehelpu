@@ -4,7 +4,7 @@ import './basestyles.scss';
 import { Box3, Vector3, Box3Helper } from 'three';
 
 import { store } from 'alexandria/store';
-import Initializers from 'alexandria/initializers/index';
+import Initializers from 'initializers/index';
 
 import { initGameLoop } from 'logics/gameLoop';
 

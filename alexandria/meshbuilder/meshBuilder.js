@@ -1,6 +1,6 @@
 import { Mesh } from 'three';
 
-import { CoatOfArms } from 'alexandria/tools/coatOfArms';
+import { CoatOfArms } from './coatOfArms';
 
 import {
   CubeMesh,
