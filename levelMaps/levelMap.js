@@ -1,4 +1,4 @@
-import {Group} from 'three';
+import {Group, Vector3} from 'three';
 
 import { CheapPool } from 'alexandria/utils/cheapPool.js';
 
@@ -7,6 +7,7 @@ import { PlaneMesh } from 'alexandria/primitives/planeMesh.js';
 import { SphereMesh } from 'alexandria/primitives/sphereMesh.js';
 import { RectangularPrismMesh } from 'alexandria/primitives/rectangularPrismMesh.js';
 
+import { store } from 'alexandria/store';
 
 
 // // import * as THREE from 'three';
@@ -15,6 +16,8 @@ import { RectangularPrismMesh } from 'alexandria/primitives/rectangularPrismMesh
 //
 // const controls = new OrbitControls( camera, renderer.domElement );
 // const loader = new GLTFLoader();
+
+const vv1 = new Vector3();
 
 export default class LevelMap extends Group {
   isLevel = true;
@@ -45,7 +48,21 @@ export default class LevelMap extends Group {
     }
   }
   
+  
   loadFromData(data){
+    
+    const st = store.state.game;
+    
+    if (data.camera) {
+      const cam = data.camera;
+      // need to fix to handle perspective and ortho . type
+      // and .controlType
+      st.camera.position.fromArray(cam.position);
+      st.camera.rotation.fromArray(cam.rotation);
+      if (st.camera.lookAt) st.camera.lookAt(vv1.fromArray(cam.lookAt));
+      st.camera.updateMatrix();
+    }
+    
     const gg = new Group();
     gg.name = data.name;
     this.add(gg);

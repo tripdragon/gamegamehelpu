@@ -30,27 +30,23 @@ export class Park1 extends LevelMap{
   }
 
   async init(){
-    // const init = async () => {
 
     const st = store.state.game;
-    // debugger
-    // 
-    
-    this.assignCamera({
-      position: [2,2,2],
-      rotation: [0,0,0],
-      lookAt: [0,0,0],
-      controlType : "orbit",
-      // fov , zoom, etc
-    })
-    
-    
+
     // uniqueness and overlap of names will be a rolling issue
     // 
-    // then we have primitves and functions that produce objects
+    // then we have primitives and functions that produce objects
     // effectively need to serailize objects but thats super later
     this.loadFromData({
       name: "stufff group",
+      camera : {
+        position : [2.484703365030347, 1.6180611288122424, 2.8602857521469813],
+        // position : [7.673987472203893, 4.997369507572419, 8.833970822360577],
+        rotation: [0,0,0],
+        lookAt: [0,0,0],
+        type:"perspective",
+        controlType : "orbit",
+      },
       objects: [
         {
           name:"cube like",

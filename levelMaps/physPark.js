@@ -24,6 +24,19 @@ export class Level extends LevelMap {
 
   async init() {
 
+    this.loadFromData({
+      name: "stufff group",
+      camera : {
+        // position : [1,1,8],
+        position : [7.673987472203893, 4.997369507572419, 8.833970822360577],
+        rotation: [0,0,0],
+        lookAt: [0,0,0],
+        type:"perspective",
+        controlType : "orbit",
+      },
+    });
+
+
     const ambientLight = new AmbientLight();
     ambientLight.intensity = 2.01;
     this.lights.add(ambientLight);
