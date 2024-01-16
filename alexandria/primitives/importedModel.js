@@ -9,6 +9,15 @@
 // So lets just scoop that code out!! and swap in some box check stuff
 // https://threejs.org/docs/index.html?q=mesh#api/en/objects/SkinnedMesh
 
+import {
+  Object3D,
+  Vector3,
+  Box3,
+  Box3Helper,
+  Sphere,
+  Ray,
+  Matrix4
+} from 'three';
 
 import { Group } from 'three';
 
@@ -50,6 +59,54 @@ export class ImportedModel extends Group {
     });
       
   }
+  
+  
+  
+  
+  boundingBox = null;
+  boundingSphere = null;
+  
+    computeBoundingBox() {
+
+
+      if ( this.boundingBox === null ) {
+
+        this.boundingBox = new Box3();
+
+      }
+
+      this.boundingBox.makeEmpty();
+
+      this.boundingBox.setFromObject(this, true);
+
+    }
+
+    computeBoundingSphere() {
+
+
+      if ( this.boundingSphere === null ) {
+
+        this.boundingSphere = new Sphere();
+
+      }
+      
+      if( this.boundingBox === null ){
+        this.computeBoundingBox();
+      }
+
+      this.boundingSphere.makeEmpty();
+
+      this.boundingBox.getBoundingSphere(this.boundingSphere);
+
+    }
+  
+  
+  
+  
+  
+  
+  
+  
   
   
   // here lie attempts to move bounding box into top level logic
