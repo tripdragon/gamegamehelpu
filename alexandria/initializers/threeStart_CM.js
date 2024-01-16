@@ -37,7 +37,9 @@ export default () => {
 
   const camera = new PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.05, 1000 );
   // camera.position.z = 5;
-  camera.position.fromArray(store.state.camPosition || [3, 14, 15]);
+  // camera.position.fromArray(store.state.camPosition || [3.302152734555017, 2.150391493963814, 3.8012990005129046]);
+  camera.position.fromArray( [3.302152734555017, 2.150391493963814, 3.8012990005129046] );
+  // camera.position.fromArray(store.state.camPosition || [3, 14, 15]);
   camera.lookAt(new Vector3());
 
   const renderer = new WebGLRenderer({antialias:true});
