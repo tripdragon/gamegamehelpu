@@ -37,7 +37,7 @@ export default () => {
 
   const camera = new PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.05, 1000 );
   // camera.position.z = 5;
-  camera.position.fromArray([0.9625265375798292, 4.0272857200013625, 4.984509277416068]);
+  camera.position.fromArray(store.state.camPosition || [3, 14, 15]);
   camera.lookAt(new Vector3());
 
   const renderer = new WebGLRenderer({antialias:true});
@@ -54,7 +54,6 @@ export default () => {
 
   // moving to gameGrapth, this couples it but its so basic of a need
   // const orbitControls = new OrbitControls( camera, renderer.domElement );
-
 
   function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -118,8 +117,6 @@ export default () => {
   // st.currentLevelMap = parkLevel;
 
   // st.levels.changeLevel("Park1");
-
-
 
   const axesHelper = new AxesHelper( 5 );
   // scene.add( axesHelper );

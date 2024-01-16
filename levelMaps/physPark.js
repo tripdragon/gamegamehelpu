@@ -1,28 +1,19 @@
 import LevelMap from './levelMap';
 
-import { store } from 'alexandria/store';
-
 import {
   DirectionalLight,
   AmbientLight,
-  BoxGeometry,
-  MeshBasicMaterial,
-  Mesh,
-  MeshStandardMaterial,
-  PlaneGeometry,
-  DoubleSide,
-  AxesHelper,
-  TextureLoader,
   RepeatWrapping,
   SRGBColorSpace,
-  CameraHelper,
-  HemisphereLight
+  Vector3
 } from 'three';
 
-import { Entities, Enty, Move, Spin, KeyWalk, Meep } from '../entities/basicEntites';
+import * as Themes from 'alexandria/modules/colorThemes';
 
 import { MeshBuilder } from 'alexandria/tools/meshBuilder';
-import { randomInRange } from 'alexandria/math/mathMore';
+import { randomInRange, randomFromArr } from 'alexandria/math/mathMore';
+
+const internals = {};
 
 export class Level extends LevelMap {
 
@@ -32,9 +23,6 @@ export class Level extends LevelMap {
   }
 
   async init() {
-
-    const st = store.state.game;
-    // debugger
 
     const ambientLight = new AmbientLight();
     ambientLight.intensity = 2.01;
@@ -69,91 +57,242 @@ export class Level extends LevelMap {
     sunLight.shadow.camera.right = -side;
 
     // var shadowHelper = new CameraHelper( sunLight.shadow.camera );
-    // this.add( shadowHelper );
+    // this.add(shadowHelper);
 
     this.sunLight = sunLight;
 
     // const hemiLight = new HemisphereLight( 0x0000ff, 0x00ff00, 0.6 );
     // this.add(hemiLight);
 
+    const floorSize = 200;
+    const goalHeight = 100;
+    const goalThickness = 5;
+    const items = 400;
+    const maxHeight = 30;
+
     // Floor
     this.add(MeshBuilder({
       mesh: 'plane',
-      meshProps: { color: 0x4fff0f },
-      scale: 12,
-      rotation: [-Math.PI / 2, 0, 0],
+      color: 0x4fff0f,
+      scale: floorSize,
       shadow: 'receive',
       texture: {
         path: './textures/myrthe-van-tol-grass-texture.jpeg',
         wrapping: RepeatWrapping,
-        repeat: 8,
+        repeat: floorSize / 3,
         colorSpace: SRGBColorSpace
       },
-      physics: { rigidBody: 'fixed' }
-    }));
-
-    this.add(MeshBuilder({
-      mesh: 'cube',
-      meshProps: { size: 1, color: 0xffffff },
-      position: { x: 1.2, y: 4 },
-      physics: { rigidBody: 'dynamic' }
-    }));
-
-    this.add(MeshBuilder({
-      mesh: 'sphere',
-      meshProps: { radius: 0.5, color: 0x00ff00 },
-      position: { x: 2, y: 2 },
       physics: {
-        rigidBody: 'dynamic',
-        collider: { type: 'sphere' }
+        rigidBody: 'fixed',
+        collider: {
+          type: 'cuboid',
+          friction: 10
+        }
       }
     }));
 
-    // return
+    // Red Goal
+    this.add(MeshBuilder({
+      mesh: 'rectangle',
+      width: goalThickness,
+      height: goalHeight,
+      depth: floorSize,
+      color: 0xff0000,
+      position: {
+        x: -floorSize / 2,
+        y: goalHeight / 2,
+        z: 0
+      },
+      physics: {
+        rigidBody: 'fixed',
+        // onCollision: internals.collisionHandler('bouncy'),
+        // onContactForce: internals.defaultContactForceEvent,
+        collider: {
+          type: 'cuboid'
+        }
+      }
+    }));
 
-    //     const cube = new Cube({size: 0.2,debug: true, color:0xffffff});
-    //     cube.position.y = 1;
+    // Blue Goal
+    this.add(MeshBuilder({
+      mesh: 'rectangle',
+      width: goalThickness,
+      height: goalHeight,
+      depth: floorSize,
+      color: 0x0000ff,
+      position: {
+        x: floorSize / 2,
+        y: goalHeight / 2,
+        z: 0
+      },
+      physics: {
+        rigidBody: 'fixed',
+        // onCollision: (stuff) => {
 
-    //     // cube.update = function(){
-    //     //   // debugger
-    //     //   this.position.x += 0.01;
-    //     //   console.log(this.name);
-    //     // }
+        //   console.log('BLUE GOAL onCollision stuff', stuff);
+        // },
+        // onContactForce: (stuff) => {
 
-    //     this.add( cube );
-    //     cube.name = 'sldkfndsf';
+        //   console.log('onContactForce stuff', stuff);
+        // },
+        // onCollision: internals.collisionHandler('sticky'),
+        // onContactForce: internals.defaultContactForceEvent
+        collider: {
+          type: 'cuboid'
+          // sensor: true
+        }
+      }
+    }));
 
-    //     st.animationPool.add(cube);
-    //     cube.entities = new Entities(cube);
+    const colorTheme = Themes.blueTealMonochromaticTheme;
 
-    //     cube.entities.add(new Spin(cube));
+    // Cubes
+    for (let i = 0; i < items; ++i) {
+      this.add(MeshBuilder({
+        mesh: 'cube',
+        size: randomInRange(2, 4),
+        color: randomFromArr(colorTheme),
+        position: {
+          x: randomInRange(-50, 50),
+          y: randomInRange(maxHeight, 1),
+          z: randomInRange(-40, 40)
+        },
+        physics: {
+          rigidBody: 'dynamic',
+          gravityScale: 0,
+          // onCollision: (stuff) => {
 
-    //     // cube.entities.add(new Move());
-    //     // now just some arbitary builder
-    //     // cube.entities.add( Meep( 'moop', function(){ this.position.z += 0.01 } ) );
+          //   console.log('CUBE onCollision stuff', stuff);
+          // },
+          collider: {
+            type: 'cuboid'
+          },
+          linvel: [
+            Math.round(randomInRange(-180, 180)),
+            Math.round(randomInRange(-4, 40)),
+            Math.round(randomInRange(-4, 4))
+          ]
+        }
+      }));
+    }
 
-    //     cube.entities.add(new KeyWalk(cube, 0.01, 0.01));
+    // Spheres
+    for (let i = 0; i < items; ++i) {
+      this.add(MeshBuilder({
+        mesh: 'sphere',
+        radius: randomInRange(2, 4),
+        color: randomFromArr(colorTheme),
+        position: {
+          x: randomInRange(-50, 50),
+          y: randomInRange(maxHeight, 1),
+          z: randomInRange(-50, 50)
+        },
+        physics: {
+          rigidBody: 'dynamic',
+          gravityScale: 2,
+          linvel: [
+            Math.round(randomInRange(-180, 180)),
+            Math.round(randomInRange(-4, 40)),
+            Math.round(randomInRange(-4, 4))
+          ],
+          // onCollision: (stuff) => {
 
-    //     for (var i = 0; i < 22; i++) {
-
-    //       const cube = new Cube({size: 0.2,debug: true, color:Math.random()* 0xffffff});
-
-    //       this.add( cube );
-    //       cube.name = 'sldkfndsf' + i;
-
-    //       st.animationPool.add(cube);
-    //       cube.entities = new Entities(cube);
-
-    //       cube.entities.add(new Spin(cube));
-
-    //       cube.position.set(randomInRange(4, -4), 1, randomInRange(4, -4))
-    //       cube.rotation.y = Math.random() * Math.PI * 2;
-
-    //       // cube.entities.add(new Move());
-    //       // now just some arbitary builder
-    //       // cube.entities.add( Meep( 'moop', function(){ this.position.z += 0.01 } ) );
-
-    //       cube.entities.add(new KeyWalk(cube, 0.01, 0.01));
-    //     }
+          //   console.log('Sphere onCollision stuff', stuff);
+          // },
+          collider: {
+            type: 'ball'
+          }
+        }
+      }));
+    }
   }
 }
+
+const avgPoint = new Vector3();
+const avgNormal = new Vector3();
+const impulseForce = new Vector3();
+internals.collisionHandler = (type, forceMultiplier = -40000000000) => (props) => {
+
+  const {
+    obj1,
+    obj2,
+    collisionInfo,
+    manifold,
+    flipped,
+    started
+  } = props;
+
+  // console.log('collisionInfo', collisionInfo);
+
+  if (collisionInfo) {
+    // Calculate average normal and average contact point
+    avgNormal.copy({
+      x: (collisionInfo.normal1.x + collisionInfo.normal2.x) / 2,
+      y: (collisionInfo.normal1.y + collisionInfo.normal2.y) / 2,
+      z: (collisionInfo.normal1.z + collisionInfo.normal2.z) / 2,
+    });
+
+    avgPoint.copy({
+      x: (collisionInfo.point1.x + collisionInfo.point2.x) / 2,
+      y: (collisionInfo.point1.y + collisionInfo.point2.y) / 2,
+      z: (collisionInfo.point1.z + collisionInfo.point2.z) / 2,
+    });
+
+    // Calculate impulse force
+    impulseForce.copy({
+      x: forceMultiplier * avgNormal.x,
+      y: forceMultiplier * avgNormal.y,
+      z: forceMultiplier * avgNormal.z,
+    });
+
+    // DOCS on RigidBody
+    // https://rapier.rs/javascript3d/classes/RigidBody.html
+
+    // Funcs available on obj2.rigidBody
+    // resetForces(true); // Reset the forces to zero.
+    // resetTorques(true); // Reset the torques to zero.
+    // addForce(force: vec3, wake: bool);
+    // addTorque(torque: vec3, wake: bool);
+    // addForceAtPoint(force: vec3, point: vec3, wake: bool);
+    // applyImpulse(impulse: vec3, wake: bool);
+    // applyTorqueImpulse(torqueImpulse: vec3, wake: bool);
+    // applyImpulseAtPoint(impulse: vec3, point: vec3, wake: bool);
+    // And many more like
+    // setLinvel(vel: vec3, wake: bool)
+    // setGravityScale(factor: number, wake: bool)
+
+    switch (type) {
+    case 'sticky': {
+      // I only sorta know why this works but it's cool anyways
+      obj2.rigidBody.addForce(avgPoint);
+    }
+      break;
+    case 'bouncy': {
+      obj2.rigidBody.addForce(impulseForce.multiplyScalar(-1));
+      // obj2.rigidBody.impulseForce(impulseForce.multiplyScalar(-1));
+      obj2.rigidBody.addTorque(impulseForce.multiplyScalar(-1));
+      obj2.rigidBody.applyTorqueImpulse(impulseForce.multiplyScalar(-1));
+    }
+      break;
+    }
+  }
+};
+
+internals.defaultContactForceEvent = (props) => {
+
+  const {
+    collisionInfo,
+    obj1,
+    obj2,
+    manifold,
+    flipped,
+    started
+  } = props;
+
+  if (started) {
+    console.log('onContactForce, collisionInfo, started, manifold, flipped', collisionInfo, started, manifold, flipped);
+  }
+  else {
+    console.log('onContactForce, collisionInfo, obj1, obj2, started', collisionInfo, obj1, obj2, started);
+  }
+};

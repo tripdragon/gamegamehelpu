@@ -8,7 +8,10 @@ const listeners = [];
 const internals = {};
 
 export const store = window.store = window._a = {
-  state: {},
+  state: {
+    // Default state
+    camPosition: [3, 200, 200]
+  },
   setState: (newState) => {
     const changedSelectors = [];
 
@@ -18,6 +21,7 @@ export const store = window.store = window._a = {
     // Notify listeners with changed selectors
     internals.notifyListeners(changedSelectors);
   },
+  // Returns unsubscribe func
   subscribe: function (selector, callback) {
     // Add a callback listener for updates with optional deep selector
     listeners.push({ selector, callback });
@@ -56,9 +60,9 @@ internals.deepMerge = (target, source, changedSelectors, currentSelector = '') =
 
 internals.notifyListeners = (changedSelectors) => {
   listeners.forEach(listener => {
-    const selectorParts = listener.selector.split('.');
+
     const matchingSelectors = changedSelectors.filter(selector =>
-      selectorParts.some(part => selector.startsWith(part))
+      selector === listener.selector
     );
 
     // Check if any part of the deep selector matches the changed selectors

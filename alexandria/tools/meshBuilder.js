@@ -1,18 +1,19 @@
-import { MeshBasicMaterial, Mesh } from 'three';
+import { Mesh } from 'three';
 
 import { CoatOfArms } from 'alexandria/tools/coatOfArms';
 
 import {
   CubeMesh,
   PlaneMesh,
-  SphereMesh
+  SphereMesh,
+  RectangleMesh
 } from 'alexandria/primitives';
 
 /*
 Example usage
 this.add(MeshBuilder({
   mesh: 'plane',
-  meshProps: { color: 0x4fff0f },
+  color: 0x4fff0f,
   scale: 12,
   shadow: 'receive',
   texture: {
@@ -25,15 +26,39 @@ this.add(MeshBuilder({
 }));
 */
 
+const internals = {};
+
 export function MeshBuilder(props) {
 
   const {
     mesh: _mesh,
     geometry,
     material,
-    meshProps = {},
+    // Props for primitives defined at root lvl for convenience
+    color,
+    size,
+    width,
+    height,
+    depth,
+    radius,
+    debug,
     ...coatOfArmsProps
   } = props;
+
+  let { meshProps = {} } = props;
+
+  internals.mergeWithObjectIfExists(
+    meshProps,
+    {
+      color,
+      size,
+      width,
+      height,
+      depth,
+      radius,
+      debug
+    }
+  );
 
   let mesh = _mesh;
 
@@ -49,6 +74,9 @@ export function MeshBuilder(props) {
     switch (mesh) {
     case 'cube':
       mesh = new CubeMesh(meshProps);
+      break;
+    case 'rectangle':
+      mesh = new RectangleMesh(meshProps);
       break;
     case 'plane':
       mesh = new PlaneMesh(meshProps);
@@ -67,5 +95,15 @@ export function MeshBuilder(props) {
   return CoatOfArms({
     mesh,
     ...coatOfArmsProps
+  });
+}
+
+internals.mergeWithObjectIfExists = (obj, items) => {
+
+  Object.entries(items).forEach(([key, val]) => {
+
+    if (val) {
+      obj[key] = val;
+    }
   });
 }

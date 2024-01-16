@@ -1,6 +1,8 @@
 // we need a core patch of object3D to have interfaces
 // so this is the simpliest route
 
+// We want to eventually move the .prototype updates to our own class that extends Object3D
+
 import {
   Object3D,
   Vector3,
@@ -11,12 +13,12 @@ import {
   Matrix4
 } from 'three';
 
-import Physics from '@dimforge/rapier3d-compat';
-
-import { addEntity, addComponent } from 'bitecs';
+import { removeEntity } from 'bitecs';
 
 import { store } from 'alexandria/store';
-import { Object3DComponent, DynamicPhysicsComponent } from 'alexandria/ecs/components';
+
+import { initPhysics } from 'alexandria/modules/initPhysics';
+import { initECS } from 'alexandria/modules/initECS';
 
 function ascSort(a, b) {
   return a.distance - b.distance;
@@ -36,73 +38,24 @@ export function patchObject3D_CM() {
   const _sphere = /*@__PURE__*/ new Sphere();
   const _sphereHitAt = /*@__PURE__*/ new Vector3();
 
-  const rigidBodyTypes = ['dynamic', 'fixed', 'kinematicPositionBased', 'kinematicVelocityBased'];
-  const physicsKeys = ['rigidBody', 'collider', 'linvel', 'angvel'];
+  Object3D.prototype.computeBoundingBox = function() {
+
+    const bounding = new Box3().setFromObject(this);
+    this.boundingBox = bounding.getSize(new Vector3()).multiplyScalar(0.5);
+  }
+
+  Object3D.prototype.initECS = function() {
+
+    initECS(this);
+  }
 
   patchInBounds_CM();
 
 
   Object3D.prototype.initPhysics = function(physConfig) {
 
-    const { rigidBody, collider = { type: 'cuboid' }, linvel, angvel } = physConfig;
-
-    const ecsCore = store.state.ecs.core;
-    const eid = addEntity(ecsCore, Object3DComponent);
-    this.eid = eid;
-
-    const physCore = store.state.physics.core;
-
-    const invalidKeys = Object.keys(physConfig).filter((key) => !physicsKeys.includes(key));
-
-    if (invalidKeys.length) {
-      throw new Error(`Invalid keys passed to object3D.initPhysics: '${invalidKeys}'`)
-    }
-
-    if (rigidBody) {
-      if (!rigidBodyTypes.includes(rigidBody)) {
-        throw new Error(`Invalid rigidBody '${rigidBody}'. Must be one of ${rigidBodyTypes}`);
-      }
-
-      if (rigidBody === 'dynamic') {
-        addComponent(ecsCore, DynamicPhysicsComponent, eid);
-      }
-
-      DynamicPhysicsComponent.objectId[eid] = this.id;
-
-      const rigidBodyDesc = Physics.RigidBodyDesc[rigidBody]()
-        .setTranslation(...this.position);
-        // .setRotation(this.rotation);
-
-      if (linvel) {
-        rigidBodyDesc.setLinvel(...linvel);
-      }
-
-      if (angvel) {
-        rigidBodyDesc.setAngvel(angvel);
-      }
-
-      this.rigidBody = physCore.createRigidBody(rigidBodyDesc);
-
-      // TODO support more collider types
-      // See docs https://rapier.rs/docs/api/javascript/JavaScript3D
-
-      let colliderDesc;
-
-      const bounding = new Box3().setFromObject(this);
-      this.boundingBox = bounding.getSize(new Vector3()).multiplyScalar(0.5);
-
-      switch (collider.type) {
-      case 'cuboid':
-        colliderDesc = Physics.ColliderDesc.cuboid(...this.boundingBox);
-        break;
-      case 'ball':
-      case 'sphere':
-        colliderDesc = Physics.ColliderDesc.ball(this.boundingBox.x);
-        break;
-      }
-
-      this.collider = physCore.createCollider(colliderDesc, this.rigidBody);
-    }
+    this.initECS();
+    initPhysics(this, physConfig);
   }
 
   Object3D.prototype.fish = 'neat!!';
@@ -184,6 +137,31 @@ export function patchObject3D_CM() {
     this.computeBoundingBox();
     var helper = new Box3Helper( this.boundingBox, 0x0000ff );
     store.state.game.scene.add(helper);
+  }
+
+  Object3D.prototype.superDelete = function() {
+
+    if (this.eid) {
+      removeEntity(store.state.ecs.core, this.eid);
+    }
+
+    if (this.rigidBody) {
+      // Also removes collider
+      store.state.physics.core.removeRigidBody(this.rigidBody);
+    }
+    else if (this.collider) {
+      store.state.physics.core.removeCollider(this.rigidBody);
+    }
+
+    if (this.vehicleController) {
+      store.state.physics.core.removeVehicleController(this.vehicleController);
+    }
+
+    if (this.characterController) {
+      store.state.physics.core.removeCharacterController(this.characterController);
+    }
+
+    this.parent.remove(this);
   }
 
   // Object3D.prototype.refreshBoxHelper = function(){

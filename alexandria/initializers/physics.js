@@ -1,6 +1,6 @@
-import Physics from '@dimforge/rapier3d-compat';
-
 export default async (store) => {
+
+  const Physics = await import('@dimforge/rapier3d-compat');
 
   await Physics.init();
 
@@ -10,7 +10,6 @@ export default async (store) => {
       core: new Physics.World({
         x: 0.0,
         // y: -9.81,
-        // y: -0.00001,
         y: -10,
         z: 0.0
       })

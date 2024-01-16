@@ -8,7 +8,7 @@ import {
   VelocityComponent
 } from '../components';
 
-export const movementQuery = defineQuery([TransformComponent, VelocityComponent]);
+const movementQuery = defineQuery([TransformComponent, VelocityComponent]);
 
 export default function movementSystem(core) {
   const { time: { delta } } = core;
