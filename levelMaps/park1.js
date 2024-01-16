@@ -35,6 +35,42 @@ export class Park1 extends LevelMap{
     const st = store.state.game;
     // debugger
 
+    
+    
+    
+    // uniqueness and overlap of names will be a rolling issue
+    // 
+    // then we have primitves and functions that produce objects
+    // effectively need to serailize objects but thats super later
+    this.loadFromData({
+      name: "stufff group",
+      objects: [
+        {
+          name:"cube like",
+          sourceName:"cubeMesh", // tree1, gate1, 
+          modelSourceGUID:"",
+          position: [0,1,2],
+          rotation: [0,0.1,0],
+          scale:[1,1,1],
+          parent:''
+        }
+      ]
+    })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     const ambientLight = new AmbientLight();
     ambientLight.intensity = 2.01;
     this.lights.add(ambientLight);

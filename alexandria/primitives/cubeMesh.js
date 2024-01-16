@@ -1,6 +1,9 @@
 import { Mesh, BoxGeometry, MeshStandardMaterial, AxesHelper} from 'three';
 
 export class CubeMesh extends Mesh {
+  
+  isCubeMesh = true;
+  isPrimitive = true;
 
   constructor(props = {}){
 

@@ -6,7 +6,10 @@ import {
 } from 'three';
 
 export class PlaneMesh extends Mesh {
-
+  
+  isPlaneMesh = true;
+  isPrimitive = true;
+  
   constructor(props = {}) {
 
     const {

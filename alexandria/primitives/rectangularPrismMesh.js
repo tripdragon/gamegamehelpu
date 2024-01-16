@@ -1,13 +1,21 @@
 import { Mesh, BoxGeometry, MeshStandardMaterial, AxesHelper} from 'three';
 
-export class RectangleMesh extends Mesh {
 
+// rectangle is the name for a 2d form, not 3d
+// so research says Prism is correct
+// Can also go with BoxMesh BUT Box conotates in the form of min max and that is not the task of this object
+// Volume solves that
+export class RectangularPrismMesh extends Mesh {
+  
+  isRectangularPrismMesh = true;
+  isPrimitive = true;
+  
   constructor(props = {}){
 
     const {
       width = 1,
       height = 1,
-      depth = 2,
+      depth = 1,
       color = 0x00ff00,
       debug = false
     } = props;

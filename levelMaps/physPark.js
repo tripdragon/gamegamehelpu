@@ -93,7 +93,7 @@ export class Level extends LevelMap {
 
     // Red Goal
     this.add(MeshBuilder({
-      mesh: 'rectangle',
+      mesh: 'rectangularPrism',
       width: goalThickness,
       height: goalHeight,
       depth: floorSize,
@@ -115,7 +115,7 @@ export class Level extends LevelMap {
 
     // Blue Goal
     this.add(MeshBuilder({
-      mesh: 'rectangle',
+      mesh: 'rectangularPrism',
       width: goalThickness,
       height: goalHeight,
       depth: floorSize,

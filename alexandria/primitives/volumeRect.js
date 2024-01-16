@@ -6,7 +6,9 @@ import { CubeMesh } from 'alexandria/primitives/cubeMesh.js';
 
 
 export class VolumeRect extends Object3D {
-
+  
+  isVolumeRect = true;
+  
   store = null;
 
   bounds = new Box3();

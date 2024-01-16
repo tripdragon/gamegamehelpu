@@ -6,7 +6,7 @@ import {
   CubeMesh,
   PlaneMesh,
   SphereMesh,
-  RectangleMesh
+  RectangularPrismMesh
 } from 'alexandria/primitives';
 
 /*
@@ -75,8 +75,8 @@ export function MeshBuilder(props) {
     case 'cube':
       mesh = new CubeMesh(meshProps);
       break;
-    case 'rectangle':
-      mesh = new RectangleMesh(meshProps);
+    case 'rectangularPrism':
+      mesh = new RectangularPrismMesh(meshProps);
       break;
     case 'plane':
       mesh = new PlaneMesh(meshProps);
