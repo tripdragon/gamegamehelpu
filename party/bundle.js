@@ -1673,7 +1673,7 @@ const internals$4 = {};
 const store$1 = window.store = window._a = {
   state: {
     // Default state
-    camPosition: [3, 200, 200]
+    // camPosition: [3, 200, 200]
   },
   setState: newState => {
     const changedSelectors = [];
@@ -4454,25 +4454,9 @@ class GameGrapth {
 
 // others
 
-// // import * as THREE from 'three';
-// import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-// import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-//
-// const controls = new OrbitControls( camera, renderer.domElement );
-// const loader = new GLTFLoader();
-
-class LevelMap extends Group {
-  isLevel = true;
-  lights;
-  sunLight = null;
-  constructor() {
-    super();
-    this.lights = new Group();
-    this.add(this.lights);
-  }
-}
-
 class CubeMesh extends Mesh {
+  isCubeMesh = true;
+  isPrimitive = true;
   constructor(props = {}) {
     const {
       size = 1,
@@ -4494,6 +4478,165 @@ class CubeMesh extends Mesh {
     // pick.matrixWorldAutoUpdate
     // debugger
     this.matrixAutoUpdate = false;
+  }
+}
+
+class PlaneMesh extends Mesh {
+  isPlaneMesh = true;
+  isPrimitive = true;
+  constructor(props = {}) {
+    const {
+      length = 1,
+      width = 1,
+      color = 0x00ff00,
+      debug = false
+    } = props;
+    const geometry = new PlaneGeometry(length, width);
+    const material = new MeshStandardMaterial({
+      color
+    });
+    super(geometry, material);
+    if (debug) {
+      const axesHelper = new AxesHelper(1);
+      this.add(axesHelper);
+    }
+    this.name = 'planey';
+
+    // debugger
+    this.matrixAutoUpdate = false;
+  }
+}
+
+class SphereMesh extends Mesh {
+  isSphereMesh = true;
+  isPrimitive = true;
+  constructor(props = {}) {
+    const {
+      radius = 1,
+      widthSegments = 12,
+      heightSegments = 12,
+      color = 0x00ff00,
+      debug = false
+    } = props;
+    const geometry = new SphereGeometry(radius, widthSegments, heightSegments);
+    const material = new MeshStandardMaterial({
+      color
+    });
+    super(geometry, material);
+    this.castShadow = true;
+    if (debug) {
+      const axesHelper = new AxesHelper(1);
+      this.add(axesHelper);
+    }
+    this.name = 'spherey';
+    this.matrixAutoUpdate = false;
+  }
+}
+
+// rectangle is the name for a 2d form, not 3d
+// so research says Prism is correct
+// Can also go with BoxMesh BUT Box conotates in the form of min max and that is not the task of this object
+// Volume solves that
+class RectangularPrismMesh extends Mesh {
+  isRectangularPrismMesh = true;
+  isPrimitive = true;
+  constructor(props = {}) {
+    const {
+      width = 1,
+      height = 1,
+      depth = 1,
+      color = 0x00ff00,
+      debug = false
+    } = props;
+    const geometry = new BoxGeometry(width, height, depth);
+    const material = new MeshStandardMaterial({
+      color
+    });
+    super(geometry, material);
+    this.castShadow = true;
+    if (debug) {
+      const axesHelper = new AxesHelper(1);
+      this.add(axesHelper);
+    }
+    this.name = 'rectangley';
+
+    // pick.matrixWorldAutoUpdate
+    // debugger
+    this.matrixAutoUpdate = false;
+  }
+}
+
+// // import * as THREE from 'three';
+// import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+// import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+//
+// const controls = new OrbitControls( camera, renderer.domElement );
+// const loader = new GLTFLoader();
+
+const vv1 = new Vector3$2();
+class LevelMap extends Group {
+  isLevel = true;
+  lights;
+  sunLight = null;
+  loadedGroups = new CheapPool();
+
+  // the initial here are primitives
+  sources = {
+    cubeMesh: new CubeMesh({
+      size: 1
+    }),
+    planeMesh: new PlaneMesh(),
+    rectangularPrismMesh: new RectangularPrismMesh(),
+    sphereMesh: new SphereMesh({
+      radius: 1
+    })
+  };
+  constructor() {
+    super();
+    this.lights = new Group();
+    this.add(this.lights);
+  }
+  fetchObject(sourceName) {
+    const gg = this.sources[sourceName];
+    if (gg) {
+      return gg.clone();
+    }
+  }
+  loadFromData(data) {
+    const st = store$1.state.game;
+    if (data.camera) {
+      const cam = data.camera;
+      // need to fix to handle perspective and ortho . type
+      // and .controlType
+      st.camera.position.fromArray(cam.position);
+      st.camera.rotation.fromArray(cam.rotation);
+      if (st.camera.lookAt) st.camera.lookAt(vv1.fromArray(cam.lookAt));
+      st.camera.updateMatrix();
+    }
+    const gg = new Group();
+    gg.name = data.name;
+    this.add(gg);
+    this.loadedGroups.add(gg);
+    for (var i = 0; i < data.objects.length; i++) {
+      const pick = data.objects[i];
+      const mm = this.fetchObject(pick.sourceName);
+      if (mm) {
+        mm.position.fromArray(pick.position);
+        mm.scale.fromArray(pick.scale);
+        mm.rotation.fromArray(pick.rotation);
+        mm.name = pick.name;
+        if (mm.material && pick.material && pick.material.clone) {
+          mm.material = mm.material.clone();
+        }
+        if (mm.material && pick.material && pick.material.color) {
+          mm.material.color.setHex(pick.material.color);
+          mm.material.needsUpdate = true;
+        }
+        gg.add(mm);
+        mm.updateMatrix();
+      }
+    }
+    gg.updateWorldMatrix();
   }
 }
 
@@ -7455,6 +7598,25 @@ class ImportedModel extends Group {
       }
     });
   }
+  boundingBox = null;
+  boundingSphere = null;
+  computeBoundingBox() {
+    if (this.boundingBox === null) {
+      this.boundingBox = new Box3$1();
+    }
+    this.boundingBox.makeEmpty();
+    this.boundingBox.setFromObject(this, true);
+  }
+  computeBoundingSphere() {
+    if (this.boundingSphere === null) {
+      this.boundingSphere = new Sphere();
+    }
+    if (this.boundingBox === null) {
+      this.computeBoundingBox();
+    }
+    this.boundingSphere.makeEmpty();
+    this.boundingBox.getBoundingSphere(this.boundingSphere);
+  }
 
   // here lie attempts to move bounding box into top level logic
 
@@ -7599,6 +7761,7 @@ async function loadModelAsync({
 }
 
 class VolumeRect extends Object3D {
+  isVolumeRect = true;
   store = null;
   bounds = new Box3$1();
   boxMesh;
@@ -10011,16 +10174,56 @@ class GUI {
 var GUI$1 = GUI;
 
 class Park1 extends LevelMap {
+  name = "park1";
   constructor() {
     super();
     this.init();
   }
   async init() {
-    // const init = async () => {
-
     store$1.state.game;
-    // debugger
 
+    // uniqueness and overlap of names will be a rolling issue
+    // 
+    // then we have primitives and functions that produce objects
+    // effectively need to serailize objects but thats super later
+    this.loadFromData({
+      name: "stufff group",
+      camera: {
+        position: [2.484703365030347, 1.6180611288122424, 2.8602857521469813],
+        // position : [7.673987472203893, 4.997369507572419, 8.833970822360577],
+        rotation: [0, 0, 0],
+        lookAt: [0, 0, 0],
+        type: "perspective",
+        controlType: "orbit"
+      },
+      objects: [{
+        name: "cube like",
+        sourceName: "cubeMesh",
+        // tree1, gate1, 
+        modelSourceGUID: "",
+        position: [0, 1, 1],
+        rotation: [0, 0.1, 0],
+        scale: [0.5, 0.5, 0.5],
+        material: {
+          clone: true,
+          color: 0x00ff00
+        },
+        parent: ''
+      }, {
+        name: "cube like sdfsdf",
+        sourceName: "cubeMesh",
+        // tree1, gate1, 
+        modelSourceGUID: "",
+        position: [0, 2, 1],
+        rotation: [0, 0.1, 0],
+        scale: [0.5, 0.5, 0.5],
+        material: {
+          clone: true,
+          color: 0x0000ff
+        },
+        parent: ''
+      }]
+    });
     const ambientLight = new AmbientLight();
     ambientLight.intensity = 2.01;
     this.lights.add(ambientLight);
@@ -10482,79 +10685,6 @@ internals$3.setOrScalar = ({
   }
 };
 
-class PlaneMesh extends Mesh {
-  constructor(props = {}) {
-    const {
-      length = 1,
-      width = 1,
-      color = 0x00ff00,
-      debug = false
-    } = props;
-    const geometry = new PlaneGeometry(length, width);
-    const material = new MeshStandardMaterial({
-      color
-    });
-    super(geometry, material);
-    if (debug) {
-      const axesHelper = new AxesHelper(1);
-      this.add(axesHelper);
-    }
-    this.name = 'planey';
-
-    // debugger
-    this.matrixAutoUpdate = false;
-  }
-}
-
-class SphereMesh extends Mesh {
-  constructor(props = {}) {
-    const {
-      radius = 1,
-      color = 0x00ff00,
-      debug = false
-    } = props;
-    const geometry = new SphereGeometry(radius, 32, 32);
-    const material = new MeshStandardMaterial({
-      color
-    });
-    super(geometry, material);
-    this.castShadow = true;
-    if (debug) {
-      const axesHelper = new AxesHelper(1);
-      this.add(axesHelper);
-    }
-    this.name = 'spherey';
-    this.matrixAutoUpdate = false;
-  }
-}
-
-class RectangleMesh extends Mesh {
-  constructor(props = {}) {
-    const {
-      width = 1,
-      height = 1,
-      depth = 2,
-      color = 0x00ff00,
-      debug = false
-    } = props;
-    const geometry = new BoxGeometry(width, height, depth);
-    const material = new MeshStandardMaterial({
-      color
-    });
-    super(geometry, material);
-    this.castShadow = true;
-    if (debug) {
-      const axesHelper = new AxesHelper(1);
-      this.add(axesHelper);
-    }
-    this.name = 'rectangley';
-
-    // pick.matrixWorldAutoUpdate
-    // debugger
-    this.matrixAutoUpdate = false;
-  }
-}
-
 /*
 Example usage
 this.add(MeshBuilder({
@@ -10612,8 +10742,8 @@ function MeshBuilder(props) {
       case 'cube':
         mesh = new CubeMesh(meshProps);
         break;
-      case 'rectangle':
-        mesh = new RectangleMesh(meshProps);
+      case 'rectangularPrism':
+        mesh = new RectangularPrismMesh(meshProps);
         break;
       case 'plane':
         mesh = new PlaneMesh(meshProps);
@@ -10647,6 +10777,17 @@ class Level extends LevelMap {
     this.init();
   }
   async init() {
+    this.loadFromData({
+      name: "stufff group",
+      camera: {
+        // position : [1,1,8],
+        position: [7.673987472203893, 4.997369507572419, 8.833970822360577],
+        rotation: [0, 0, 0],
+        lookAt: [0, 0, 0],
+        type: "perspective",
+        controlType: "orbit"
+      }
+    });
     const ambientLight = new AmbientLight();
     ambientLight.intensity = 2.01;
     this.lights.add(ambientLight);
@@ -10719,7 +10860,7 @@ class Level extends LevelMap {
 
     // Red Goal
     this.add(MeshBuilder({
-      mesh: 'rectangle',
+      mesh: 'rectangularPrism',
       width: goalThickness,
       height: goalHeight,
       depth: floorSize,
@@ -10741,7 +10882,7 @@ class Level extends LevelMap {
 
     // Blue Goal
     this.add(MeshBuilder({
-      mesh: 'rectangle',
+      mesh: 'rectangularPrism',
       width: goalThickness,
       height: goalHeight,
       depth: floorSize,
@@ -10838,7 +10979,9 @@ var threeStart_CM = (() => {
   helpersGroup.matrixAutoUpdate = false;
   const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.05, 1000);
   // camera.position.z = 5;
-  camera.position.fromArray(store$1.state.camPosition || [3, 14, 15]);
+  // camera.position.fromArray(store.state.camPosition || [3.302152734555017, 2.150391493963814, 3.8012990005129046]);
+  camera.position.fromArray([3.302152734555017, 2.150391493963814, 3.8012990005129046]);
+  // camera.position.fromArray(store.state.camPosition || [3, 14, 15]);
   camera.lookAt(new Vector3$2());
   const renderer = new WebGLRenderer({
     antialias: true
@@ -10886,6 +11029,8 @@ var threeStart_CM = (() => {
 
   // lights moved into levels
 
+  // #TODO: move level swapper out
+  console.warn("move level swapper out");
   // temporary level swapper, need something more complex so we can load multi on start
   const queryLvl = window.location.search.replace('?', '').split('lvl=')[1] || 'park1';
   let level;
@@ -11723,65 +11868,116 @@ const initECS = obj => {
   return;
 };
 
-// we need a core patch of object3D to have interfaces
-// so this is the simpliest route
+function patchInBounds_CM() {
+  console.log("patchInBounds_CM");
 
-function patchObject3D_CM() {
-  Object3D.prototype.computeBoundingBox = function () {
-    const bounding = new Box3$1().setFromObject(this);
-    this.boundingBox = bounding.getSize(new Vector3$2()).multiplyScalar(0.5);
-  };
-  Object3D.prototype.initECS = function () {
-    initECS(this);
-  };
-  Object3D.prototype.initPhysics = function (physConfig) {
-    this.initECS();
-    initPhysics(this, physConfig);
-  };
-  Object3D.prototype.fish = 'neat!!';
-  Object3D.prototype.entities = {};
-
-  // addresses onSelected, onUnseleced
-  Object3D.prototype.isSelected = false;
-  Object3D.prototype.select = function () {};
-  Object3D.prototype.deselect = function () {};
-  Object3D.prototype.simplePhysics = {
-    velocity: new Vector3$2(),
-    acceleration: new Vector3$2(),
-    force: new Vector3$2()
-  };
-  Object3D.prototype.setAutoMatrixAll = function (parentVal = true, val = true) {
-    this.matrixAutoUpdate = parentVal;
-    this.traverse(item => {
-      item.matrixAutoUpdate = val;
-    });
-  };
+  // window.CubeMesh = CubeMesh;
+  // 
+  // Object3D.prototype.narfs = function(){
+  //   console.log("in Object3D 111");
+  // }  
+  // 
+  // Mesh.prototype.narfs = function(){
+  //   // cant use super here, think this is the same
+  //   Object3D.prototype.narfs.call(this);
+  //   console.log("in mesh 222");
+  // }
+  // 
 
   // //
   // // // changing the world and local bounds idea
   // // // trying for a direct three patch to maybe be included
   // Object3D.prototype.boundingBox = null;
   // Object3D.prototype.boundingSphere = null;
+  // 
+  // Object3D.prototype.boundingBox = undefined;
+  // Object3D.prototype.boundingSphere = undefined;
+
   // //
   // //
   // //
   // // #BUG we need precise to fix lota internal things
   // // from setting the box settings to Infinity as defaults
+  // 
   // Object3D.prototype.computeBoundingBox = function(precise=true) {
-  //   if ( this.boundingBox === null ) {
-  //     this.boundingBox = new Box3();
+  //   if(this.isMesh){
+  //     // debugger
+  //     Mesh.prototype.computeBoundingBox.call(this);
   //   }
-  //   this.boundingBox.setFromObject(this, precise);
+  //   else {
+  //     if ( this.boundingBox === null ) {
+  //       this.boundingBox = new Box3();
+  //     }
+  //     this.boundingBox.setFromObject(this, precise);
+  // 
+  //   }
   // }
+  // // 
+  // // 
+  // // Object3D.prototype.computeBoundingSphere = function() {}
   // Object3D.prototype.computeBoundingSphere = function() {
-  //   if ( this.boundingBox === null ) {
+  //   if(this.isMesh){
+  //     // debugger
+  //     // this.super.computeBoundingSphere();
+  //     Mesh.prototype.computeBoundingSphere.call(this);
+  //   }
+  //   else {  
+  //     if ( this.boundingBox === null ) {
+  //       this.computeBoundingBox();
+  //     }
+  //     if (this.boundingBox && this.boundingSphere === null) {
+  //       this.boundingSphere = new Sphere();
+  //     }
+  //     this.boundingBox.getBoundingSphere(this.boundingSphere);
+  //   }
+  // }
+  // 
+  // 
+  // 
+
+  // 
+  // 
+  // Object3D.prototype.computeBoundingBox = function() {
+  // 
+  // 	const geometry = this.geometry;
+  // 
+  // 	if ( this.boundingBox === null ) {
+  // 
+  // 		this.boundingBox = new Box3();
+  // 
+  // 	}
+  // 
+  // 	this.boundingBox.makeEmpty();
+  // 
+  //   this.boundingBox.setFromObject(this, true);
+  // 
+  // }
+  // 
+  // Object3D.prototype.computeBoundingSphere = function() {
+  // 
+  // 	const geometry = this.geometry;
+  // 
+  // 	if ( this.boundingSphere === null ) {
+  // 
+  // 		this.boundingSphere = new Sphere();
+  // 
+  // 	}
+  // 
+  //   if( this.boundingBox === null ){
   //     this.computeBoundingBox();
   //   }
-  //   if (this.boundingBox && this.boundingSphere === null) {
-  //     this.boundingSphere = new Sphere();
-  //   }
+  // 
+  // 	this.boundingSphere.makeEmpty();
+  // 
   //   this.boundingBox.getBoundingSphere(this.boundingSphere);
+  // 
   // }
+  // 
+  // 
+  // 
+  // 
+  // 
+
   //
   //
   //
@@ -11861,6 +12057,42 @@ function patchObject3D_CM() {
   // }
   //
   //
+}
+
+// we need a core patch of object3D to have interfaces
+// so this is the simpliest route
+
+function patchObject3D_CM() {
+  Object3D.prototype.computeBoundingBox = function () {
+    const bounding = new Box3$1().setFromObject(this);
+    this.boundingBox = bounding.getSize(new Vector3$2()).multiplyScalar(0.5);
+  };
+  Object3D.prototype.initECS = function () {
+    initECS(this);
+  };
+  patchInBounds_CM();
+  Object3D.prototype.initPhysics = function (physConfig) {
+    this.initECS();
+    initPhysics(this, physConfig);
+  };
+  Object3D.prototype.fish = 'neat!!';
+  Object3D.prototype.entities = {};
+
+  // addresses onSelected, onUnseleced
+  Object3D.prototype.isSelected = false;
+  Object3D.prototype.select = function () {};
+  Object3D.prototype.deselect = function () {};
+  Object3D.prototype.simplePhysics = {
+    velocity: new Vector3$2(),
+    acceleration: new Vector3$2(),
+    force: new Vector3$2()
+  };
+  Object3D.prototype.setAutoMatrixAll = function (parentVal = true, val = true) {
+    this.matrixAutoUpdate = parentVal;
+    this.traverse(item => {
+      item.matrixAutoUpdate = val;
+    });
+  };
 
   // object3's dont have a bounds, so we force one!!!
   // and optimise for cache

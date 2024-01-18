@@ -24,6 +24,8 @@ import GUI from 'lil-gui';
 
 export class Park1 extends LevelMap{
 
+  name = "park1";
+
   constructor(){
     super();
     this.init();
