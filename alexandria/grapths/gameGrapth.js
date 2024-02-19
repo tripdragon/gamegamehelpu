@@ -59,7 +59,7 @@ export class GameGrapth {
   setCameraControls(mode){
     if (mode === 'orbit') {
       this.cameraControls.main = this.cameraControls.orbit;
-    },
+    }
     else if (mode === 'firstPerson') {
       // ...
     }
