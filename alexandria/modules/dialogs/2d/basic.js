@@ -1,28 +1,16 @@
-import { DialogInterface } from '../dialogInterface';
+import { Dialog2D } from './dialog';
 
-export class PlainDialog2D extends DialogInterface {
+export class BasicDialog2D extends Dialog2D {
 
   constructor(props) {
 
     super(props);
 
-    // Init DOM element here
-
     return this;
   }
 
-  show() {
+  dismiss() {
 
-    //
-  }
-
-  hide() {
-
-    //
-  }
-
-  ref() {
-
-    //
+    super.dismiss();
   }
 }

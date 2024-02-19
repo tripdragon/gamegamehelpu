@@ -1,22 +1,10 @@
-import { DialogInterface } from '../dialogInterface';
+import { Dialog3D } from './dialog';
 
-export class PlainDialog3D extends DialogInterface {
+export class BasicDialog3D extends Dialog3D {
 
-  show() {
+  dismiss() {
 
-    // if (!this.object3D), create it here
-  }
-
-  attach({ object3D, ...config }) {
-
-    // Attach to object3D
-    // Add ECS component to have it follow above bounding box of thingy thing
-    // Do something w/ config
-  }
-
-  hide() {
-
-    //
+    super.dismiss();
   }
 
   ref() {

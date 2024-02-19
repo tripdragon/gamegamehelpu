@@ -1,3 +1,4 @@
-export const Theme = {
-  // background: 'rgba(0, 0, 0, 0.2)'
+export const Theme = (obj3D) => {
+
+  // Set styles
 };

@@ -1,6 +1,5 @@
 import {
-  TextureLoader,
-  MeshStandardMaterial
+  TextureLoader
 } from 'three';
 
 /*

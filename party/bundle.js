@@ -2429,12 +2429,23 @@ class SceneGrapth extends CheapPool {
   }
 }
 
+// what is added here via .add()???
+// an object from tools pallete
 class PlanningBoard extends CheapPool {
   constructor() {
     super();
   }
   cachuplevel() {
-    return cachuplevel_CM(this);
+    // return cachuplevel_CM(this);
+    let rr = new Dats();
+    // let lMap = store.state.game.currentLevelMap;
+    // let lMap = store.state.game.planningBoard;
+    for (var i = 0; i < this.length; i++) {
+      let gg = new Dat();
+      gg.copy(this[i]);
+      rr.push(gg);
+    }
+    return rr;
   }
 }
 
@@ -2442,38 +2453,36 @@ class PlanningBoard extends CheapPool {
 
 // save feature
 // // let lMap = store.state.game.planningBoard;
-function cachuplevel_CM(lMap) {
-  class dat {
-    position = new Vector3();
-    rotation = new Vector3();
-    scale = new Vector3();
-    name = "";
-    copy(wobj) {
-      this.position.copy(wobj.position);
-      this.scale.copy(wobj.scale);
-      this.rotation.copy(wobj.rotation);
-      this.name = wobj.name;
-      this.compress(this.position);
-      this.compress(this.scale);
-    }
-    compress(vec) {
-      vec.x = +Number.parseFloat(vec.x).toFixed(3);
-      vec.y = +Number.parseFloat(vec.y).toFixed(3);
-      vec.z = +Number.parseFloat(vec.z).toFixed(3);
-    }
+// function cachuplevel_CM(lMap){
+//   let rr = new Dats();
+//   // let lMap = store.state.game.currentLevelMap;
+//   // let lMap = store.state.game.planningBoard;
+//   for (var i = 0; i < lMap.length; i++) {
+//     let gg = new Dat();gg.copy(lMap[i]);
+//     rr.wobjs.push( gg );
+//   }
+//   return rr;
+// }
+
+class Dats extends CheapPool {}
+class Dat {
+  position = new Vector3();
+  rotation = new Vector3();
+  scale = new Vector3();
+  name = "";
+  copy(wobj) {
+    this.position.copy(wobj.position);
+    this.scale.copy(wobj.scale);
+    this.rotation.copy(wobj.rotation);
+    this.name = wobj.name;
+    this.compress(this.position);
+    this.compress(this.scale);
   }
-  function dats() {
-    this.wobjs = [];
+  compress(vec) {
+    vec.x = +Number.parseFloat(vec.x).toFixed(3);
+    vec.y = +Number.parseFloat(vec.y).toFixed(3);
+    vec.z = +Number.parseFloat(vec.z).toFixed(3);
   }
-  let rr = new dats();
-  // let lMap = store.state.game.currentLevelMap;
-  // let lMap = store.state.game.planningBoard;
-  for (var i = 0; i < lMap.length; i++) {
-    let gg = new dat();
-    gg.copy(lMap[i]);
-    rr.wobjs.push(gg);
-  }
-  return rr;
 }
 
 class Levels extends CheapPool {
@@ -4447,8 +4456,6 @@ class GameGrapth {
     //     _this.pointerDownOnTransformWidget = false;
     //   }
     // });
-    //
-    //
   }
 }
 
@@ -10183,7 +10190,7 @@ class Park1 extends LevelMap {
     store$1.state.game;
 
     // uniqueness and overlap of names will be a rolling issue
-    // 
+    //
     // then we have primitives and functions that produce objects
     // effectively need to serailize objects but thats super later
     this.loadFromData({
@@ -10199,7 +10206,7 @@ class Park1 extends LevelMap {
       objects: [{
         name: "cube like",
         sourceName: "cubeMesh",
-        // tree1, gate1, 
+        // tree1, gate1,
         modelSourceGUID: "",
         position: [0, 1, 1],
         rotation: [0, 0.1, 0],
@@ -10212,7 +10219,7 @@ class Park1 extends LevelMap {
       }, {
         name: "cube like sdfsdf",
         sourceName: "cubeMesh",
-        // tree1, gate1, 
+        // tree1, gate1,
         modelSourceGUID: "",
         position: [0, 2, 1],
         rotation: [0, 0.1, 0],
@@ -10364,79 +10371,79 @@ function buildLilGui(gameConfig) {
 
     // // min
     // // :o
-    // 
+    //
     // // val = -1
-    // 
+    //
     // vol.setVectice(vol.reorderSharedVertices.bottom[0],min.x,min.y,min.z)
-    // 
+    //
     // // y
     // vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "y", min.y);
     // vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "y", min.y);
     // vol.offsetVectice(vol.reorderSharedVertices.bottom[3], "y", min.y);
-    // 
+    //
     // // here we already need the y of the top, not to += it
     // // vol.setVectice(vol.reorderSharedVertices.top[0],val,val,val)
-    // 
+    //
     // var v0 = []
     // vol.readVertAtSharedIndex(vol.reorderSharedVertices.bottom[0], v0)
     // // opisite
     // var v1 = []
     // vol.readVertAtSharedIndex(vol.reorderSharedVertices.top[2], v1)
-    // 
+    //
     // // top edge
     // vol.offsetVectice(vol.reorderSharedVertices.top[0], "x", v0[0]);
     // vol.offsetVectice(vol.reorderSharedVertices.top[0], "z", v0[2]);
     // vol.offsetVectice(vol.reorderSharedVertices.top[0], "y", v1[1]);
-    // 
+    //
     // // x edge
     // vol.offsetVectice(vol.reorderSharedVertices.bottom[3], "z", v0[2]);
     // vol.offsetVectice(vol.reorderSharedVertices.top[3], "z", v0[2]);
-    // 
+    //
     // // y
     // vol.offsetVectice(vol.reorderSharedVertices.top[3], "y", v1[1]);
-    // 
+    //
     // // z edge
     // vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "x", v0[0]);
     // vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "z", v1[2]);
-    // 
+    //
     // vol.offsetVectice(vol.reorderSharedVertices.top[1], "x", v0[0]);
     // vol.offsetVectice(vol.reorderSharedVertices.top[1], "y", v1[1]);
-    // 
+    //
     // // :x
-    // 
+    //
     // // max
     // // :o
-    // 
+    //
     // // val = 1
     // vol.setVectice(vol.reorderSharedVertices.top[2],max.x,max.y,max.z)
-    // 
-    // 
-    // 
+    //
+    //
+    //
     // // y
     // vol.offsetVectice(vol.reorderSharedVertices.top[0], "y", max.y);
     // vol.offsetVectice(vol.reorderSharedVertices.top[1], "y", max.y);
     // vol.offsetVectice(vol.reorderSharedVertices.top[3], "y", max.y);
-    // 
+    //
     // var v0 = []
     // vol.readVertAtSharedIndex(vol.reorderSharedVertices.top[2], v0)
     // // opisite
     // var v1 = []
     // vol.readVertAtSharedIndex(vol.reorderSharedVertices.bottom[0], v1)
-    // 
+    //
     // // bottom edge
     // vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "x", v0[0]);
     // vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "z", v0[2]);
     // vol.offsetVectice(vol.reorderSharedVertices.bottom[2], "y", v1[1]);
-    // 
-    // 
+    //
+    //
     // // x edge
     // vol.offsetVectice(vol.reorderSharedVertices.bottom[3], "x", v0[0]);
     // vol.offsetVectice(vol.reorderSharedVertices.top[3], "x", v0[0]);
-    // 
+    //
     // // z edge
     // vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "z", v0[2]);
     // vol.offsetVectice(vol.reorderSharedVertices.bottom[1], "x", v1[0]);
-    // 
+    //
     // vol.offsetVectice(vol.reorderSharedVertices.top[1], "z", v0[2]);
     // vol.offsetVectice(vol.reorderSharedVertices.top[1], "x", v1[0]);
   }
@@ -10778,15 +10785,15 @@ class Level extends LevelMap {
   }
   async init() {
     this.loadFromData({
-      name: "stufff group",
+      name: 'stufff group',
       camera: {
-        // position : [1,1,8],
         position: [7.673987472203893, 4.997369507572419, 8.833970822360577],
         rotation: [0, 0, 0],
         lookAt: [0, 0, 0],
-        type: "perspective",
-        controlType: "orbit"
-      }
+        type: 'perspective',
+        controlType: 'orbit'
+      },
+      objects: []
     });
     const ambientLight = new AmbientLight();
     ambientLight.intensity = 2.01;
@@ -10979,9 +10986,7 @@ var threeStart_CM = (() => {
   helpersGroup.matrixAutoUpdate = false;
   const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.05, 1000);
   // camera.position.z = 5;
-  // camera.position.fromArray(store.state.camPosition || [3.302152734555017, 2.150391493963814, 3.8012990005129046]);
   camera.position.fromArray([3.302152734555017, 2.150391493963814, 3.8012990005129046]);
-  // camera.position.fromArray(store.state.camPosition || [3, 14, 15]);
   camera.lookAt(new Vector3$2());
   const renderer = new WebGLRenderer({
     antialias: true
